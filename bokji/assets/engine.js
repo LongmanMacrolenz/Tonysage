@@ -432,9 +432,12 @@
     return verdict('firstMeet', r, { amount: { text: manwon(amt), sub: older > 0 ? '둘째 이상' : '첫째, 둘째부터 ' + manwon(fm.second) } });
   };
 
-  RULES.pregnancyCare = function (h) {
+  RULES.pregnancyCare = function (h, ctx) {
     var pc = P().pregnancyCare;
     var r = [h.pregnant ? pass('임신 중') : fail('임신 중인 가구원이 없음')];
+    if (h.pregnant && ctx.bls.medical.ratio <= P().bls.ratio.medical) {
+      r.push(ask('의료급여 수급자는 대상이 아님(건강보험 가입자·피부양자만). 의료급여 쪽 임신·출산 지원을 주민센터에 확인'));
+    }
     return verdict('pregnancyCare', r, { amount: { text: manwon(pc.single), sub: '다태아는 태아 1명당 ' + manwon(pc.perFetus) } });
   };
 
@@ -454,7 +457,7 @@
     var n = h.kidsUnder18;
     var r = [];
     r.push(h.singleParent ? pass('한부모 가구') : fail('한부모 가구가 아님'));
-    r.push(n ? pass('18세 미만 자녀 ' + n + '명') : fail('18세 미만 자녀가 없음'));
+    r.push(n ? pass('18세 미만 자녀 ' + n + '명(고등학생은 22세 미만까지 포함)') : fail('18세 미만 자녀가 없음(고등학교 재학 중이면 22세 미만까지)'));
     var lim = median(h.size) * sp.ratio / 100;
     r.push(c.ratio <= sp.ratio ? pass('소득인정액 추정 ' + won(c.recognized) + '이 기준중위소득 ' + sp.ratio + '%(' + won(lim) + ') 이하') : fail('소득인정액 추정 ' + won(c.recognized) + '이 기준중위소득 ' + sp.ratio + '%(' + won(lim) + ')를 넘음'));
     var teen = h.age <= 24;
