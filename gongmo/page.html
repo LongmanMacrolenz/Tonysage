@@ -288,6 +288,57 @@ details.handoff pre { white-space: pre-wrap; font: 12.5px/1.55 var(--f-num); col
 .checklist small { display: block; color: var(--ink-3); font-size: 12.5px; }
 .exports { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 6px; border-top: 1px solid var(--line-2); }
 
+/* AI 엔진 */
+.engine { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); }
+.engine label:first-child { font-weight: 600; }
+.engine select { min-height: 32px; border: 1px solid var(--line); border-radius: 8px; background: var(--sheet); padding: 2px 6px; font-size: 13px; }
+@media (max-width: 640px) { .engine { order: 3; width: 100%; } .engine select { flex: 1 1 0; } }
+
+/* 제출 패키지 */
+.pkg { display: grid; gap: 16px; }
+.stepbox { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px 16px; display: grid; gap: 12px; background: var(--sheet); }
+.stepbox.mine { border-color: var(--gov); }
+.stepbox.claude { border-color: var(--talk); }
+.stepbox > h3 { margin: 0; font-size: 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.stepbox > h3 .no { font: 600 12px/1 var(--f-num); border-radius: 999px; padding: 4px 8px; background: var(--gov-soft); color: var(--gov); }
+.stepbox.claude > h3 .no { background: var(--talk-soft); color: var(--talk); }
+.stepbox > h3 .by { margin-left: auto; font: 500 12px var(--f-body); color: var(--ink-3); }
+.fld { display: grid; gap: 5px; }
+.fld > label { font-weight: 600; font-size: 13.5px; }
+.fld > small { color: var(--ink-3); font-size: 12.5px; margin-top: -3px; }
+.fld textarea, .fld input[type="text"], .fld select { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; background: var(--sheet); font-size: 15px; line-height: 1.6; resize: vertical; }
+.fld.two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+@media (max-width: 600px) { .fld.two { grid-template-columns: minmax(0, 1fr); } }
+.engline { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; font-size: 13.5px; color: var(--ink-2); }
+.engline b { color: var(--ink); }
+.progress { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.progress li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 14px; color: var(--ink-3); }
+.progress li::before { content: ""; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); justify-self: center; }
+.progress li[data-s="run"] { color: var(--ink); font-weight: 600; }
+.progress li[data-s="run"]::before { border-color: var(--talk); border-top-color: transparent; animation: spin 1s linear infinite; }
+.progress li[data-s="done"] { color: var(--ink-2); }
+.progress li[data-s="done"]::before { background: var(--ok); border-color: var(--ok); }
+.progress li[data-s="err"]::before { background: var(--seal); border-color: var(--seal); }
+.progress li .t { font: 500 12px var(--f-num); color: var(--ink-3); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .progress li[data-s="run"]::before { animation: none; } }
+.live { max-height: 180px; overflow: auto; font-size: 12.5px; line-height: 1.55; color: var(--ink-2); white-space: pre-wrap; background: var(--sheet-2); border: 1px solid var(--line-2); border-radius: 8px; padding: 8px 10px; }
+.dl { display: flex; gap: 8px; flex-wrap: wrap; }
+.part { border-top: 1px solid var(--line-2); padding-top: 12px; display: grid; gap: 8px; }
+.part > h4 { margin: 0; font-size: 15px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.part > h4 .sp { margin-left: auto; display: flex; gap: 6px; }
+.part > h4 small { font: 500 12px var(--f-num); color: var(--ink-3); }
+.ptable { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ptable th, .ptable td { border-bottom: 1px solid var(--line-2); padding: 7px 6px; text-align: left; vertical-align: top; }
+.ptable th { font-size: 12.5px; color: var(--ink-3); font-weight: 600; }
+.ptable td:first-child { font-weight: 600; width: 32%; }
+.ptable input, .ptable textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; background: var(--sheet); font-size: 14px; resize: vertical; }
+.pwrap { overflow-x: auto; }
+.olist { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 14px; }
+.olist small { color: var(--ink-3); }
+.mark { background: var(--hl); border-radius: 3px; padding: 0 2px; }
+.addr { font: 500 14px var(--f-num); user-select: all; background: var(--sheet-2); border: 1px solid var(--line-2); border-radius: 6px; padding: 3px 8px; }
+
 /* 공고 추가 */
 dialog { border: 1px solid var(--line); border-radius: 14px; padding: 0; width: min(760px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); background: var(--sheet); color: var(--ink); box-shadow: var(--shadow); }
 dialog::backdrop { background: rgba(10, 14, 25, .45); }
@@ -311,6 +362,12 @@ dialog::backdrop { background: rgba(10, 14, 25, .45); }
 <header class="top">
   <div class="top-in gutter">
     <a class="brand" href="#home"><b>정책공모 작업실</b><span>Claude와 함께 쓰는 정책 제안</span></a>
+    <div class="engine" id="engine" title="Claude가 답할 때 쓰는 모델과 생각 수준입니다. 웹 검색은 하지 않습니다.">
+      <label for="engModel">AI 엔진</label>
+      <select id="engModel"></select>
+      <label class="sr-only" for="engEffort">생각 수준</label>
+      <select id="engEffort"></select>
+    </div>
     <span class="sync" id="sync" data-s="local">이 브라우저에 저장</span>
     <button class="btn small" id="addBtn" type="button">공고 추가</button>
   </div>
@@ -395,6 +452,8 @@ dialog::backdrop { background: rgba(10, 14, 25, .45); }
   </form>
 </dialog>
 
+<script async id="lib-docx" src="https://cdn.jsdelivr.net/npm/docx@9.5.1/dist/index.iife.js"></script>
+<script async id="lib-jszip" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script id="snapshot" type="application/json">__SNAPSHOT__</script>
 <script>
 (() => {
@@ -424,7 +483,8 @@ const st = {
   f: { view: 'open', q: '', tag: '', org: '', prize: false, team: false, anyone: false, sort: 'end' },
   backend: 'local', canWrite: true,
   db: null, sample: undefined, sampleOff: false, downloads: null,
-  busy: {}, sugg: {}, chatErr: {}, includeDraft: {}
+  busy: {}, sugg: {}, chatErr: {}, includeDraft: {},
+  gen: {}, engine: { model: 'claude-opus-5-5', effort: 'high' }, reviewPass: {}, lastModel: ''
 };
 
 /* ---------- 날짜·금액 ---------- */
@@ -681,14 +741,15 @@ function renderContest(id) {
     '<div class="meta">' + stampHtml(c) + '<span>' + esc(c.org) + '</span><span class="chip">' + esc(c.orgType || '') + '</span><span class="chip">' + esc(c.kind) + '</span>' + (c.verified ? '' : '<span class="chip unv">공식 공고 미확인</span>') + (p ? '<span class="chip mine">' + esc(p.status) + '</span>' : '') + '</div>' +
     '<h1>' + esc(c.title) + '</h1>' +
     '<div class="dline"><span class="when' + (s.k === 'open' && s.n <= 3 ? ' hot' : '') + '">' + esc(when) + (s.k === 'open' ? ' · ' + (s.n === 0 ? '오늘 마감' : s.n + '일 남음') : s.k === 'closed' ? ' · 접수 끝남' : '') + '</span>' + prizeChip(c) + '</div>' +
-    '<div class="actions">' + (p ? '' : '<button class="btn talk" type="button" data-act="start">작업 시작</button>') +
+    '<div class="actions">' + (p ? '<button class="btn talk" type="button" data-tab="pkg">제출 패키지 열기</button>' : '<button class="btn talk" type="button" data-act="start">작업 시작</button>') +
     '<button class="btn" type="button" data-act="ask">Claude에게 묻기</button>' +
     (c.url ? '<a class="btn" href="' + esc(c.url) + '" target="_blank" rel="noopener">공식 공고 열기</a>' : '') +
     '<button class="btn ghost" type="button" data-act="handoff">대화용 요약 복사</button></div></div>' +
     '<div class="tabs" role="tablist">' +
     '<button role="tab" type="button" data-tab="brief" aria-selected="' + (st.tab === 'brief') + '">공고 한 장</button>' +
+    '<button role="tab" type="button" data-tab="pkg" aria-selected="' + (st.tab === 'pkg') + '">제출 패키지' + (p && p.pkg ? '<span class="badge">완성</span>' : (st.gen[id] && st.gen[id].running ? '<span class="badge">만드는 중</span>' : '')) + '</button>' +
     '<button role="tab" type="button" data-tab="chat" aria-selected="' + (st.tab === 'chat') + '">Claude와 대화' + (nChat ? '<span class="badge">' + nChat + '</span>' : '') + '</button>' +
-    '<button role="tab" type="button" data-tab="draft" aria-selected="' + (st.tab === 'draft') + '">제안서' + (p ? '<span class="badge">' + filled(p) + '/' + SECTIONS.length + '</span>' : '') + '</button></div>' +
+    '<button role="tab" type="button" data-tab="draft" aria-selected="' + (st.tab === 'draft') + '">제안서 편집' + (p ? '<span class="badge">' + filled(p) + '/' + SECTIONS.length + '</span>' : '') + '</button></div>' +
     '<div class="tabpanel" id="panel"></div></article></div>';
   renderTab(c);
 }
@@ -697,6 +758,7 @@ function renderTab(c) {
   if (!el) return;
   if (st.tab === 'chat') renderChat(c, el);
   else if (st.tab === 'draft') renderDraft(c, el);
+  else if (st.tab === 'pkg') renderPkg(c, el);
   else renderBrief(c, el);
 }
 function fact(k, v, cls) { return '<dt>' + k + '</dt><dd' + (cls ? ' class="' + cls + '"' : '') + '>' + (v && String(v).trim() ? linkify(v) : '<span class="miss">공고 요약에 없음 · 공식 공고에서 확인</span>') + '</dd>'; }
@@ -816,10 +878,11 @@ async function sendChat(c, text) {
   const input = [{ role: 'user', content: rules(c, !!st.includeDraft[id]) }].concat(turns.slice(-20).map(m => ({ role: m.role, content: m.content })));
   let answer = '';
   try {
-    const r = await st.sample(input, {
+    const r = await st.sample(input, engineOpts({
       cache: false, signal: ctl.signal,
       onText: ({ text }) => { answer = text; const live = $('#live .body'); if (live && st.route === id) live.innerHTML = md(text); }
-    });
+    }));
+    noteApplied(r);
     answer = r.text + (r.truncated ? '\n\n(답이 길어 중간에 끊겼습니다. "이어서"라고 보내 주세요.)' : '');
     turns.push({ role: 'assistant', content: answer, at: Date.now() });
   } catch (e) {
@@ -882,7 +945,7 @@ function renderDraft(c, el) {
     }).join('') +
     '<section><h3 style="margin:6px 0 6px;font-size:16px">제출 전 점검</h3><ul class="checklist">' +
     checklist(c).map(([k, t, d]) => '<li><label><input type="checkbox" data-check="' + k + '"' + (p.checks[k] ? ' checked' : '') + (ro ? ' disabled' : '') + '><span><b>' + esc(t) + '</b><small>' + linkify(d) + '</small></span></label></li>').join('') + '</ul></section>' +
-    '<div class="exports"><button class="btn" type="button" data-act="copydraft">제안서 복사</button>' +
+    '<div class="exports"><button class="btn" type="button" data-act="dl-proposal">제안서(.docx)</button><button class="btn" type="button" data-act="copydraft">제안서 복사</button>' +
     (st.downloads ? '<button class="btn" type="button" data-act="savefile">파일로 저장(.md)</button>' : '') +
     '<button class="btn ghost" type="button" data-act="handoff">대화용 요약 복사</button>' +
     (ro ? '' : '<button class="btn ghost danger" type="button" data-act="resetdraft" style="margin-left:auto">제안서 비우기</button>') + '</div></div>';
@@ -918,7 +981,8 @@ async function aiSection(c, key) {
     '- 출력은 이 칸에 그대로 넣을 본문만. 머리말, 칸 이름, 설명, 따옴표, 마크다운 기호 없이.' +
     (cur ? '\n\n[지금 쓴 내용]\n' + cur : '');
   try {
-    const r = await st.sample(prompt, { cache: false, signal: ctl.signal, onText: ({ text }) => { st.sugg[k].text = text; const tx = $('#sg_' + key + ' .tx'); if (tx && st.route === id) tx.textContent = text; } });
+    const r = await st.sample(prompt, engineOpts({ cache: false, signal: ctl.signal, onText: ({ text }) => { st.sugg[k].text = text; const tx = $('#sg_' + key + ' .tx'); if (tx && st.route === id) tx.textContent = text; } }));
+    noteApplied(r);
     st.sugg[k] = { busy: false, text: plain(r.text) };
   } catch (e) {
     st.sugg[k] = { busy: false, text: (e && e.text) || '', err: errText(e) };
@@ -945,6 +1009,439 @@ function draftMarkdown(c, p) {
   return '# ' + ((p.sections.title || '').trim() || c.title + ' 제안서') + '\n\n' +
     '- 공모: ' + c.title + ' (' + c.org + ')\n- 마감: ' + (c.always ? '상시' : (c.end || '') + (c.endTime ? ' ' + c.endTime : '')) + '\n- 공식 공고: ' + (c.url || '') + '\n\n' +
     SECTIONS.filter(s => s.key !== 'title').map(s => '## ' + s.label + '\n\n' + ((p.sections[s.key] || '').trim() || '(비어 있음)')).join('\n\n') + '\n';
+}
+
+/* ---------- AI 엔진 ---------- */
+const ENGINES = [
+  { id: 'claude-opus-5-5', label: 'Opus 5.5' },
+  { id: 'claude-fable-5-1', label: 'Fable 5.1' },
+  { id: '', label: '자동(기본 모델)' }
+];
+const EFFORTS = [['low', '낮음'], ['medium', '보통'], ['high', '높음']];
+function engineLabel(id) { const e = ENGINES.find(x => x.id === id); return e ? e.label : (id || '기본 모델'); }
+function effortLabel(v) { const e = EFFORTS.find(x => x[0] === v); return e ? e[1] : v; }
+function initEngine() {
+  const saved = LS.get('gongmo.engine', null);
+  st.engine = saved && ENGINES.some(e => e.id === saved.model) && EFFORTS.some(e => e[0] === saved.effort) ? saved : { model: 'claude-opus-5-5', effort: 'high' };
+  $('#engModel').innerHTML = ENGINES.map(e => '<option value="' + e.id + '"' + (e.id === st.engine.model ? ' selected' : '') + '>' + e.label + '</option>').join('');
+  $('#engEffort').innerHTML = EFFORTS.map(e => '<option value="' + e[0] + '"' + (e[0] === st.engine.effort ? ' selected' : '') + '>생각 ' + e[1] + '</option>').join('');
+  const onChange = () => {
+    st.engine = { model: $('#engModel').value, effort: $('#engEffort').value };
+    LS.set('gongmo.engine', st.engine);
+    const eng = $('#engNow'); if (eng) eng.innerHTML = engineNowHtml();
+  };
+  $('#engModel').addEventListener('change', onChange);
+  $('#engEffort').addEventListener('change', onChange);
+}
+function engineOpts(extra) {
+  const o = Object.assign({}, extra || {});
+  if (st.engine.model) { o.model = st.engine.model; o.modelTier = 'complex'; }
+  if (st.engine.effort) o.effort = st.engine.effort;
+  return o;
+}
+function noteApplied(r) {
+  if (!r) return '';
+  const name = r.modelApplied ? engineLabel(r.modelApplied) : '기본 모델';
+  if (st.engine.model && !r.modelApplied) toast('선택한 ' + engineLabel(st.engine.model) + '을(를) 이 계정에서 쓸 수 없어 기본 모델이 답했습니다.');
+  st.lastModel = name;
+  return name;
+}
+function engineNowHtml() { return 'AI 엔진 <b>' + esc(engineLabel(st.engine.model)) + '</b> · 생각 <b>' + esc(effortLabel(st.engine.effort)) + '</b> <span class="muted">(오른쪽 위에서 바꿉니다)</span>'; }
+
+/* 빈칸 표시: [이름], [연락처], [확인 필요: …] 같은 것만. 공고의 메일 제목 규칙 같은 대괄호는 제외 */
+const PH_SRC = '\\[(?:확인 필요|공고 확인|빈칸)[^\\]\\n]{0,80}\\]|\\[(?:이름|성명|연락처|전화번호|휴대전화|이메일|소속|학교|학과|직업|주소|생년월일|제출일|팀명|대표자|작성자|서명)[^\\]\\n]{0,20}\\]';
+const PH_SPLIT = new RegExp('(' + PH_SRC + ')');
+const PH_ONE = new RegExp('^(?:' + PH_SRC + ')$');
+function placeholders(text) { return [...new Set(String(text || '').match(new RegExp(PH_SRC, 'g')) || [])]; }
+
+/* ---------- 제출 패키지: 프롬프트 ---------- */
+const HEADS = [['title', '제목'], ['summary', '한 줄 요약'], ['problem', '현황 및 문제점'], ['solution', '개선 방안'], ['effect', '기대 효과'], ['plan', '실행 방안'], ['refs', '근거 자료']];
+function headsText() { return HEADS.map(h => '=== ' + h[1] + ' ===').join('\n'); }
+function sectionsText(sec) { return HEADS.map(h => '=== ' + h[1] + ' ===\n' + ((sec && sec[h[0]]) || '').trim()).join('\n\n'); }
+function parseSections(text) {
+  const map = {}; HEADS.forEach(h => { map[h[1]] = h[0]; }); map['검토 메모'] = 'review';
+  const out = {}; let cur = null, n = 0;
+  for (const line of String(text).replace(/\r/g, '').split('\n')) {
+    const m = line.match(/^\s*={2,}\s*(.+?)\s*={2,}\s*$/);
+    const key = m && map[m[1].replace(/\s+/g, ' ').trim()];
+    if (key) { cur = key; out[cur] = []; n++; continue; }
+    if (cur) out[cur].push(line);
+  }
+  if (n < 4) return null;
+  const res = {};
+  for (const k in out) res[k] = plain(out[k].join('\n'));
+  return res;
+}
+function userInputText(inp) {
+  return '[사용자가 정한 정책 방향]\n' + ((inp.direction || '').trim() || '(적지 않음)') +
+    '\n\n[사용자의 아이디어 초안]\n' + ((inp.idea || '').trim() || '(적지 않음)') +
+    ((inp.notes || '').trim() ? '\n\n[사용자의 경험·근거 메모]\n' + inp.notes.trim() : '') +
+    '\n\n[참가 형태] ' + (inp.team === 'team' ? '팀' : '개인');
+}
+const WRITE_RULES =
+  '- 사용자의 방향과 아이디어를 중심에 두고 구체화하라. 논리의 빈틈은 메워도 되지만 주제를 바꾸지 마라.\n' +
+  '- 공모 주제·분야·심사 기준에 맞춰라. 심사 기준이 있으면 각 기준을 본문 어디에서 충족하는지 드러나게 써라.\n' +
+  '- 분량은 공고의 제출물·분량 규정 안에서 넉넉히 채우되 넘지 마라. A4 1쪽은 약 1,300자다. 규정이 없으면 본문 전체 4,000자 안팎.\n' +
+  '- 정책은 실행 주체(어느 기관·부서), 대상, 방법, 단계, 소요 예산 산정 방식, 바꿔야 할 법령·조례까지 구체적으로 써라.\n' +
+  '- 통계·법령·예산·기존 정책은 확실한 것만 쓰고, 확실하지 않으면 그 자리에 [확인 필요: 무엇을, 어디서]를 붙여라. 수치를 지어내지 마라.\n' +
+  '- 개인정보(이름, 연락처, 소속)는 지어내지 말고 [이름]처럼 빈칸으로 둬라.\n' +
+  '- 정책제안서 문체로 써라. 소제목과 번호(1. 가. -)를 쓰고, 마크다운 기호(#, **, 표)는 쓰지 마라.';
+function bodyPrompt(c, inp) {
+  return rules(c, false) + '\n\n' + userInputText(inp) + '\n\n[요청]\n위 방향과 아이디어로 이 공모에 낼 정책 제안서 본문을 완성하라.\n' + WRITE_RULES +
+    '\n\n출력 형식: 아래 머리표 일곱 개를 이 순서 그대로 한 줄씩 쓰고, 각 머리표 다음 줄부터 그 칸의 내용을 써라. 머리표 밖에는 아무것도 쓰지 마라.\n' + headsText();
+}
+function reviewPrompt(c, inp, sec) {
+  return rules(c, false) + '\n\n' + userInputText(inp) + '\n\n[제안서 본문 초안]\n' + sectionsText(sec) +
+    '\n\n[요청]\n이 공모의 심사위원이 되어 초안을 냉정하게 검토한 뒤, 고친 최종본을 써라.\n' +
+    '점검할 것: 공모 주제 적합성, 심사 기준별 충족, 실현 가능성(주체·예산·법령), 구체성, 독창성, 기존 정책과의 차별점, 분량·형식, [확인 필요] 표시가 빠진 단정, 문장의 군더더기.\n' +
+    WRITE_RULES + '\n\n출력 형식: 같은 머리표 일곱 개로 고친 최종본 전체를 쓰고, 맨 끝에 \'=== 검토 메모 ===\' 머리표를 달아 무엇을 왜 고쳤는지와 사용자가 직접 채우거나 확인할 것을 다섯 줄 이내 목록으로 써라.\n' + headsText() + '\n=== 검토 메모 ===';
+}
+function extrasPrompt(c, inp, sec) {
+  return rules(c, false) + '\n\n' + userInputText(inp) + '\n\n[최종 제안서 본문]\n' + sectionsText(sec) +
+    '\n\n[요청]\n사용자가 로그인해 업로드하거나 이메일로 보내기만 하면 되도록 제출 부속 자료를 만들어라.\n' +
+    '- 공고의 제출물, 제출 방법, 메일 제목 규칙, 파일 형식을 그대로 따른다. 공고 요약에 없는 규칙은 지어내지 말고 [공고 확인]이라고 쓴다.\n' +
+    '- 개인정보는 지어내지 말고 [이름], [연락처], [소속]처럼 빈칸으로 둔다.\n' +
+    '- 제출물이 발표 자료(PPT·PT 심사)면 slides에 슬라이드 구성을, 영상·포스터·카드뉴스면 장면이나 면 구성을 담는다. 해당 없으면 빈 배열.\n' +
+    'JSON 객체 하나로만 답하라. 형식:\n' +
+    '{"summary1p":"1쪽 요약본 본문. 600~900자. 문제-해법-기대효과-실행 순서. 제목 제외",' +
+    '"applicationFields":[{"label":"참가신청서 항목","value":"기재할 내용 또는 [빈칸]"}],' +
+    '"email":{"to":"접수 이메일 주소 또는 null","subject":"공고 규칙에 맞춘 메일 제목","body":"정중한 메일 본문","attachments":["첨부 파일명"]},' +
+    '"upload":[{"field":"온라인 접수 입력란 이름","value":"그대로 붙여 넣을 내용","limit":"글자 수 제한 등 또는 null"}],' +
+    '"slides":[{"title":"슬라이드나 장면 제목","points":["핵심 문장"]}],' +
+    '"files":[{"name":"파일명.확장자","what":"담을 내용","how":"서식·형식 주의점"}],' +
+    '"verify":[{"item":"제출 전에 확인할 사실·수치","where":"확인할 곳과 검색어"}],' +
+    '"aiNote":"공고에 생성형 AI 규정이 있으면 그에 맞춘 활용 고지 문안, 없으면 null",' +
+    '"steps":["사용자가 제출할 때 할 일을 순서대로"]}';
+}
+function cleanExtras(o) {
+  const arr = v => Array.isArray(v) ? v : [];
+  const str = v => (v == null ? '' : String(v));
+  o = o && typeof o === 'object' ? o : {};
+  const em = o.email && typeof o.email === 'object' ? o.email : {};
+  return {
+    summary1p: plain(str(o.summary1p)),
+    applicationFields: arr(o.applicationFields).filter(x => x && x.label).map(x => ({ label: str(x.label), value: str(x.value) })),
+    email: { to: em.to ? str(em.to) : '', subject: str(em.subject), body: plain(str(em.body)), attachments: arr(em.attachments).map(str) },
+    upload: arr(o.upload).filter(x => x && x.field).map(x => ({ field: str(x.field), value: plain(str(x.value)), limit: x.limit ? str(x.limit) : '' })),
+    slides: arr(o.slides).filter(x => x && x.title).map(x => ({ title: str(x.title), points: arr(x.points).map(str) })),
+    files: arr(o.files).filter(x => x && x.name).map(x => ({ name: str(x.name), what: str(x.what), how: str(x.how) })),
+    verify: arr(o.verify).filter(x => x && x.item).map(x => ({ item: str(x.item), where: str(x.where) })),
+    aiNote: o.aiNote ? plain(str(o.aiNote)) : '',
+    steps: arr(o.steps).map(str).filter(Boolean)
+  };
+}
+
+/* ---------- 제출 패키지: 만들기 ---------- */
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+function rerPkg(c) { if (st.route === c.id && st.tab === 'pkg') renderPkg(c, $('#panel')); }
+function updLive(c) {
+  if (st.route !== c.id || st.tab !== 'pkg') return;
+  const g = st.gen[c.id], el = $('#genLive');
+  if (el && g) { el.textContent = g.live.slice(-2500); el.scrollTop = el.scrollHeight; }
+  const t = $('#genTime'); if (t && g) t.textContent = Math.round((Date.now() - g.t0) / 1000) + '초';
+}
+async function runStep(c, g, k, prompt, asJson) {
+  const s = g.steps.find(x => x.k === k);
+  s.state = 'run'; s.t0 = Date.now(); g.live = ''; rerPkg(c);
+  const ctl = g.ctl = new AbortController();
+  const o = engineOpts({ cache: false, signal: ctl.signal, onText: ({ text }) => { g.live = text; updLive(c); } });
+  const r = asJson ? await st.sample.json(prompt, o) : await st.sample(prompt, o);
+  s.state = 'done'; s.secs = Math.round((Date.now() - s.t0) / 1000);
+  if (!asJson) { g.applied = noteApplied(r); if (r.truncated) g.warn = '답이 길어 중간에 끊겼습니다. 생각 수준을 낮추거나 아이디어를 줄여 다시 만들어 보세요.'; }
+  return r;
+}
+async function makePackage(c) {
+  const id = c.id;
+  if (st.gen[id] && st.gen[id].running) return;
+  if (!st.sample || st.sampleOff) { toast('이 화면에서는 Claude를 부를 수 없습니다. \'대화용 요약 복사\'를 쓰세요.'); return; }
+  ensureProject(id, false);
+  const inp = proj(id).input || {};
+  if (!(inp.direction || '').trim() && !(inp.idea || '').trim()) { toast('정책 방향이나 아이디어 초안을 먼저 적어 주세요.'); const el = $('#in_direction'); if (el) el.focus(); return; }
+  const review = st.reviewPass[id] !== false;
+  const g = st.gen[id] = {
+    running: true, t0: Date.now(), live: '', err: '', warn: '', applied: '',
+    steps: [{ k: 'body', label: '제안서 본문 쓰기' }].concat(review ? [{ k: 'review', label: '심사위원 관점으로 검토하고 다시 쓰기' }] : [], [{ k: 'extras', label: '1쪽 요약, 신청서·업로드·이메일 문안, 파일 목록 만들기' }]).map(s => Object.assign(s, { state: 'wait' }))
+  };
+  const tick = setInterval(() => updLive(c), 1000);
+  let p = clone(proj(id));
+  if (filled(p)) p.backup = { sections: clone(p.sections), at: Date.now() };
+  saveProject(id, p);
+  try {
+    let r = await runStep(c, g, 'body', bodyPrompt(c, inp));
+    let sec = parseSections(r.text);
+    if (!sec) throw { code: 'format', text: r.text };
+    let reviewNote = '';
+    p = clone(proj(id)); Object.assign(p.sections, pick(sec)); saveProject(id, p);
+    if (review) {
+      r = await runStep(c, g, 'review', reviewPrompt(c, inp, sec));
+      const sec2 = parseSections(r.text);
+      if (sec2) { reviewNote = sec2.review || ''; sec = sec2; p = clone(proj(id)); Object.assign(p.sections, pick(sec)); saveProject(id, p); }
+      else g.warn = '검토본의 형식을 읽지 못해 첫 초안을 그대로 썼습니다.';
+    }
+    const ex = cleanExtras(await runStep(c, g, 'extras', extrasPrompt(c, inp, sec), true));
+    p = clone(proj(id));
+    p.pkg = Object.assign(ex, { review: reviewNote, generatedAt: Date.now(), engine: { model: st.engine.model, effort: st.engine.effort }, applied: g.applied || '' });
+    if (['아이디어 구상', '작성 중'].includes(p.status)) p.status = '검토 중';
+    saveProject(id, p);
+    toast('제출 패키지를 만들었습니다.');
+  } catch (e) {
+    const s = g.steps.find(x => x.state === 'run');
+    if (s) s.state = 'err';
+    if (e && e.code === 'format') { g.err = 'Claude 답의 형식을 읽지 못했습니다. 다시 만들어 보세요. 받은 내용은 아래에 남겨 두었습니다.'; g.live = e.text || g.live; }
+    else if (e && e.code === 'cancelled') g.err = '멈췄습니다. 끝난 단계까지의 결과는 저장되어 있습니다.';
+    else g.err = errText(e) || '만들지 못했습니다. 다시 시도해 주세요.';
+  } finally {
+    clearInterval(tick);
+    g.running = false; g.ctl = null;
+    if (st.route === id) renderContest(id);
+    renderList();
+  }
+}
+function pick(sec) { const o = {}; HEADS.forEach(h => { if (sec[h[0]] != null && sec[h[0]] !== '') o[h[0]] = sec[h[0]]; }); return o; }
+
+/* ---------- 제출 패키지: 화면 ---------- */
+function renderPkg(c, el) {
+  const id = c.id, p = proj(id), inp = (p && p.input) || {}, g = st.gen[id], pk = p && p.pkg;
+  const aiOff = !st.sample || st.sampleOff, ro = !st.canWrite;
+  const running = !!(g && g.running);
+  const hasBody = p && filled(p) >= 4;
+  const emails = ((c.how || '') + ' ' + (c.contact || '')).match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g) || [];
+  const links = ((c.how || '').match(/https?:\/\/[^\s)，,]+/g) || []).concat(c.url ? [c.url] : []);
+  const step = (no, cls, title, by, inner) => '<section class="stepbox ' + cls + '"><h3><span class="no">' + no + '</span>' + title + '<span class="by">' + by + '</span></h3>' + inner + '</section>';
+  let html = '<div class="pkg">';
+  html += step('1', 'mine', '정책 방향과 아이디어 초안', '내가 할 일',
+    '<div class="fld"><label for="in_direction">정책 방향</label><small>어떤 문제를 어느 쪽으로 풀고 싶은지. 예: 청년 1인가구의 고립을 줄이되, 지자체가 내년 예산으로 바로 할 수 있는 작은 정책으로.</small>' +
+    '<textarea id="in_direction" data-in="direction" rows="3"' + (ro ? ' readonly' : '') + '>' + esc(inp.direction || '') + '</textarea></div>' +
+    '<div class="fld"><label for="in_idea">아이디어 초안</label><small>떠오른 해법을 편하게 적으세요. 문장이 거칠어도 됩니다.</small>' +
+    '<textarea id="in_idea" data-in="idea" rows="6"' + (ro ? ' readonly' : '') + '>' + esc(inp.idea || '') + '</textarea></div>' +
+    '<div class="fld two"><div class="fld"><label for="in_notes">내 경험·근거 메모 <span class="muted">(선택)</span></label><textarea id="in_notes" data-in="notes" rows="3"' + (ro ? ' readonly' : '') + ' placeholder="직접 겪은 일, 알고 있는 통계나 기사, 강조하고 싶은 점">' + esc(inp.notes || '') + '</textarea></div>' +
+    '<div class="fld"><label for="in_team">참가 형태</label><select id="in_team" data-in="team"' + (ro ? ' disabled' : '') + '><option value="solo"' + (inp.team !== 'team' ? ' selected' : '') + '>개인</option><option value="team"' + (inp.team === 'team' ? ' selected' : '') + '>팀</option></select><small>공고 기준: ' + esc(c.team || '공고 확인') + '</small></div></div>');
+  html += step('2', 'claude', '제출 패키지 만들기', 'Claude가 할 일',
+    '<div class="engline" id="engNow">' + engineNowHtml() + '</div>' +
+    '<label class="chk"><input type="checkbox" id="reviewPass"' + (st.reviewPass[id] !== false ? ' checked' : '') + (running ? ' disabled' : '') + '> 심사위원 관점으로 한 번 더 검토하고 다시 쓰기(권장, 시간이 두 배쯤 걸림)</label>' +
+    '<p class="muted" style="margin:0">Claude는 인터넷을 검색하지 않습니다. 확실하지 않은 수치는 <span class="mark">[확인 필요]</span>로 남기니 공식 통계로 채워 주세요. 높은 생각 수준은 단계마다 1~3분 걸릴 수 있습니다.</p>' +
+    (hasBody && !running ? '<p class="note" style="margin:0">다시 만들면 지금 제안서 본문을 새 내용으로 바꿉니다. 지금 본문은 \'이전 본문으로 되돌리기\'로 한 번 되돌릴 수 있게 보관합니다.</p>' : '') +
+    '<div class="actions">' + (running ? '<button class="btn" type="button" data-act="stopgen">멈추기</button>'
+      : '<button class="btn talk" type="button" data-act="make"' + (aiOff || ro ? ' disabled' : '') + '>' + (pk ? '제출 패키지 다시 만들기' : '제출 패키지 만들기') + '</button>') +
+    (p && p.backup && !running ? '<button class="btn ghost" type="button" data-act="restore">이전 본문으로 되돌리기</button>' : '') +
+    (aiOff ? '<button class="btn ghost" type="button" data-act="handoff">대화용 요약 복사</button>' : '') + '</div>' +
+    (aiOff ? '<p class="muted" style="margin:0">' + (st.sample === undefined && !st.sampleOff ? 'Claude 연결을 확인하는 중입니다.' : '이 화면에서는 Claude를 바로 부를 수 없습니다. 게시된 페이지에서 열거나, 대화용 요약을 복사해 Claude 대화창에서 이어 가세요.') + '</p>' : '') +
+    (g ? '<ol class="progress">' + g.steps.map(s => '<li data-s="' + s.state + '"><span>' + esc(s.label) + '</span><span class="t">' + (s.secs ? s.secs + '초' : '') + '</span></li>').join('') + '</ol>' +
+      (running ? '<div class="engline">진행 <b id="genTime">' + Math.round((Date.now() - g.t0) / 1000) + '초</b></div><div class="live" id="genLive">' + esc(g.live.slice(-2500)) + '</div>' : '') +
+      (g.err ? '<p class="err" style="margin:0">' + esc(g.err) + '</p>' + (g.live && !running ? '<div class="live">' + esc(g.live.slice(-4000)) + '</div>' : '') : '') +
+      (g.warn ? '<p class="note" style="margin:0">' + esc(g.warn) + '</p>' : '') : ''));
+  html += step('3', 'claude', '패키지 확인과 내려받기', pk ? '만든 때 ' + esc(new Date(pk.generatedAt).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })) + (pk.applied ? ' · ' + esc(pk.applied) : '') : '패키지를 만들면 나타납니다', pk ? pkgResultHtml(c, p, pk, ro) : '<p class="muted" style="margin:0">2단계를 마치면 제안서, 1쪽 요약, 신청서 기재 초안, 온라인 접수 입력란, 이메일 문안, 파일 목록, 확인할 것이 여기에 모입니다.</p>');
+  html += step('4', 'mine', '로그인하고 제출하기', '내가 할 일',
+    '<ol class="olist">' + ((pk && pk.steps.length ? pk.steps : defaultSteps(c)).map(t => '<li>' + linkify(t) + '</li>').join('')) + '</ol>' +
+    '<div class="fld"><label>제출처</label><div class="actions">' +
+    [...new Set(links)].slice(0, 3).map(u => '<a class="btn small" href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(u.replace(/^https?:\/\//, '').slice(0, 38)) + '</a>').join('') +
+    [...new Set(emails)].map(m => '<span class="addr">' + esc(m) + '</span><button class="btn small ghost" type="button" data-copy-text="' + esc(m) + '">주소 복사</button>').join('') + '</div>' +
+    '<small>제출 방법: ' + linkify(c.how || '공식 공고 확인') + '</small></div>' +
+    '<div class="actions">' + (p && p.status === '제출 완료' ? '<span class="chip mine">제출 완료 · ' + esc(p.submittedAt ? new Date(p.submittedAt).toLocaleDateString('ko-KR') : '') + '</span><button class="btn small ghost" type="button" data-act="unsubmit">제출 전으로 되돌리기</button>'
+      : '<button class="btn primary" type="button" data-act="submitted"' + (ro || !p ? ' disabled' : '') + '>제출을 마쳤어요</button>') + '</div>');
+  html += '</div>';
+  el.innerHTML = html;
+}
+function defaultSteps(c) {
+  return ['3단계에서 \'전체 패키지\'를 내려받고 [확인 필요]와 [이름] 같은 빈칸을 모두 채웁니다.',
+    '공고에 전용 양식이 있으면 제안서 내용을 양식 칸에 옮겨 붙입니다.',
+    '제출처에 로그인해 파일을 올리거나 이메일을 보냅니다. ' + (c.how ? '제출 방법: ' + c.how : ''),
+    '접수 확인 메일이나 화면을 저장하고, 아래 \'제출을 마쳤어요\'를 누릅니다.'];
+}
+function pkgResultHtml(c, p, pk, ro) {
+  const RO = ro ? ' readonly' : '';
+  const sec = p.sections;
+  const uniq = placeholders(SECTIONS.map(s => sec[s.key] || '').join('\n') + '\n' + pk.summary1p + '\n' + pk.email.subject + '\n' + pk.email.body + '\n' + pk.applicationFields.map(f => f.value).join('\n'));
+  let h = '<div class="dl"><button class="btn talk" type="button" data-act="dl-zip">전체 패키지 내려받기(.zip)</button>' +
+    '<button class="btn" type="button" data-act="dl-proposal">제안서(.docx)</button>' +
+    '<button class="btn" type="button" data-act="dl-summary">1쪽 요약(.docx)</button>' +
+    '<button class="btn" type="button" data-act="dl-guide">패키지 안내서(.docx)</button></div>' +
+    '<p class="muted" style="margin:0">Word 파일은 한컴오피스 한글에서도 열립니다. 공고에 HWP 양식이 있으면 내용을 양식에 옮겨 붙이세요.</p>';
+  h += '<div class="part"><h4>제안서 본문 <small>' + filled(p) + '/' + SECTIONS.length + '칸 · ' + totalChars(p).toLocaleString('ko-KR') + '자</small><span class="sp"><button class="btn small" type="button" data-tab="draft">제안서 편집에서 고치기</button></span></h4>' +
+    '<p style="margin:0;font-weight:600">' + esc(sec.title || '') + '</p><p class="muted" style="margin:0">' + esc(sec.summary || '') + '</p></div>';
+  if (uniq.length) h += '<div class="part"><h4>채워야 할 빈칸 <small>' + uniq.length + '곳</small></h4><ul class="olist">' + uniq.slice(0, 30).map(f => '<li><span class="mark">' + esc(f) + '</span></li>').join('') + '</ul></div>';
+  if (pk.review) h += '<div class="part"><h4>검토 메모</h4><div class="live" style="max-height:none">' + esc(pk.review) + '</div></div>';
+  h += '<div class="part"><h4>1쪽 요약 <small id="cnt_summary1p">' + pk.summary1p.length.toLocaleString('ko-KR') + '자</small><span class="sp"><button class="btn small ghost" type="button" data-copy-pk="summary1p">복사</button></span></h4>' +
+    '<textarea class="copybox" style="font:15px/1.65 var(--f-body)" data-pk="summary1p" rows="8"' + RO + '>' + esc(pk.summary1p) + '</textarea></div>';
+  if (pk.applicationFields.length) h += '<div class="part"><h4>참가신청서 기재 초안<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="app">복사</button></span></h4><div class="pwrap"><table class="ptable"><tbody>' +
+    pk.applicationFields.map((f, i) => '<tr><td>' + esc(f.label) + '</td><td><input type="text" data-pk="applicationFields.' + i + '.value" value="' + esc(f.value) + '"' + RO + '></td></tr>').join('') + '</tbody></table></div></div>';
+  if (pk.upload.length) h += '<div class="part"><h4>온라인 접수 입력란<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="upload">전체 복사</button></span></h4><div class="pwrap"><table class="ptable"><tbody>' +
+    pk.upload.map((f, i) => '<tr><td>' + esc(f.field) + (f.limit ? '<br><small class="muted">' + esc(f.limit) + '</small>' : '') + '<br><small class="muted" id="cnt_up' + i + '">' + f.value.length.toLocaleString('ko-KR') + '자</small></td><td><textarea data-pk="upload.' + i + '.value" rows="' + Math.min(8, 2 + Math.ceil(f.value.length / 60)) + '"' + RO + '>' + esc(f.value) + '</textarea><button class="btn small ghost" type="button" data-copy-pk="upload.' + i + '">이 칸 복사</button></td></tr>').join('') + '</tbody></table></div></div>';
+  h += '<div class="part"><h4>이메일 문안<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="email.subject">제목 복사</button><button class="btn small ghost" type="button" data-copy-pk="email.body">본문 복사</button></span></h4>' +
+    '<div class="fld"><label for="em_to">받는 곳</label><input type="text" id="em_to" data-pk="email.to" value="' + esc(pk.email.to) + '"' + RO + '></div>' +
+    '<div class="fld"><label for="em_sub">제목</label><input type="text" id="em_sub" data-pk="email.subject" value="' + esc(pk.email.subject) + '"' + RO + '></div>' +
+    '<div class="fld"><label for="em_body">본문</label><textarea id="em_body" data-pk="email.body" rows="7"' + RO + '>' + esc(pk.email.body) + '</textarea></div>' +
+    (pk.email.attachments.length ? '<small class="muted">첨부: ' + esc(pk.email.attachments.join(', ')) + '</small>' : '') + '</div>';
+  if (pk.files.length) h += '<div class="part"><h4>제출 파일 목록</h4><div class="pwrap"><table class="ptable"><thead><tr><th>파일</th><th>담을 내용과 주의점</th></tr></thead><tbody>' +
+    pk.files.map(f => '<tr><td>' + esc(f.name) + '</td><td>' + esc(f.what) + (f.how ? '<br><small class="muted">' + esc(f.how) + '</small>' : '') + '</td></tr>').join('') + '</tbody></table></div></div>';
+  if (pk.slides.length) h += '<div class="part"><h4>발표·장면 구성 <small>' + pk.slides.length + '장</small><span class="sp"><button class="btn small ghost" type="button" data-copy-pk="slides">복사</button></span></h4><ol class="olist">' +
+    pk.slides.map(s => '<li><b>' + esc(s.title) + '</b>' + (s.points.length ? '<br><small>' + esc(s.points.join(' / ')) + '</small>' : '') + '</li>').join('') + '</ol></div>';
+  if (pk.verify.length) h += '<div class="part"><h4>제출 전에 확인할 사실</h4><div class="pwrap"><table class="ptable"><thead><tr><th>확인할 것</th><th>확인할 곳</th></tr></thead><tbody>' +
+    pk.verify.map(v => '<tr><td>' + esc(v.item) + '</td><td>' + linkify(v.where) + '</td></tr>').join('') + '</tbody></table></div></div>';
+  h += '<div class="part"><h4>생성형 AI 활용 고지<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="aiNote">복사</button></span></h4>' +
+    '<small class="muted">' + esc(c.aiRule ? '공고 규정: ' + c.aiRule : '공고 요약에 AI 규정이 없습니다. 공식 공고에서 확인하고, 필요하면 아래 문안을 고쳐 쓰세요.') + '</small>' +
+    '<textarea class="copybox" style="font:14px/1.6 var(--f-body);min-height:70px" data-pk="aiNote" rows="3"' + RO + '>' + esc(pk.aiNote || '') + '</textarea></div>';
+  return h;
+}
+function setPk(c, path, value) {
+  const p = clone(proj(c.id));
+  if (!p.pkg) return;
+  const keys = path.split('.');
+  let o = p.pkg;
+  for (let i = 0; i < keys.length - 1; i++) { o = o[/^\d+$/.test(keys[i]) ? +keys[i] : keys[i]]; if (o == null) return; }
+  o[keys[keys.length - 1]] = value;
+  saveProject(c.id, p);
+}
+function pkText(pk, what) {
+  if (what === 'summary1p') return pk.summary1p;
+  if (what === 'aiNote') return pk.aiNote || '';
+  if (what === 'email.subject') return pk.email.subject;
+  if (what === 'email.body') return pk.email.body;
+  if (what === 'app') return pk.applicationFields.map(f => f.label + ': ' + f.value).join('\n');
+  if (what === 'upload') return pk.upload.map(f => '■ ' + f.field + (f.limit ? ' (' + f.limit + ')' : '') + '\n' + f.value).join('\n\n');
+  if (what.startsWith('upload.')) { const f = pk.upload[+what.split('.')[1]]; return f ? f.value : ''; }
+  if (what === 'slides') return pk.slides.map((s, i) => (i + 1) + '. ' + s.title + (s.points.length ? '\n   - ' + s.points.join('\n   - ') : '')).join('\n');
+  return '';
+}
+
+/* ---------- 문서 파일 ---------- */
+function lib(globalName, id) {
+  if (window[globalName]) return Promise.resolve(window[globalName]);
+  const el = document.getElementById(id);
+  return new Promise((res, rej) => {
+    let done = false;
+    const ok = () => { if (!done && window[globalName]) { done = true; res(window[globalName]); } };
+    if (el) { el.addEventListener('load', ok); el.addEventListener('error', () => { if (!done) { done = true; rej(new Error('load')); } }); }
+    const iv = setInterval(() => { ok(); if (done) clearInterval(iv); }, 300);
+    setTimeout(() => { clearInterval(iv); if (!done) { done = true; rej(new Error('timeout')); } }, 25000);
+  });
+}
+function shortName(c) { return (c.title || '공모').replace(/[\\/:*?"<>|「」『』'()]/g, '').replace(/\s+/g, ' ').trim().slice(0, 28); }
+function stamp() { const t = today(); return t.replace(/-/g, ''); }
+async function buildDocs(c, p, kinds) {
+  const d = await lib('docx', 'lib-docx');
+  const { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, AlignmentType, ShadingType } = d;
+  const FONT = { ascii: 'Malgun Gothic', eastAsia: '맑은 고딕', hAnsi: 'Malgun Gothic', cs: 'Malgun Gothic' };
+  const W = 9298;
+  const runs = (text, o) => String(text == null ? '' : text).split(PH_SPLIT).filter(t => t !== '' && t !== undefined).map(t =>
+    PH_ONE.test(t) ? new TextRun(Object.assign({ text: t, font: FONT, bold: true, color: 'C0342A', highlight: 'yellow' }, o || {})) : new TextRun(Object.assign({ text: t, font: FONT }, o || {})));
+  const P = (text, o) => new Paragraph(Object.assign({ children: runs(text, o && o.run) }, (o && o.para) || {}));
+  const body = text => {
+    const out = [];
+    for (const raw of String(text || '').replace(/\r/g, '').split('\n')) {
+      const t = raw.trim(); if (!t) continue;
+      let m;
+      if ((m = t.match(/^[-•·▪]\s+(.*)/))) out.push(new Paragraph({ children: runs('• ' + m[1]), indent: { left: 400, hanging: 200 } }));
+      else if (/^(\d+[.)]|[가-하][.)]|\(\d+\)|[①-⑳])\s*/.test(t)) out.push(new Paragraph({ children: runs(t), indent: { left: 320, hanging: 320 } }));
+      else out.push(new Paragraph({ children: runs(t) }));
+    }
+    return out.length ? out : [new Paragraph({ children: [] })];
+  };
+  const H1 = t => new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: t, font: FONT })] });
+  const H2 = t => new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: t, font: FONT })] });
+  const TITLE = t => new Paragraph({ heading: HeadingLevel.TITLE, children: runs(t) });
+  const cell = (t, w, fill, bold) => new TableCell({ width: { size: w, type: WidthType.DXA }, shading: fill ? { type: ShadingType.CLEAR, color: 'auto', fill } : undefined, margins: { top: 60, bottom: 60, left: 100, right: 100 }, children: bold ? [P(t, { run: { bold: true } })] : body(t) });
+  const kv = (rows, w1) => { w1 = w1 || 2300; return new Table({ width: { size: W, type: WidthType.DXA }, columnWidths: [w1, W - w1], rows: rows.map(([k, v]) => new TableRow({ children: [cell(k, w1, 'E6ECFA', true), cell(v, W - w1)] })) }); };
+  const grid = (head, rows, widths) => new Table({ width: { size: W, type: WidthType.DXA }, columnWidths: widths, rows: [new TableRow({ tableHeader: true, children: head.map((t, i) => cell(t, widths[i], 'E6ECFA', true)) })].concat(rows.map(r => new TableRow({ children: r.map((t, i) => cell(t, widths[i])) }))) });
+  const gap = () => new Paragraph({ children: [] });
+  const styles = {
+    default: {
+      document: { run: { font: FONT, size: 21 }, paragraph: { spacing: { line: 336, after: 100 } } },
+      title: { run: { font: FONT, size: 34, bold: true, color: '131A2B' }, paragraph: { alignment: AlignmentType.CENTER, spacing: { before: 120, after: 280 } } },
+      heading1: { run: { font: FONT, size: 27, bold: true, color: '1F3A8A' }, paragraph: { spacing: { before: 320, after: 120 }, keepNext: true } },
+      heading2: { run: { font: FONT, size: 23, bold: true, color: '131A2B' }, paragraph: { spacing: { before: 220, after: 80 }, keepNext: true } }
+    }
+  };
+  const props = { page: { size: { width: 11906, height: 16838 }, margin: { top: 1418, right: 1304, bottom: 1418, left: 1304 } } };
+  const sec = p.sections || {}, pk = p.pkg || cleanExtras({});
+  const title = (sec.title || '').trim() || c.title + ' 정책 제안';
+  const deadline = c.always ? '상시' : (c.end || '') + (c.endTime ? ' ' + c.endTime : '');
+  const proposalChildren = () => [
+    TITLE(title),
+    kv([['공모명', c.title], ['주최', c.org], ['제안자', (p.input && p.input.team === 'team') ? '[팀명] / 대표 [이름]' : '[이름]'], ['연락처', '[연락처]'], ['제출일', '[제출일]']]),
+    gap(),
+    H1('1. 제안 요약'), ...body(sec.summary),
+    H1('2. 현황 및 문제점'), ...body(sec.problem),
+    H1('3. 개선 방안'), ...body(sec.solution),
+    H1('4. 기대 효과'), ...body(sec.effect),
+    H1('5. 실행 방안'), ...body(sec.plan),
+    H1('6. 근거 자료'), ...body(sec.refs)
+  ];
+  const make = children => new Document({ creator: '[작성자]', title, styles, sections: [{ properties: props, children }] });
+  const out = {};
+  if (kinds.includes('proposal')) out.proposal = await Packer.toBlob(make(proposalChildren()));
+  if (kinds.includes('summary')) out.summary = await Packer.toBlob(make([TITLE(title), kv([['공모명', c.title], ['제안자', '[이름]']]), gap(), H1('제안 요약'), ...body(pk.summary1p || sec.summary)]));
+  if (kinds.includes('guide')) {
+    const flags = placeholders(SECTIONS.map(s => sec[s.key] || '').join('\n') + '\n' + (pk.summary1p || '') + '\n' + pk.email.subject + '\n' + pk.email.body + '\n' + pk.applicationFields.map(f => f.value).join('\n'));
+    const steps = pk.steps && pk.steps.length ? pk.steps : defaultSteps(c);
+    const ch = [
+      TITLE('제출 패키지 안내'),
+      kv([['공모', c.title], ['주최', c.org], ['마감', deadline], ['제출 방법', c.how || '공식 공고 확인'], ['제출물', c.submit || '공식 공고 확인'], ['공식 공고', c.url || ''], ['확인 상태', (c.verified ? '공식 공고 확인' : '공식 공고 미확인') + ' (' + (c.checkedAt || '') + ')'], ['만든 날', today() + (pk.applied ? ' · ' + pk.applied : '')]]),
+      gap(),
+      H1('1. 제출 순서'), ...steps.map((t, i) => P((i + 1) + '. ' + t, { para: { indent: { left: 320, hanging: 320 } } })),
+      H1('2. 파일 목록'), pk.files.length ? grid(['파일', '담을 내용', '주의점'], pk.files.map(f => [f.name, f.what, f.how]), [2600, 3700, W - 6300]) : P('공고의 제출물 목록을 따르세요: ' + (c.submit || '공식 공고 확인')), gap(),
+      H1('3. 먼저 채우고 확인할 것'),
+      flags.length ? P('본문의 빈칸과 확인 필요 표시 ' + flags.length + '곳: ' + flags.join(', ')) : P('본문에 남은 빈칸 표시가 없습니다.'),
+      pk.verify.length ? grid(['확인할 것', '확인할 곳'], pk.verify.map(v => [v.item, v.where]), [4400, W - 4400]) : gap(), gap(),
+      H1('4. 제안서 본문'), ...proposalChildren().slice(2),
+      H1('5. 1쪽 요약'), ...body(pk.summary1p),
+      H1('6. 참가신청서 기재 초안'), pk.applicationFields.length ? kv(pk.applicationFields.map(f => [f.label, f.value])) : P('공고 양식을 확인하세요.'), gap(),
+      H1('7. 온라인 접수 입력란'), pk.upload.length ? grid(['입력란', '붙여 넣을 내용'], pk.upload.map(f => [f.field + (f.limit ? '\n(' + f.limit + ')' : ''), f.value]), [2300, W - 2300]) : P('온라인 입력란 정보가 공고 요약에 없습니다.'), gap(),
+      H1('8. 이메일 문안'), kv([['받는 곳', pk.email.to || '[공고 확인]'], ['제목', pk.email.subject], ['본문', pk.email.body], ['첨부', pk.email.attachments.join('\n')]]), gap()
+    ];
+    if (pk.slides.length) { ch.push(H1('9. 발표·장면 구성')); pk.slides.forEach((s, i) => { ch.push(H2((i + 1) + '. ' + s.title)); s.points.forEach(t => ch.push(P('• ' + t, { para: { indent: { left: 400, hanging: 200 } } }))); }); }
+    ch.push(H1((pk.slides.length ? '10' : '9') + '. 생성형 AI 활용 고지'), P(c.aiRule ? '공고 규정: ' + c.aiRule : '공고 요약에 규정 없음. 공식 공고에서 확인하세요.'), ...body(pk.aiNote || '(필요하면 작성)'));
+    if (pk.review) ch.push(H1((pk.slides.length ? '11' : '10') + '. 검토 메모'), ...body(pk.review));
+    ch.push(gap(), P('이 안내서는 정책공모 작업실에서 만든 초안입니다. 제출 전에 공식 공고와 모든 수치를 다시 확인하세요.', { run: { size: 17, color: '737C90' } }));
+    out.guide = await Packer.toBlob(make(ch));
+  }
+  return out;
+}
+function textFiles(c, p) {
+  const pk = p.pkg || cleanExtras({});
+  const files = {};
+  files['04_이메일문안.txt'] = '받는 곳: ' + (pk.email.to || '[공고 확인]') + '\n제목: ' + pk.email.subject + '\n첨부: ' + pk.email.attachments.join(', ') + '\n\n' + pk.email.body + '\n';
+  if (pk.upload.length) files['05_온라인접수_입력란.txt'] = pkText(pk, 'upload') + '\n';
+  if (pk.applicationFields.length) files['06_신청서_기재초안.txt'] = pkText(pk, 'app') + '\n';
+  if (pk.slides.length) files['07_발표장면_구성.txt'] = pkText(pk, 'slides') + '\n';
+  files['08_제안서_본문.md'] = draftMarkdown(c, p);
+  return files;
+}
+async function saveBlob(name, blob) {
+  if (st.downloads) {
+    try { await st.downloads.save({ filename: name, data: blob }); return true; }
+    catch (e) { if (e && e.code === 'declined') return false; if (!(e && ['unavailable', 'not_granted', 'capability_disabled', 'capability_removed'].includes(e.code))) { toast('파일을 저장하지 못했습니다.'); return false; } st.downloads = null; }
+  }
+  try {
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    return true;
+  } catch (e) { toast('이 화면에서는 파일 저장이 막혀 있습니다. 복사 버튼을 쓰세요.'); return false; }
+}
+async function download(c, kind) {
+  const p = proj(c.id); if (!p) return;
+  const base = shortName(c);
+  toast('문서를 만드는 중입니다…');
+  try {
+    if (kind === 'zip') {
+      const [docs, JSZip] = await Promise.all([buildDocs(c, p, ['proposal', 'summary', 'guide']), lib('JSZip', 'lib-jszip')]);
+      const zip = new JSZip();
+      zip.file('00_제출패키지_안내.docx', docs.guide);
+      zip.file('01_제안서.docx', docs.proposal);
+      zip.file('02_1쪽요약.docx', docs.summary);
+      const tf = textFiles(c, p);
+      for (const k in tf) zip.file(k, tf[k]);
+      const blob = await zip.generateAsync({ type: 'blob' });
+      if (await saveBlob(base + '_제출패키지_' + stamp() + '.zip', blob)) toast('전체 패키지를 저장했습니다.');
+    } else {
+      const docs = await buildDocs(c, p, [kind]);
+      const names = { proposal: '_제안서_', summary: '_1쪽요약_', guide: '_제출패키지_안내_' };
+      if (await saveBlob(base + names[kind] + stamp() + '.docx', docs[kind])) toast('문서를 저장했습니다.');
+    }
+  } catch (e) {
+    toast('문서 도구를 불러오지 못했습니다. 인터넷 연결을 확인하거나 복사 버튼을 쓰세요.');
+  }
 }
 
 /* ---------- 복사·알림 ---------- */
@@ -983,7 +1480,7 @@ async function extract() {
   const prompt = '다음은 정책·아이디어 공모전 공고문이다. 공고에 적힌 내용만 아래 JSON 객체 하나로 답하라. 공고에 없는 값은 null. 날짜는 YYYY-MM-DD(연도가 없으면 ' + today().slice(0, 4) + '년으로). 추측하지 말 것.\n' +
     '{"title":"공모 이름","org":"주최 기관","orgType":"중앙부처|광역지자체|기초지자체|공공기관|국회|학회·민간 중 하나","start":"접수 시작일","end":"접수 마감일","endTime":"마감 시각 예: 18:00","team":"참가 형태 예: 개인 또는 3인 이내 팀","who":"참여 조건","prizeKind":"cash|goods|none|unknown","prizeTop":최고 상금 원 단위 숫자 또는 null,"prizeText":"시상 내역 요약","theme":"공모 주제와 분야","submit":"제출물, 서식, 분량","how":"제출 방법과 접수처","judging":"심사 기준과 절차","announce":"발표 일정","contact":"문의처","aiRule":"생성형 AI 관련 규정","url":"공고에 적힌 공식 주소","tags":["주제 태그 1~3개, 예: 청년, 주거, 환경, 안전, 복지, 지역, 행정혁신, 디지털·데이터, 일자리, 교육, 문화"]}\n\n[공고문]\n' + text.slice(0, 60000);
   try {
-    const o = await st.sample.json(prompt, { cache: false });
+    const o = await st.sample.json(prompt, engineOpts({ cache: false }));
     if (!o || typeof o !== 'object') throw { code: 'invalid_json' };
     for (const k of AF) {
       const el = $('#a_' + k); if (!el) continue;
@@ -1061,11 +1558,17 @@ function bind() {
     const c = st.route !== 'home' ? getC(st.route) : null;
     const t = e.target;
     const tab = t.closest('[data-tab]');
-    if (tab && c) { st.tab = tab.dataset.tab; $$('.tabs [data-tab]').forEach(b => b.setAttribute('aria-selected', String(b === tab))); renderTab(c); return; }
+    if (tab && c) { st.tab = tab.dataset.tab; $$('.tabs [data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === st.tab))); renderTab(c); if (!tab.closest('.tabs')) { const tb = $('.tabs'); if (tb) tb.scrollIntoView({ block: 'start' }); } return; }
     const act = t.closest('[data-act]');
     if (act && c) {
       const a = act.dataset.act;
-      if (a === 'start' || a === 'start-draft') { ensureProject(c.id); st.tab = a === 'start' ? 'chat' : 'draft'; renderContest(c.id); renderList(); }
+      if (a === 'start' || a === 'start-draft') { ensureProject(c.id); st.tab = a === 'start' ? 'pkg' : 'draft'; renderContest(c.id); renderList(); if (a === 'start') { const d = $('#in_direction'); if (d) d.focus(); } }
+      else if (a === 'make') makePackage(c);
+      else if (a === 'stopgen') { const g = st.gen[c.id]; if (g && g.ctl) g.ctl.abort(); }
+      else if (a === 'restore') { const p = clone(proj(c.id)); if (p.backup) { p.sections = p.backup.sections; delete p.backup; saveProject(c.id, p); renderContest(c.id); toast('이전 본문으로 되돌렸습니다.'); } }
+      else if (a === 'dl-zip' || a === 'dl-proposal' || a === 'dl-summary' || a === 'dl-guide') download(c, a.slice(3));
+      else if (a === 'submitted') { const p = clone(proj(c.id)); p.status = '제출 완료'; p.submittedAt = Date.now(); saveProject(c.id, p); renderContest(c.id); renderList(); toast('제출 완료로 표시했습니다.'); }
+      else if (a === 'unsubmit') { const p = clone(proj(c.id)); p.status = '검토 중'; delete p.submittedAt; saveProject(c.id, p); renderContest(c.id); renderList(); }
       else if (a === 'ask') { st.tab = 'chat'; renderContest(c.id); const ask = $('#ask'); if (ask) ask.focus(); }
       else if (a === 'handoff') copy(handoffText(c), '대화용 요약');
       else if (a === 'send') { const ask = $('#ask'); sendChat(c, ask && ask.value); }
@@ -1078,6 +1581,10 @@ function bind() {
       else if (a === 'delete') { if (act.dataset.confirm) { st.overlay.delete(c.id); queue('contests/' + c.id, null); location.hash = '#home'; renderFilters(); toast('공고를 지웠습니다.'); } else { act.dataset.confirm = '1'; act.textContent = '정말 지우기'; } }
       return;
     }
+    const cpk = t.closest('[data-copy-pk]');
+    if (cpk && c) { const p = proj(c.id); if (p && p.pkg) copy(pkText(p.pkg, cpk.dataset.copyPk), '내용'); return; }
+    const ctx = t.closest('[data-copy-text]');
+    if (ctx) { copy(ctx.dataset.copyText, '주소'); return; }
     const sb = t.closest('[data-starter]');
     if (sb && c) { sendChat(c, STARTERS[+sb.dataset.starter][1]); return; }
     const cm = t.closest('[data-copy-msg]');
@@ -1106,6 +1613,18 @@ function bind() {
   $('#main').addEventListener('input', e => {
     const c = st.route !== 'home' ? getC(st.route) : null; if (!c) return;
     const t = e.target;
+    if (t.dataset.in) {
+      const p = clone(proj(c.id) || blankProject(c.id));
+      p.input = Object.assign({}, p.input || {}, { [t.dataset.in]: t.value });
+      saveProject(c.id, p);
+      return;
+    }
+    if (t.dataset.pk) {
+      setPk(c, t.dataset.pk, t.value);
+      const cnt = t.dataset.pk === 'summary1p' ? $('#cnt_summary1p') : /^upload\.\d+\.value$/.test(t.dataset.pk) ? $('#cnt_up' + t.dataset.pk.split('.')[1]) : null;
+      if (cnt) cnt.textContent = t.value.length.toLocaleString('ko-KR') + '자';
+      return;
+    }
     if (t.id && t.id.startsWith('s_')) {
       const key = t.id.slice(2);
       setSection(c, key, t.value);
@@ -1116,6 +1635,8 @@ function bind() {
     const c = st.route !== 'home' ? getC(st.route) : null; if (!c) return;
     const t = e.target;
     if (t.id === 'incDraft') st.includeDraft[c.id] = t.checked;
+    else if (t.id === 'reviewPass') st.reviewPass[c.id] = t.checked;
+    else if (t.dataset.in) { const p = clone(proj(c.id) || blankProject(c.id)); p.input = Object.assign({}, p.input || {}, { [t.dataset.in]: t.value }); saveProject(c.id, p); renderList(); }
     else if (t.id === 'pStatus') { const p = JSON.parse(JSON.stringify(proj(c.id))); p.status = t.value; saveProject(c.id, p); renderList(); }
     else if (t.dataset.check) { const p = JSON.parse(JSON.stringify(proj(c.id))); p.checks[t.dataset.check] = t.checked; saveProject(c.id, p); }
     else if (t.id && t.id.startsWith('s_')) { renderList(); }
@@ -1147,7 +1668,7 @@ function applyDocs(col, docs) {
   renderList();
   const focusIn = document.activeElement && $('#main').contains(document.activeElement) && /TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName);
   if (st.route === 'home') renderHome();
-  else if (!focusIn && !st.busy[st.route] && !Object.keys(st.sugg).some(k => k.startsWith(st.route + ':') && st.sugg[k].busy)) renderContest(st.route);
+  else if (!focusIn && !st.busy[st.route] && !(st.gen[st.route] && st.gen[st.route].running) && !Object.keys(st.sugg).some(k => k.startsWith(st.route + ':') && st.sugg[k].busy)) renderContest(st.route);
 }
 async function connect() {
   const cl = window.claude;
@@ -1175,6 +1696,7 @@ async function connect() {
 /* ---------- 시작 ---------- */
 $('#asOf').textContent = SNAP.asOf;
 loadLocal();
+initEngine();
 renderFilters();
 bind();
 route();
