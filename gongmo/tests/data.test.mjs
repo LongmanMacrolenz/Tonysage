@@ -69,5 +69,24 @@ check('Claude에게 넘길 핵심 항목이 비어 있지 않다', () => {
   for (const c of data.contests) for (const k of ['who', 'theme', 'how']) assert(c[k] && c[k].trim(), c.id + ' ' + k + ' 비어 있음');
 });
 
+check('참여 자격(elig)이 정해진 형식이다', () => {
+  const SIDO = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '대전광역시', '울산광역시', '세종특별자치시', '경기도', '강원특별자치도', '충청북도', '충청남도', '전북특별자치도', '전라남도', '경상북도', '경상남도', '제주특별자치도'];
+  const OK = ['regions', 'workSchoolOk', 'soft', 'minAge', 'maxAge', 'statuses', 'extra', 'unknown', 'own', 'note'];
+  for (const c of data.contests) {
+    assert(c.elig && typeof c.elig === 'object', c.id + ' elig 없음');
+    for (const k of Object.keys(c.elig)) assert(OK.includes(k), c.id + ' 모르는 elig 항목 ' + k);
+    for (const r of c.elig.regions || []) assert(SIDO.includes(r.sido), c.id + ' 시·도 이름 ' + r.sido);
+    if (c.elig.minAge && c.elig.maxAge) assert(c.elig.minAge <= c.elig.maxAge, c.id + ' 나이 범위');
+  }
+});
+
+check('거주지 제한 공모가 빠지지 않았다', () => {
+  const need = { 'yangcheon-idea-contest-2026': '양천구', 'daejeon-social-innovation-idea-2026': '대전광역시', 'gyeonggi-ordinance-initiative': '경기도' };
+  for (const [id, place] of Object.entries(need)) {
+    const c = data.contests.find(x => x.id === id);
+    assert(c && JSON.stringify(c.elig.regions || []).includes(place), id + ' 거주지 제한 누락');
+  }
+});
+
 console.log('\n' + pass + ' passed' + (fail ? ', ' + fail + ' failed' : ''));
 process.exit(fail ? 1 : 0);

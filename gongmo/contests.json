@@ -36,7 +36,10 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "전 국민 누구나(한국주택금융공사 직원 제외)"
+   }
   },
   {
    "id": "yangcheon-idea-contest-2026",
@@ -72,7 +75,17 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": "연례 개최 여부 미확인",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "regions": [
+     {
+      "sido": "서울특별시",
+      "sigungu": "양천구"
+     }
+    ],
+    "workSchoolOk": true,
+    "note": "양천구에 살거나, 양천구에 있는 직장·학교·단체에 다니는 사람"
+   }
   },
   {
    "id": "uijeongbu-citizen-proposal-2026",
@@ -89,29 +102,32 @@
    ],
    "start": "2026-10-26",
    "end": "2026-11-06",
-   "endTime": null,
-   "who": "의정부시 시정에 관심 있는 누구나 (공고 원문 미확인)",
-   "team": null,
-   "limit": null,
+   "endTime": "방문·우편은 18:00 도달분",
+   "who": "의정부시 시정에 관심 있는 누구나. 공동제안 가능(기여도에 따라 시상)",
+   "team": "개인 또는 공동제안",
+   "limit": "여러 건 가능하나 시상은 가장 높은 1건만. 같은·비슷한 제안은 먼저 접수된 것만 심사",
    "prize": {
-    "kind": "unknown",
+    "kind": "cash",
     "total": null,
-    "top": null,
-    "text": "공고 원문에서 확인 필요. 1차 조사에서는 금상 250만 원으로 나왔으나 대조하지 못함"
+    "top": 2500000,
+    "text": "금상 250만 원, 은상 150만 원, 동상 70만 원, 장려상 20만 원, 노력상 10만 원(등급·인원은 응모 수와 예산에 따라 조정)"
    },
-   "theme": "1차 조사 기준 분야: 상권 활성화, 의정부역 환승 개선, 어르신 복지서비스 안내, 청소년 진로 탐색, 공공시설 운영 개선",
-   "submit": "공고문 양식 확인 필요",
-   "how": "의정부시청 누리집 고시공고 게시판의 공고문 확인 후 제출",
-   "judging": null,
-   "announce": null,
+   "theme": "① 부대찌개 거리·행복로 등 상권 방문객 만족과 매출 증대 ② 의정부역 일대 철도·버스 환승 편의 개선 ③ 어르신 맞춤형 복지서비스 안내·연계 ④ 도서관·공공시설·지역 인재를 활용한 중·고등학생 무료 진로탐색 ⑤ 공공시설·행사 운영 개선",
+   "submit": "참여 신청서(제1쪽), 제안서(제2쪽: 제안제목·제안동기·개요·제안내용 100자 이상·기대효과), 개인정보 수집·이용 동의서(제3쪽), 성과보고서(제4쪽)",
+   "how": "국민신문고(www.epeople.go.kr) 국민제안 > 일반제안, 시 홈페이지(www.ui4u.go.kr) 시민참여 > 제안마당 > 국민제안, 방문·등기우편(경기도 의정부시 시민로 1 의정부시청 시민주권담당관). 온라인 제출은 인적사항·서명 생략 가능",
+   "judging": "능률성 및 경제성 30점, 창의성 20점, 노력도 20점, 계속성 15점, 적용범위 15점. 기존 사업과 중복되거나 대규모 재정이 필요한 제안은 불이익",
+   "announce": "2026년 12월 중 시 홈페이지 게시와 개별 통보",
    "aiRule": null,
-   "contact": null,
-   "tip": null,
+   "contact": "시민주권담당관 제안담당자 031-828-2233",
+   "tip": "국민신문고에 같은 공모전 제안이 공개되어 있으니, 비슷한 제안이 없는지 먼저 확인하세요.",
    "url": "https://www.ui4u.go.kr/portal/saeol/gosiList.do",
-   "verified": false,
-   "source": "공식 공고를 열지 못해 2차 출처 기준",
-   "note": "민선 9기 출범에 맞춘 공모로 보이며 연례 여부는 미확인",
-   "checkedAt": "2026-11-03"
+   "verified": true,
+   "source": "의정부시 공고 제2026-1995호(2026.10.23)와 제출서식 확인",
+   "note": null,
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "의정부시 시정에 관심 있는 누구나"
+   }
   },
   {
    "id": "mofa-korea-us-japan-idea-challenge-2026",
@@ -146,7 +162,14 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": "연례 여부 미확인",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "statuses": [
+     "대학(원)생"
+    ],
+    "extra": "한국에서 공부하는 한·미·일 국적 학부생(휴학생 포함)이어야 함",
+    "note": "한국 내 한·미·일 국적 학부생"
+   }
   },
   {
    "id": "kalis-accident-investigation-tech-idea-2026",
@@ -182,7 +205,10 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "국민 누구나(개인)"
+   }
   },
   {
    "id": "kimst-esg-innovation-idea-2026",
@@ -218,7 +244,11 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "unknown": true,
+    "note": "공고문에서 자격 확인 필요"
+   }
   },
   {
    "id": "kisa-modu-kisa-2026",
@@ -254,7 +284,10 @@
    "verified": false,
    "source": "공식 공고를 열지 못해 2차 출처 기준",
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "제한 없음(모음 사이트 기준)"
+   }
   },
   {
    "id": "mois-disaster-safety-paper-2026",
@@ -289,7 +322,11 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "minAge": 18,
+    "note": "18세 이상(또는 대학생) 국민"
+   }
   },
   {
    "id": "boryeong-wellness-policy-2026",
@@ -328,7 +365,10 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": "연례 여부 미확인",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "보령 시정에 관심 있는 누구나"
+   }
   },
   {
    "id": "nibp-esg-idea-2026",
@@ -365,7 +405,10 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "국민 누구나"
+   }
   },
   {
    "id": "mois-mohw-isolation-forum-2026",
@@ -402,7 +445,10 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": "'모두의 토론회'는 소통24에서 주제별로 수시 개최",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "국민 누구나(150명 균형 선발)"
+   }
   },
   {
    "id": "daejeon-social-innovation-idea-2026",
@@ -439,7 +485,15 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": "연례 여부 미확인",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "regions": [
+     {
+      "sido": "대전광역시"
+     }
+    ],
+    "note": "대전에 사는 시민"
+   }
   },
   {
    "id": "stcc-nosmoking-policy-research-2026",
@@ -474,7 +528,11 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": "연례 여부 미확인",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "minAge": 19,
+    "note": "만 19세 이상 성인"
+   }
   },
   {
    "id": "ex-ai-idea-2026",
@@ -510,7 +568,10 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "국민 누구나"
+   }
   },
   {
    "id": "gcgf-small-business-policy-idea-2026",
@@ -546,7 +607,10 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": "연례 여부 미확인",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "전 국민 누구나(경기신용보증재단 공모지만 거주지 제한 없음)"
+   }
   },
   {
    "id": "ssis-ai-welfare-idea-2026",
@@ -583,7 +647,10 @@
    "verified": false,
    "source": "공식 공고를 열지 못해 2차 출처 기준",
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "국민 누구나"
+   }
   },
   {
    "id": "jejusi-policy-idea-2026-round3",
@@ -621,7 +688,10 @@
    "verified": false,
    "source": "공식 공고를 열지 못해 2차 출처 기준",
    "note": "2026년에 회차별로 운영됨(1차는 5.18~7.10 마감). 이번이 3차",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "전 국민(개인)"
+   }
   },
   {
    "id": "seoul-admin-form-improvement-2026",
@@ -656,7 +726,10 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": "연례 여부 미확인",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "행정서식을 써 본 국민 누구나(전국)"
+   }
   },
   {
    "id": "kspo-regulation-idea-2026",
@@ -691,7 +764,10 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": "연례 여부 미확인",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "국민 누구나(개인)"
+   }
   },
   {
    "id": "mpb-fiscal-edu-idea-2026",
@@ -727,7 +803,10 @@
    "verified": true,
    "source": "공식 공고 확인",
    "note": "2026년부터 대국민 재정교육을 본격 운영하며 처음 여는 공모로 보임. 12월 중 수상작 선정",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "국민 누구나"
+   }
   },
   {
    "id": "khs-ich-performance-idea-2026",
@@ -762,7 +841,10 @@
    "aiRule": null,
    "tip": null,
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "국민 누구나(개인 또는 단체)"
+   }
   },
   {
    "id": "kapae-student-policy-idea-2026",
@@ -798,7 +880,13 @@
    "judging": null,
    "tip": null,
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "statuses": [
+     "대학(원)생"
+    ],
+    "note": "대학생만"
+   }
   },
   {
    "id": "semas-research-paper-2026",
@@ -834,7 +922,13 @@
    "aiRule": null,
    "tip": null,
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "statuses": [
+     "대학(원)생"
+    ],
+    "note": "대학(원)생만(휴학·수료 포함)"
+   }
   },
   {
    "id": "gangneung-citizen-idea-2026",
@@ -870,7 +964,10 @@
    "contact": null,
    "tip": null,
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "국민 누구나(거주지 무관)"
+   }
   },
   {
    "id": "saenggakham-policy-idea",
@@ -910,7 +1007,11 @@
    "aiRule": null,
    "tip": null,
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "minAge": 19,
+    "note": "만 19세 이상(청년부 19~34세, 성인부 35세 이상). 청소년은 별도 공모"
+   }
   },
   {
    "id": "moleg-idea",
@@ -947,7 +1048,10 @@
    "contact": null,
    "tip": null,
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "국민 누구나(회차 공고 확인)"
+   }
   },
   {
    "id": "infosec-policy-proposal",
@@ -986,7 +1090,13 @@
    "contact": null,
    "tip": null,
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "statuses": [
+     "대학(원)생"
+    ],
+    "note": "대학(원)생만"
+   }
   },
   {
    "id": "komipo-innovation-idea",
@@ -1024,7 +1134,10 @@
    "contact": null,
    "tip": null,
    "note": null,
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "전 국민 누구나(개인, 법인)"
+   }
   },
   {
    "id": "epeople-gukmin-jean",
@@ -1060,7 +1173,10 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 접수",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "누구나"
+   }
   },
   {
    "id": "epeople-gukmin-saenggakham",
@@ -1096,7 +1212,10 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 운영. 기관이 여는 개별 의견수렴·온라인공청회는 안건마다 기간이 따로 있음",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "누구나"
+   }
   },
   {
    "id": "epeople-active-admin",
@@ -1132,7 +1251,11 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 접수",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "extra": "이미 낸 민원·제안이 법령 문제로 반려된 경우에만 신청 가능",
+    "note": "반려된 민원·제안이 있는 사람"
+   }
   },
   {
    "id": "assembly-petition",
@@ -1168,7 +1291,10 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 등록. 청원마다 동의기간 30일",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "누구나(본인인증)"
+   }
   },
   {
    "id": "cheongwon24",
@@ -1204,7 +1330,10 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 접수",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "누구나(본인인증)"
+   }
   },
   {
    "id": "modu-plaza-proposal",
@@ -1240,7 +1369,10 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "정책제안은 상시 접수. 30일 동안 30명 이상 공감을 얻은 제안은 소관부처 검토를 거쳐 정책 반영을 추진함. 사이트 안의 국민심사·설문·공모전·정책공동설계·공청회는 건마다 기간이 따로 있음",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "누구나(회원가입)"
+   }
   },
   {
    "id": "withpeople-thinkn",
@@ -1276,7 +1408,10 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 운영. 설문과 BEST 투표는 건마다 기간이 있음",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "누구나"
+   }
   },
   {
    "id": "mybudget-national",
@@ -1312,7 +1447,10 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "연중 제안 가능. '27회계연도 운영계획 기준 사업제안 집중접수는 1~4월이고, 5월 이후 접수분은 '28회계연도 예산안 반영을 검토함(누리집 안내: 지금 제안하는 사업은 최종 선정되면 2028년 예산에 반영). 이후 일정: 적격성 검토·숙성 3~5월, 예산국민참여단 검토 5~6월, 선호도 투표 7월, 국무회의 확정 9월, 국회 확정 12월. 2027년('28회계연도) 운영계획은 2026-11-02 현재 공고되지 않음",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "국민 누구나(개인·단체)"
+   }
   },
   {
    "id": "regulation-sinmungo",
@@ -1349,7 +1487,10 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 접수",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "누구나"
+   }
   },
   {
    "id": "lawmaking-opinion",
@@ -1385,7 +1526,10 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "입법제안·불편법령신고는 상시. 입법예고·행정예고 의견은 예고마다 기간이 있음. '아이디어 공모제'는 회차별로 다름",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "note": "누구나"
+   }
   },
   {
    "id": "youthcenter-sinmungo",
@@ -1421,7 +1565,12 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 접수",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "minAge": 19,
+    "maxAge": 34,
+    "note": "청년(19~34세) 대상 창구"
+   }
   },
   {
    "id": "youthcenter-housing",
@@ -1459,7 +1608,12 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 접수",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "minAge": 19,
+    "maxAge": 34,
+    "note": "청년(19~34세) 대상 창구"
+   }
   },
   {
    "id": "pb-lofin365",
@@ -1496,7 +1650,11 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "주민참여예산 제안 접수 시기는 지자체마다 다르므로 각 지자체 공고를 확인해야 함. 포털에서 지역을 고르면 해당 지자체 주민참여예산 사이트로 이동함",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "own": true,
+    "note": "내가 사는 지자체의 주민참여예산에 제안"
+   }
   },
   {
    "id": "seoul-idea",
@@ -1533,7 +1691,16 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 접수. 30일 동안 공감 50개 이상을 받은 제안은 담당부서가 30일 검토한 뒤 답변함",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "regions": [
+     {
+      "sido": "서울특별시"
+     }
+    ],
+    "soft": true,
+    "note": "시민 누구나(우수제안 투표는 서울시민). 서울 밖이면 이용 안내 확인"
+   }
   },
   {
    "id": "gyeonggi-petition",
@@ -1570,7 +1737,15 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 등록. 30일 동안 의견을 모아 1만 명 이상 동의하면 청원 성립, 성립일부터 30일 안에 도지사가 직접 답변",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "regions": [
+     {
+      "sido": "경기도"
+     }
+    ],
+    "note": "경기도민(보도 기준)"
+   }
   },
   {
    "id": "gyeonggi-ordinance-initiative",
@@ -1607,7 +1782,15 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 접수",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "regions": [
+     {
+      "sido": "경기도"
+     }
+    ],
+    "note": "경기도민"
+   }
   },
   {
    "id": "busan-petition",
@@ -1644,7 +1827,16 @@
    "verified": true,
    "source": "공식 안내 확인",
    "note": "상시 등록. 30일 동안 300명 이상 공감하면 부산시가 답변. 정책 주제는 '시민토론 ON AIR'에서 30일간 온라인 토론",
-   "checkedAt": "2026-11-03"
+   "checkedAt": "2026-11-03",
+   "elig": {
+    "regions": [
+     {
+      "sido": "부산광역시"
+     }
+    ],
+    "soft": true,
+    "note": "부산시 청원. 부산 밖 주민의 참여 가능 여부는 확인하지 못함"
+   }
   }
  ],
  "finders": [

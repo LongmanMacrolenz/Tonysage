@@ -339,6 +339,23 @@ details.handoff pre { white-space: pre-wrap; font: 12.5px/1.55 var(--f-num); col
 .mark { background: var(--hl); border-radius: 3px; padding: 0 2px; }
 .addr { font: 500 14px var(--f-num); user-select: all; background: var(--sheet-2); border: 1px solid var(--line-2); border-radius: 6px; padding: 3px 8px; }
 
+/* 내 조건과 자격 */
+.prof span { margin-left: 6px; font-weight: 600; color: var(--gov); }
+.chip.no { background: var(--seal-soft); color: var(--seal); font-weight: 600; }
+.chip.ok { background: var(--ok-soft); color: var(--ok); }
+.item.dim a { opacity: .55; }
+.note.ok { background: var(--ok-soft); }
+.note.no { background: var(--seal-soft); }
+.elig { margin: 0 0 14px; display: grid; gap: 6px; }
+.elig ul { margin: 0; padding-left: 18px; }
+.elig .actions { margin-top: 2px; }
+.hidnote { font-size: 12.5px; color: var(--ink-3); margin: 0; padding-block: 0 20px; }
+.hidnote button { border: 0; background: none; padding: 0; color: var(--gov); text-decoration: underline; font-size: 12.5px; cursor: pointer; }
+.checks { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 6px; }
+.fgrid .chk, .checks .chk { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; color: var(--ink); font-size: 13.5px; }
+.fgrid .chk input { width: 16px; height: 16px; }
+.flabel { font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
+
 /* 공고 추가 */
 dialog { border: 1px solid var(--line); border-radius: 14px; padding: 0; width: min(760px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); background: var(--sheet); color: var(--ink); box-shadow: var(--shadow); }
 dialog::backdrop { background: rgba(10, 14, 25, .45); }
@@ -362,6 +379,7 @@ dialog::backdrop { background: rgba(10, 14, 25, .45); }
 <header class="top">
   <div class="top-in gutter">
     <a class="brand" href="#home"><b>정책공모 작업실</b><span>Claude와 함께 쓰는 정책 제안</span></a>
+    <button class="btn small prof" id="profBtn" type="button" title="거주지·나이·신분으로 참여 자격을 확인합니다">내 조건<span id="profSum">미설정</span></button>
     <div class="engine" id="engine" title="Claude가 답할 때 쓰는 모델과 생각 수준입니다. 웹 검색은 하지 않습니다.">
       <label for="engModel">AI 엔진</label>
       <select id="engModel"></select>
@@ -396,12 +414,14 @@ dialog::backdrop { background: rgba(10, 14, 25, .45); }
         <select id="org"><option value="">주최 전체</option></select>
       </div>
       <div class="frow">
+        <label class="chk"><input type="checkbox" id="fElig" checked> 참여 가능한 것만</label>
         <label class="chk"><input type="checkbox" id="fPrize"> 상금·상품 있음</label>
         <label class="chk"><input type="checkbox" id="fTeam"> 팀 참가 가능</label>
         <label class="chk"><input type="checkbox" id="fAll"> 누구나 참여</label>
       </div>
     </div>
     <ul class="list" id="list"></ul>
+    <p class="hidnote gutter" id="hidNote" hidden></p>
   </aside>
 
   <main class="main gutter" id="main"></main>
@@ -443,12 +463,34 @@ dialog::backdrop { background: rgba(10, 14, 25, .45); }
       <label class="wide">생성형 AI 규정<input id="a_aiRule"></label>
       <label class="wide">공식 공고 주소<input id="a_url" type="url" placeholder="https://"></label>
       <label class="wide">주제 태그(쉼표로 구분)<input id="a_tags" placeholder="예: 청년, 주거"></label>
+      <label>거주지 제한 시·도<select id="a_esido"></select></label>
+      <label>거주지 제한 시·군·구<input id="a_esigungu" placeholder="제한이 없으면 비워 두기"></label>
+      <label>최소 나이<input id="a_eminage" inputmode="numeric"></label>
+      <label>최대 나이<input id="a_emaxage" inputmode="numeric"></label>
+      <div class="wide checks"><label class="chk"><input type="checkbox" id="a_eworkok"> 그 지역 직장·학교에 다녀도 됨</label><label class="chk"><input type="checkbox" id="a_estudent"> 대학(원)생만</label></div>
     </div>
     <p class="err" id="addErr" hidden></p>
     <div class="bar">
       <button class="btn ghost" type="button" id="addCancel">닫기</button>
       <button class="btn primary" type="button" id="addSave">목록에 추가</button>
     </div>
+  </form>
+</dialog>
+
+<dialog id="profDlg" aria-labelledby="profTitle">
+  <form class="dlg" id="profForm" method="dialog">
+    <h2 id="profTitle">내 조건</h2>
+    <p class="muted" style="margin:0">사는 곳, 나이, 신분을 넣으면 공모마다 참여 자격을 확인하고, 참여할 수 없는 공모는 목록에서 숨깁니다. 이 정보는 이 페이지에 저장되고, Claude와 대화할 때 자격 판단에 함께 쓰입니다.</p>
+    <div class="fgrid">
+      <label>사는 곳 시·도<select id="p_sido"></select></label>
+      <label>사는 곳 시·군·구<input id="p_sigungu" placeholder="예: 성동구"></label>
+      <label>직장·학교 시·도 (선택)<select id="p_wsido"></select></label>
+      <label>직장·학교 시·군·구 (선택)<input id="p_wsigungu" placeholder="지역 직장인·학생도 받는 공모 확인용"></label>
+      <label>출생 연도<input id="p_birth" inputmode="numeric" placeholder="예: 1994"></label>
+      <div class="wide"><span class="flabel">해당하는 것을 모두 고르세요</span><div class="checks" id="p_status"></div></div>
+    </div>
+    <p class="err" id="profErr" hidden></p>
+    <div class="bar"><button class="btn ghost" type="button" id="profClear">모두 지우기</button><button class="btn ghost" type="button" id="profCancel">닫기</button><button class="btn primary" type="button" id="profSave">저장</button></div>
   </form>
 </dialog>
 
@@ -480,11 +522,12 @@ const st = {
   projects: {}, chats: {},
   dirty: {},
   route: 'home', tab: 'brief',
-  f: { view: 'open', q: '', tag: '', org: '', prize: false, team: false, anyone: false, sort: 'end' },
+  f: { view: 'open', q: '', tag: '', org: '', prize: false, team: false, anyone: false, elig: true, sort: 'end' },
   backend: 'local', canWrite: true,
   db: null, sample: undefined, sampleOff: false, downloads: null,
   busy: {}, sugg: {}, chatErr: {}, includeDraft: {},
-  gen: {}, engine: { model: 'claude-opus-5-5', effort: 'high' }, reviewPass: {}, lastModel: ''
+  gen: {}, engine: { model: 'claude-opus-5-5', effort: 'high' }, reviewPass: {}, lastModel: '',
+  profile: null, uid: null, forceElig: {}
 };
 
 /* ---------- 날짜·금액 ---------- */
@@ -611,6 +654,125 @@ function setSync(s) {
   el.dataset.s = s; el.textContent = text;
 }
 
+/* ---------- 내 조건과 참여 자격 ---------- */
+const SIDO = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '대전광역시', '울산광역시', '세종특별자치시', '경기도', '강원특별자치도', '충청북도', '충청남도', '전북특별자치도', '전라남도', '경상북도', '경상남도', '제주특별자치도'];
+const STATUS_OPTS = ['대학(원)생', '고등학생 이하', '직장인', '소상공인·자영업', '공무원'];
+const shortSido = s => String(s || '').replace(/특별자치시|특별자치도|특별시|광역시/, '').replace(/^(충청|전라|경상)(북|남)도$/, (m, a, b) => ({ 충청: '충', 전라: '전', 경상: '경' }[a] + b));
+function normGu(s) { return String(s || '').replace(/\s+/g, ''); }
+function sameGu(a, b) { a = normGu(a); b = normGu(b); if (!a || !b) return false; return a === b || a.replace(/[시군구]$/, '') === b.replace(/[시군구]$/, ''); }
+function placeMatch(place, r) {
+  if (!place || !place.sido) return null;
+  if (place.sido !== r.sido) return false;
+  if (!r.sigungu) return true;
+  if (!place.sigungu) return null;
+  return sameGu(place.sigungu, r.sigungu);
+}
+function placeText(r) { return r.sigungu ? shortSido(r.sido) + ' ' + r.sigungu : r.sido; }
+function profileSet() { const p = st.profile; return !!(p && (p.sido || p.birthYear || (p.statuses && p.statuses.length))); }
+function ageRange(by) { const y = +today().slice(0, 4); return [y - by - 1, y - by]; }
+function eligOf(c) {
+  const e = c.elig || {}, p = st.profile || {};
+  const why = []; let k = 'ok';
+  const rank = { ok: 0, ask: 1, no: 2 };
+  const worse = n => { if (rank[n] > rank[k]) k = n; };
+  if (e.unknown) { worse('ask'); why.push('공고 요약에 참여 자격이 없어 공식 공고에서 확인해야 합니다.'); }
+  if (e.own) why.push(p.sido ? '내 지역(' + (p.sigungu ? shortSido(p.sido) + ' ' + p.sigungu : p.sido) + ')의 주민참여예산에 제안하는 창구입니다.' : '내가 사는 지자체의 주민참여예산에 제안하는 창구입니다.');
+  if (e.regions && e.regions.length) {
+    const places = e.regions.map(placeText).join(', ');
+    const whoTxt = places + (e.workSchoolOk ? ' 주민이나 그 지역 직장·학교에 다니는 사람' : ' 주민');
+    const home = e.regions.map(r => placeMatch({ sido: p.sido, sigungu: p.sigungu }, r));
+    const work = e.workSchoolOk ? e.regions.map(r => placeMatch({ sido: p.wsido, sigungu: p.wsigungu }, r)) : [];
+    if (home.includes(true)) why.push(places + '에 살고 있어 해당합니다.');
+    else if (work.includes(true)) why.push(places + '에 있는 직장·학교에 다녀 해당합니다.');
+    else if (!p.sido) { worse('ask'); why.push(whoTxt + '만 참여할 수 있습니다. 내 조건에 사는 곳을 넣으면 확인합니다.'); }
+    else if (home.includes(null)) { worse('ask'); why.push(whoTxt + '만 참여할 수 있습니다. 내 조건에 시·군·구를 넣으면 확인합니다.'); }
+    else if (e.soft) { worse('ask'); why.push('주로 ' + whoTxt + ' 대상입니다. 다른 지역 주민도 되는지 이용 안내를 확인하세요.'); }
+    else { worse('no'); why.push(whoTxt + '만 참여할 수 있습니다.' + (e.workSchoolOk && !p.wsido ? ' 그 지역에 직장·학교가 있으면 내 조건에 넣으세요.' : '')); }
+  }
+  if (e.minAge || e.maxAge) {
+    const rng = e.minAge && e.maxAge ? '만 ' + e.minAge + '~' + e.maxAge + '세' : e.minAge ? '만 ' + e.minAge + '세 이상' : '만 ' + e.maxAge + '세 이하';
+    const by = +p.birthYear;
+    if (!by) { worse('ask'); why.push(rng + '만 참여할 수 있습니다. 출생 연도를 넣으면 확인합니다.'); }
+    else {
+      const [lo, hi] = ageRange(by);
+      const out = (e.minAge && hi < e.minAge) || (e.maxAge && lo > e.maxAge);
+      const inside = (!e.minAge || lo >= e.minAge) && (!e.maxAge || hi <= e.maxAge);
+      if (out) { worse('no'); why.push(rng + '만 참여할 수 있습니다(지금 만 ' + lo + '~' + hi + '세).'); }
+      else if (inside) why.push(rng + ' 조건에 맞습니다.');
+      else { worse('ask'); why.push(rng + ' 경계에 있어 생일 기준으로 확인해야 합니다.'); }
+    }
+  }
+  if (e.statuses && e.statuses.length) {
+    const mine = p.statuses || [];
+    if (e.statuses.some(x => mine.includes(x))) why.push(e.statuses.join('·') + ' 조건에 맞습니다.');
+    else { worse(profileSet() ? 'no' : 'ask'); why.push(e.statuses.join('·') + '만 참여할 수 있습니다.'); }
+  }
+  if (e.extra) { worse('ask'); why.push(e.extra + '.'); }
+  if (!why.length) why.push((e.note || '누구나 참여할 수 있습니다') + '.');
+  return { k, why };
+}
+function eligChip(c) {
+  const r = eligOf(c);
+  if (r.k === 'no') return '<span class="chip no">참여 불가</span>';
+  if (r.k === 'ask') return '<span class="chip unv">자격 확인</span>';
+  return '';
+}
+function profileSummary() {
+  const p = st.profile;
+  if (!profileSet()) return '미설정';
+  const parts = [];
+  if (p.sido) parts.push(p.sigungu ? p.sigungu : shortSido(p.sido));
+  if (p.birthYear) { const r = ageRange(+p.birthYear); parts.push('만 ' + r[1] + '세'); }
+  if (p.statuses && p.statuses.length) parts.push(p.statuses[0] + (p.statuses.length > 1 ? ' 외' : ''));
+  return parts.join(' · ');
+}
+function profileText() {
+  const p = st.profile;
+  if (!profileSet()) return '';
+  const where = p.sido ? (p.sido + (p.sigungu ? ' ' + p.sigungu : '')) : '모름';
+  const work = p.wsido ? (p.wsido + (p.wsigungu ? ' ' + p.wsigungu : '')) : '없음 또는 모름';
+  return '[사용자 조건] 사는 곳: ' + where + ' / 직장·학교: ' + work + ' / 출생 연도: ' + (p.birthYear || '모름') + ' / 신분: ' + ((p.statuses || []).join(', ') || '해당 없음');
+}
+function renderProfileBtn() { const el = $('#profSum'); if (el) el.textContent = profileSummary(); }
+function fillSido(sel, val, blank) { sel.innerHTML = '<option value="">' + blank + '</option>' + SIDO.map(x => '<option' + (x === val ? ' selected' : '') + '>' + x + '</option>').join(''); }
+function openProfile() {
+  const p = st.profile || {};
+  fillSido($('#p_sido'), p.sido, '고르세요');
+  fillSido($('#p_wsido'), p.wsido, '없음');
+  $('#p_sigungu').value = p.sigungu || ''; $('#p_wsigungu').value = p.wsigungu || ''; $('#p_birth').value = p.birthYear || '';
+  $('#p_status').innerHTML = STATUS_OPTS.map((x, i) => '<label class="chk"><input type="checkbox" id="p_st' + i + '" value="' + x + '"' + ((p.statuses || []).includes(x) ? ' checked' : '') + '> ' + x + '</label>').join('');
+  $('#profErr').hidden = true;
+  const d = $('#profDlg'); if (d.showModal) d.showModal(); else d.setAttribute('open', '');
+}
+function closeDlg(id) { const d = $(id); if (d.close) d.close(); else d.removeAttribute('open'); }
+async function saveProfile(p) {
+  st.profile = p;
+  LS.set('gongmo.profile', p);
+  renderProfileBtn(); rerenderAll();
+  if (st.backend === 'db' && st.uid && st.canWrite) {
+    try { await st.db.doc('data/users/' + st.uid + '/profile').set(p || { cleared: true }); } catch (e) { /* 이 브라우저에는 남아 있음 */ }
+  }
+}
+function readProfileForm() {
+  const raw = ($('#p_birth').value || '').trim();
+  const by = parseInt(raw.replace(/[^0-9]/g, ''), 10);
+  const y = +today().slice(0, 4);
+  if (raw && !(by >= 1900 && by <= y)) { const e = $('#profErr'); e.textContent = '출생 연도를 네 자리로 넣어 주세요. 예: 1994'; e.hidden = false; return null; }
+  return {
+    sido: $('#p_sido').value || '', sigungu: $('#p_sigungu').value.trim(),
+    wsido: $('#p_wsido').value || '', wsigungu: $('#p_wsigungu').value.trim(),
+    birthYear: by || null,
+    statuses: $$('#p_status input:checked').map(x => x.value),
+    updatedAt: Date.now()
+  };
+}
+function rerenderAll() {
+  renderList();
+  const focusIn = document.activeElement && $('#main').contains(document.activeElement) && /TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName);
+  if (st.route === 'home') renderHome();
+  else if (!focusIn && !(st.gen[st.route] && st.gen[st.route].running) && !st.busy[st.route]) renderContest(st.route);
+}
+
 /* ---------- 목록 ---------- */
 function inView(c, v) {
   const s = status(c).k;
@@ -629,12 +791,13 @@ function filtered() {
   if (f.prize) arr = arr.filter(c => prizeValue(c) > 0);
   if (f.team) arr = arr.filter(teamOk);
   if (f.anyone) arr = arr.filter(anyone);
+  if (f.elig && f.view !== 'mine') arr = arr.filter(c => eligOf(c).k !== 'no');
   const by = { end: (a, b) => status(a).sort - status(b).sort, prize: (a, b) => prizeValue(b) - prizeValue(a) || status(a).sort - status(b).sort, new: (a, b) => String(b.start || '').localeCompare(String(a.start || '')) }[f.sort];
   return arr.sort(by);
 }
 function renderCounts() {
   const all = contests();
-  const n = v => all.filter(c => inView(c, v)).length;
+  const n = v => all.filter(c => inView(c, v) && (!st.f.elig || v === 'mine' || eligOf(c).k !== 'no')).length;
   for (const v of ['open', 'always', 'annual', 'mine']) { const el = $('[data-n="' + v + '"]'); if (el) el.textContent = n(v) || ''; }
 }
 function renderFilters() {
@@ -651,26 +814,36 @@ function renderList() {
   const cur = st.route;
   $('#list').innerHTML = arr.length ? arr.map(c => {
     const p = proj(c.id);
-    const chips = [prizeChip(c)];
+    const el = eligOf(c);
+    const chips = [eligChip(c), prizeChip(c)].filter(Boolean);
     if (c.team) chips.push('<span class="chip">' + esc(shortTeam(c.team)) + '</span>');
     if (!c.verified) chips.push('<span class="chip unv">공식 공고 미확인</span>');
     if (c.aiRule) chips.push('<span class="chip ai">AI 규정 있음</span>');
     if (p) chips.push('<span class="chip mine">' + esc(p.status) + '</span>');
-    return '<li class="item"><a href="#' + esc(c.id) + '"' + (c.id === cur ? ' aria-current="page"' : '') + '>' + stampHtml(c) +
+    return '<li class="item' + (el.k === 'no' ? ' dim' : '') + '"><a href="#' + esc(c.id) + '"' + (c.id === cur ? ' aria-current="page"' : '') + '>' + stampHtml(c) +
       '<div><h3>' + esc(c.title) + '</h3><div class="org">' + esc(c.org) + ' · ' + esc(c.kind) + '</div><div class="chips">' + chips.join('') + '</div></div></a></li>';
   }).join('') : '<li class="empty-list">' + (st.f.view === 'mine' ? '아직 시작한 제안이 없습니다. 공모를 고르고 \'작업 시작\'을 누르세요.' : '조건에 맞는 공모가 없습니다. 필터를 풀어 보세요.') + '</li>';
+  const hid = $('#hidNote');
+  if (hid) {
+    let n = 0;
+    if (st.f.elig && st.f.view !== 'mine') { st.f.elig = false; n = filtered().filter(c => eligOf(c).k === 'no').length; st.f.elig = true; }
+    hid.hidden = !n;
+    hid.innerHTML = n ? '내 조건으로 참여할 수 없는 ' + n + '건을 숨겼습니다. <button type="button" id="showAll">모두 보기</button>' : '';
+  }
 }
 function shortTeam(t) { return t.length > 14 ? t.replace(/\(.*?\)/g, '').slice(0, 14) : t; }
 
 /* ---------- 홈 ---------- */
 function renderHome() {
   const all = contests(), t = today();
-  const open = all.filter(c => status(c).k === 'open').sort((a, b) => status(a).sort - status(b).sort);
+  const can = c => !st.f.elig || eligOf(c).k !== 'no';
+  const open = all.filter(c => status(c).k === 'open' && can(c)).sort((a, b) => status(a).sort - status(b).sort);
   const week = open.filter(c => status(c).n != null && status(c).n <= 7);
-  const live = all.filter(c => ['open', 'soon'].includes(status(c).k));
+  const live = all.filter(c => ['open', 'soon'].includes(status(c).k) && can(c));
+  const blocked = all.filter(c => ['open', 'soon'].includes(status(c).k) && eligOf(c).k === 'no').length;
   const money = live.filter(c => prizeValue(c) > 0);
   const mine = Object.values(st.projects).map(p => ({ p, c: getC(p.contestId) })).filter(x => x.c).sort((a, b) => (b.p.updatedAt || 0) - (a.p.updatedAt || 0));
-  const annual = all.filter(c => c.annual);
+  const annual = all.filter(c => c.annual && can(c));
   const m = +t.slice(5, 7);
   const cal = '<div class="cal"><div class="cal-grid"><div class="mh"></div>' + Array.from({ length: 12 }, (_, i) => '<div class="mh' + (i + 1 === m ? ' now' : '') + '">' + (i + 1) + '월</div>').join('') +
     annual.map(c => { const a = +c.start.slice(5, 7), b = +c.end.slice(5, 7);
@@ -679,7 +852,9 @@ function renderHome() {
     '<section class="sheet hero"><span class="eyebrow">' + esc(kdate(t)) + ' 기준</span>' +
     '<h1>좋은 정책 아이디어를, 마감 안에 제안서로</h1>' +
     '<p>정부·지자체·공공기관의 정책 제안 공모를 모았습니다. 공모를 고르면 참여 조건, 상금, 기간, 제출 방법을 한 장으로 보여 주고, 그 내용을 그대로 Claude에게 넘겨 아이디어를 다듬고 제안서를 함께 씁니다.</p>' +
-    '<div class="tally"><span><b>' + live.length + '</b>건 접수 중·예정</span><span><b>' + week.length + '</b>건 7일 안 마감</span><span><b>' + money.length + '</b>건 상금·상품</span><span><b>' + all.filter(c => c.always).length + '</b>곳 상시 창구</span></div>' +
+    (profileSet() ? '<p class="note ok" style="margin:0">내 조건(' + esc(profileSummary()) + ')으로 참여할 수 있는 공모만 셉니다.' + (blocked ? ' 자격이 맞지 않는 ' + blocked + '건은 뺐습니다.' : '') + ' <button class="btn small ghost" type="button" data-act="profile">내 조건 바꾸기</button></p>'
+      : '<p class="note" style="margin:0">사는 곳과 나이, 신분을 넣으면 참여할 수 있는 공모만 골라 보여 줍니다. <button class="btn small" type="button" data-act="profile">내 조건 넣기</button></p>') +
+    '<div class="tally"><span><b>' + live.length + '</b>건 ' + (profileSet() ? '참여 가능' : '접수 중·예정') + '</span><span><b>' + week.length + '</b>건 7일 안 마감</span><span><b>' + money.length + '</b>건 상금·상품</span><span><b>' + all.filter(c => c.always).length + '</b>곳 상시 창구</span></div>' +
     '<ol class="steps"><li><b>공모 고르기</b><br>왼쪽 목록에서 조건과 마감을 보고 고릅니다.</li><li><b>Claude와 대화</b><br>공고 요약이 자동으로 들어가서 바로 아이디어부터 묻습니다.</li><li><b>제안서와 점검</b><br>칸별로 초안을 받고, 심사위원처럼 검토받은 뒤 제출 전 점검을 합니다.</li></ol></section>' +
     '<section class="sheet panel"><h2>내 작업 <small>' + mine.length + '건</small></h2>' +
     (mine.length ? '<div class="rows">' + mine.map(({ p, c }) => { const s = status(c); return '<a class="row" href="#' + esc(c.id) + '"><span class="d' + (s.k === 'open' && s.n <= 3 ? ' hot' : '') + '">' + esc(s.k === 'open' ? (s.n === 0 ? '오늘' : 'D-' + s.n) : s.label) + '</span><span class="t">' + esc(c.title) + '<small>' + esc(p.status) + ' · 제안서 ' + filled(p) + '/' + SECTIONS.length + '칸</small></span><span class="chip mine">' + esc(p.status) + '</span></a>'; }).join('') + '</div>'
@@ -722,7 +897,7 @@ function rules(c, withDraft) {
     '4. 공고에 생성형 AI 관련 규정이 있으면 먼저 알려 준다. 제출하는 글은 사용자가 자기 경험과 판단으로 고쳐 쓰도록 돕고, 표절과 중복 응모를 피하게 한다.\n' +
     '5. 이미 시행 중인 정책과 겹칠 수 있으면 그 점을 짚고 차별점을 묻는다.\n' +
     '6. 짧은 문단과 목록으로 답한다. 정보가 모자라면 먼저 한두 가지를 묻는다.\n' +
-    '오늘 날짜: ' + today() + '\n\n' + briefText(c) + (d ? '\n\n' + d : '');
+    '오늘 날짜: ' + today() + '\n\n' + briefText(c) + (profileSet() ? '\n\n' + profileText() + '\n- 화면의 자격 판정: ' + ({ ok: '참여 가능', ask: '확인 필요', no: '참여 불가' }[eligOf(c).k]) + ' (' + eligOf(c).why.join(' ') + ')' : '') + (d ? '\n\n' + d : '');
 }
 function handoffText(c) {
   return rules(c, true) + '\n\n[요청]\n이 공모에 낼 정책 제안을 함께 준비하고 싶습니다. 먼저 제 상황과 관심 주제를 물어봐 주세요.';
@@ -738,7 +913,7 @@ function renderContest(id) {
   const nChat = chatOf(id).length;
   $('#main').innerHTML = '<div class="wrap"><a class="btn small ghost back" href="#home">← 목록</a>' +
     '<article class="sheet"><div class="dhead">' +
-    '<div class="meta">' + stampHtml(c) + '<span>' + esc(c.org) + '</span><span class="chip">' + esc(c.orgType || '') + '</span><span class="chip">' + esc(c.kind) + '</span>' + (c.verified ? '' : '<span class="chip unv">공식 공고 미확인</span>') + (p ? '<span class="chip mine">' + esc(p.status) + '</span>' : '') + '</div>' +
+    '<div class="meta">' + stampHtml(c) + '<span>' + esc(c.org) + '</span><span class="chip">' + esc(c.orgType || '') + '</span><span class="chip">' + esc(c.kind) + '</span>' + (c.verified ? '' : '<span class="chip unv">공식 공고 미확인</span>') + eligChip(c) + (p ? '<span class="chip mine">' + esc(p.status) + '</span>' : '') + '</div>' +
     '<h1>' + esc(c.title) + '</h1>' +
     '<div class="dline"><span class="when' + (s.k === 'open' && s.n <= 3 ? ' hot' : '') + '">' + esc(when) + (s.k === 'open' ? ' · ' + (s.n === 0 ? '오늘 마감' : s.n + '일 남음') : s.k === 'closed' ? ' · 접수 끝남' : '') + '</span>' + prizeChip(c) + '</div>' +
     '<div class="actions">' + (p ? '<button class="btn talk" type="button" data-tab="pkg">제출 패키지 열기</button>' : '<button class="btn talk" type="button" data-act="start">작업 시작</button>') +
@@ -766,7 +941,10 @@ function renderBrief(c, el) {
   const s = status(c);
   const period = c.always ? '상시 접수' : (c.start ? kdate(c.start) : '?') + ' ~ ' + (c.end ? kdate(c.end) : '?') + (c.endTime ? ' ' + c.endTime : '') + (c.annual ? ' (2026년 회차, ' + (c.season || '') + ')' : '');
   const prize = c.prize ? c.prize.text + (c.prize.total && c.prize.kind !== 'none' ? '\n총액 ' + won(c.prize.total) : '') : '';
-  el.innerHTML = (c.verified ? '' : '<p class="note">이 공모는 공식 공고를 직접 열어 대조하지 못했습니다. ' + esc(c.source || '') + '. 응모 전에 공식 공고를 꼭 확인하세요.</p>') +
+  const eg = eligOf(c);
+  const eligBox = '<div class="note ' + (eg.k === 'ok' ? 'ok' : eg.k === 'no' ? 'no' : '') + ' elig"><b>' + (eg.k === 'ok' ? '참여할 수 있습니다' : eg.k === 'no' ? '참여할 수 없습니다' : '참여 자격을 확인해야 합니다') + (profileSet() ? ' · 내 조건 ' + esc(profileSummary()) : '') + '</b><ul>' + eg.why.map(w => '<li>' + esc(w) + '</li>').join('') + '</ul>' +
+    '<div class="actions"><button class="btn small ghost" type="button" data-act="profile">' + (profileSet() ? '내 조건 바꾸기' : '내 조건 넣기') + '</button></div></div>';
+  el.innerHTML = eligBox + (c.verified ? '' : '<p class="note">이 공모는 공식 공고를 직접 열어 대조하지 못했습니다. ' + esc(c.source || '') + '. 응모 전에 공식 공고를 꼭 확인하세요.</p>') +
     (s.k === 'closed' ? '<p class="note">접수가 끝난 공모입니다. 비슷한 공모나 상시 창구로 아이디어를 낼 수 있습니다.</p>' : '') +
     (c.annual ? '<p class="note info">해마다 열리는 공모입니다. 아래는 2026년 회차 기준이며, 다음 회차 조건은 바뀔 수 있습니다.</p>' : '') +
     '<dl class="facts" style="margin-top:' + (c.verified && s.k !== 'closed' && !c.annual ? '0' : '14px') + '">' +
@@ -1156,6 +1334,7 @@ async function makePackage(c) {
   if (!st.sample || st.sampleOff) { toast('이 화면에서는 Claude를 부를 수 없습니다. \'대화용 요약 복사\'를 쓰세요.'); return; }
   ensureProject(id, false);
   const inp = proj(id).input || {};
+  if (eligOf(c).k === 'no' && !st.forceElig[id]) { toast('내 조건으로는 참여할 수 없는 공모라 패키지를 만들지 않았습니다. 공고 한 장에서 이유를 확인하세요.'); return; }
   if (!(inp.direction || '').trim() && !(inp.idea || '').trim()) { toast('정책 방향이나 아이디어 초안을 먼저 적어 주세요.'); const el = $('#in_direction'); if (el) el.focus(); return; }
   const review = st.reviewPass[id] !== false;
   const g = st.gen[id] = {
@@ -1470,6 +1649,7 @@ function openAdd() {
   const dlg = $('#addDlg');
   $('#extractBtn').disabled = !st.sample || st.sampleOff;
   $('#extractMsg').textContent = (!st.sample || st.sampleOff) ? '이 화면에서는 Claude 정리를 쓸 수 없어 직접 입력해야 합니다.' : '';
+  fillSido($('#a_esido'), '', '제한 없음');
   $('#addErr').hidden = true;
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
@@ -1478,7 +1658,7 @@ async function extract() {
   if (!text) { $('#extractMsg').textContent = '공고문을 먼저 붙여 넣으세요.'; return; }
   const btn = $('#extractBtn'); btn.disabled = true; $('#extractMsg').textContent = 'Claude가 공고를 읽는 중입니다…';
   const prompt = '다음은 정책·아이디어 공모전 공고문이다. 공고에 적힌 내용만 아래 JSON 객체 하나로 답하라. 공고에 없는 값은 null. 날짜는 YYYY-MM-DD(연도가 없으면 ' + today().slice(0, 4) + '년으로). 추측하지 말 것.\n' +
-    '{"title":"공모 이름","org":"주최 기관","orgType":"중앙부처|광역지자체|기초지자체|공공기관|국회|학회·민간 중 하나","start":"접수 시작일","end":"접수 마감일","endTime":"마감 시각 예: 18:00","team":"참가 형태 예: 개인 또는 3인 이내 팀","who":"참여 조건","prizeKind":"cash|goods|none|unknown","prizeTop":최고 상금 원 단위 숫자 또는 null,"prizeText":"시상 내역 요약","theme":"공모 주제와 분야","submit":"제출물, 서식, 분량","how":"제출 방법과 접수처","judging":"심사 기준과 절차","announce":"발표 일정","contact":"문의처","aiRule":"생성형 AI 관련 규정","url":"공고에 적힌 공식 주소","tags":["주제 태그 1~3개, 예: 청년, 주거, 환경, 안전, 복지, 지역, 행정혁신, 디지털·데이터, 일자리, 교육, 문화"]}\n\n[공고문]\n' + text.slice(0, 60000);
+    '{"title":"공모 이름","org":"주최 기관","orgType":"중앙부처|광역지자체|기초지자체|공공기관|국회|학회·민간 중 하나","start":"접수 시작일","end":"접수 마감일","endTime":"마감 시각 예: 18:00","team":"참가 형태 예: 개인 또는 3인 이내 팀","who":"참여 조건","prizeKind":"cash|goods|none|unknown","prizeTop":최고 상금 원 단위 숫자 또는 null,"prizeText":"시상 내역 요약","theme":"공모 주제와 분야","submit":"제출물, 서식, 분량","how":"제출 방법과 접수처","judging":"심사 기준과 절차","announce":"발표 일정","contact":"문의처","aiRule":"생성형 AI 관련 규정","url":"공고에 적힌 공식 주소","tags":["주제 태그 1~3개, 예: 청년, 주거, 환경, 안전, 복지, 지역, 행정혁신, 디지털·데이터, 일자리, 교육, 문화"],"eligRegion":{"sido":"참여 자격에 거주지 제한이 있으면 시·도 정식 명칭(예: 서울특별시, 경기도), 없으면 null","sigungu":"시·군·구 제한이 있으면 이름(예: 양천구), 없으면 null"},"eligWorkSchoolOk":그 지역 직장·학교에 다니는 사람도 되면 true 아니면 false,"eligMinAge":최소 나이 숫자 또는 null,"eligMaxAge":최대 나이 숫자 또는 null,"eligStudentOnly":대학(원)생만 참여할 수 있으면 true 아니면 false}\n\n[공고문]\n' + text.slice(0, 60000);
   try {
     const o = await st.sample.json(prompt, engineOpts({ cache: false }));
     if (!o || typeof o !== 'object') throw { code: 'invalid_json' };
@@ -1490,6 +1670,13 @@ async function extract() {
       if (el.tagName === 'SELECT') { if ([...el.options].some(op => op.value === String(v))) el.value = String(v); }
       else el.value = String(v);
     }
+    const er = o.eligRegion && typeof o.eligRegion === 'object' ? o.eligRegion : {};
+    if (er.sido && SIDO.includes(er.sido)) $('#a_esido').value = er.sido;
+    if (er.sigungu) $('#a_esigungu').value = String(er.sigungu);
+    if (o.eligMinAge) $('#a_eminage').value = String(o.eligMinAge);
+    if (o.eligMaxAge) $('#a_emaxage').value = String(o.eligMaxAge);
+    $('#a_eworkok').checked = !!o.eligWorkSchoolOk;
+    $('#a_estudent').checked = !!o.eligStudentOnly;
     $('#extractMsg').textContent = '정리했습니다. 틀린 곳이 없는지 확인한 뒤 추가하세요.';
   } catch (e) {
     $('#extractMsg').textContent = errText(e) || '정리하지 못했습니다.';
@@ -1511,6 +1698,14 @@ function saveAdd() {
     announce: v('announce') || null, aiRule: v('aiRule') || null, contact: v('contact') || null, tip: null,
     url: v('url') || null, verified: false, source: '직접 추가한 공고', note: null, checkedAt: today(), addedAt: Date.now()
   };
+  const num = k => { const n = parseInt(v(k).replace(/[^0-9]/g, ''), 10); return isFinite(n) && n > 0 ? n : null; };
+  const elig = {};
+  if (v('esido')) elig.regions = [{ sido: v('esido'), sigungu: v('esigungu') || null }];
+  if (elig.regions && $('#a_eworkok').checked) elig.workSchoolOk = true;
+  if (num('eminage')) elig.minAge = num('eminage');
+  if (num('emaxage')) elig.maxAge = num('emaxage');
+  if ($('#a_estudent').checked) elig.statuses = ['대학(원)생'];
+  c.elig = elig;
   if (!c.end) c.always = false;
   st.overlay.set(id, c);
   queue('contests/' + id, c);
@@ -1548,6 +1743,13 @@ function bind() {
   $('#fPrize').addEventListener('change', e => { st.f.prize = e.target.checked; renderList(); });
   $('#fTeam').addEventListener('change', e => { st.f.team = e.target.checked; renderList(); });
   $('#fAll').addEventListener('change', e => { st.f.anyone = e.target.checked; renderList(); });
+  $('#fElig').addEventListener('change', e => { st.f.elig = e.target.checked; rerenderAll(); });
+  $('#hidNote').addEventListener('click', e => { if (e.target.id === 'showAll') { st.f.elig = false; $('#fElig').checked = false; rerenderAll(); } });
+  $('#profBtn').addEventListener('click', openProfile);
+  $('#profCancel').addEventListener('click', () => closeDlg('#profDlg'));
+  $('#profClear').addEventListener('click', () => { closeDlg('#profDlg'); saveProfile(null); toast('내 조건을 지웠습니다.'); });
+  $('#profSave').addEventListener('click', () => { const p = readProfileForm(); if (!p) return; closeDlg('#profDlg'); saveProfile(p); toast('내 조건을 저장했습니다. 참여할 수 있는 공모만 보여 줍니다.'); });
+  $('#profForm').addEventListener('submit', e => e.preventDefault());
   $('#addBtn').addEventListener('click', openAdd);
   $('#addCancel').addEventListener('click', () => { const d = $('#addDlg'); d.close ? d.close() : d.removeAttribute('open'); });
   $('#extractBtn').addEventListener('click', extract);
@@ -1557,12 +1759,19 @@ function bind() {
   $('#main').addEventListener('click', e => {
     const c = st.route !== 'home' ? getC(st.route) : null;
     const t = e.target;
+    if (!c && t.closest('[data-act="profile"]')) { openProfile(); return; }
     const tab = t.closest('[data-tab]');
     if (tab && c) { st.tab = tab.dataset.tab; $$('.tabs [data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === st.tab))); renderTab(c); if (!tab.closest('.tabs')) { const tb = $('.tabs'); if (tb) tb.scrollIntoView({ block: 'start' }); } return; }
     const act = t.closest('[data-act]');
     if (act && c) {
       const a = act.dataset.act;
-      if (a === 'start' || a === 'start-draft') { ensureProject(c.id); st.tab = a === 'start' ? 'pkg' : 'draft'; renderContest(c.id); renderList(); if (a === 'start') { const d = $('#in_direction'); if (d) d.focus(); } }
+      if ((a === 'start' || a === 'start-draft') && eligOf(c).k === 'no' && !st.forceElig[c.id] && !act.dataset.confirm) {
+        act.dataset.confirm = '1'; act.textContent = '자격이 맞지 않습니다. 그래도 시작';
+        toast('내 조건으로는 참여할 수 없는 공모입니다. 공고 한 장에서 이유를 확인하세요.');
+        return;
+      }
+      if (a === 'profile') { openProfile(); return; }
+      if (a === 'start' || a === 'start-draft') { if (eligOf(c).k === 'no') st.forceElig[c.id] = true; ensureProject(c.id); st.tab = a === 'start' ? 'pkg' : 'draft'; renderContest(c.id); renderList(); if (a === 'start') { const d = $('#in_direction'); if (d) d.focus(); } }
       else if (a === 'make') makePackage(c);
       else if (a === 'stopgen') { const g = st.gen[c.id]; if (g && g.ctl) g.ctl.abort(); }
       else if (a === 'restore') { const p = clone(proj(c.id)); if (p.backup) { p.sections = p.backup.sections; delete p.backup; saveProject(c.id, p); renderContest(c.id); toast('이전 본문으로 되돌렸습니다.'); } }
@@ -1680,7 +1889,19 @@ async function connect() {
   try { db = await cl.use('db'); } catch (e) { db = null; }
   if (!db) { setSync('local'); return; }
   st.db = db; st.backend = 'db';
-  try { const u = await cl.use('user'); if (u) { const w = await u.can('data.write'); if (w === false) { st.canWrite = false; } } } catch (e) { /* 모르면 쓰기를 열어 두고 거절되면 막는다 */ }
+  try { const u = await cl.use('user'); if (u) { const w = await u.can('data.write'); if (w === false) { st.canWrite = false; } try { st.uid = await u.id(); } catch (e2) { st.uid = null; } } } catch (e) { /* 모르면 쓰기를 열어 두고 거절되면 막는다 */ }
+  if (st.uid) {
+    db.doc('data/users/' + st.uid + '/profile').onSnapshot(snap => {
+      if (snap.exists) {
+        const v = snap.data();
+        st.profile = v && !v.cleared ? JSON.parse(JSON.stringify(v)) : null;
+        LS.set('gongmo.profile', st.profile);
+        renderProfileBtn(); rerenderAll();
+      } else if (st.profile && st.canWrite) {
+        st.db.doc('data/users/' + st.uid + '/profile').set(st.profile).catch(() => {});
+      }
+    }, () => {});
+  }
   st.projects = {}; st.chats = {}; st.overlay = new Map();
   let answered = false;
   const timer = setTimeout(() => { if (!answered) setSync('slow'); }, 10000);
@@ -1696,6 +1917,8 @@ async function connect() {
 /* ---------- 시작 ---------- */
 $('#asOf').textContent = SNAP.asOf;
 loadLocal();
+st.profile = LS.get('gongmo.profile', null);
+renderProfileBtn();
 initEngine();
 renderFilters();
 bind();
