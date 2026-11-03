@@ -383,6 +383,12 @@ input[type="number"]:focus, select:focus { border-color: var(--navy); }
 .gauge-box { overflow-x: auto; }
 .gauge { display: block; width: 100%; min-width: 520px; height: auto; }
 
+.soon-box { border-top: 1px solid var(--rule); padding-top: 12px; }
+.soon-box h3 { font-family: var(--f-body); font-size: var(--step--1); font-weight: 700; color: var(--ink-2); margin-bottom: 6px; }
+.soon-box ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.soon-box li { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: var(--step--1); }
+.card { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 80px); }
+
 .group-title {
   display: flex; align-items: center; gap: 10px;
   font-size: var(--step-1);

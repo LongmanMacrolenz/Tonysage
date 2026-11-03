@@ -222,7 +222,17 @@
       esc(c.ratio.toFixed(1)) + '%</span>에 해당합니다.</p>' +
       '<table class="calc"><tbody>' + rows + '</tbody></table>' +
       '<div class="gauge-box">' + gaugeSvg(out.gauge) + '</div>' +
+      deadlineList(out) +
       '</section>';
+  }
+
+  function deadlineList(out) {
+    var items = out.results.filter(function (r) { return r.status !== 'no' && r.deadline; });
+    if (!items.length) return '';
+    return '<div class="soon-box"><h3>마감이 다가오는 신청</h3><ul>' + items.map(function (r) {
+      var p = programById[r.id];
+      return '<li><a href="#card-' + esc(r.id) + '" data-open="card-' + esc(r.id) + '">' + esc(p ? p.name : r.id) + '</a> <span class="pill deadline">' + esc(r.deadline) + '</span></li>';
+    }).join('') + '</ul></div>';
   }
 
   function gaugeSvg(g) {
@@ -321,6 +331,13 @@
     open.forEach(function (id) { var d = document.getElementById(id); if (d) d.open = true; });
     var t = $('#toggleNo');
     if (t) t.addEventListener('click', function () { showNo = !showNo; render(); });
+    $$('[data-open]', box).forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        var d = document.getElementById(a.getAttribute('data-open'));
+        if (d) { d.open = true; d.scrollIntoView({ behavior: 'smooth', block: 'start' }); d.querySelector('summary').focus(); }
+      });
+    });
   }
 
   var timer = null;

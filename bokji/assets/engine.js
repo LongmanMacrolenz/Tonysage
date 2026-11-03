@@ -24,6 +24,7 @@
   }
   function manwon(n) { // 원 → '82만 원' (만 원 아래 반올림)
     var m = Math.round((n || 0) / MAN);
+    if (m === 0) return n ? won(n) : '0원';
     if (m >= 10000) return won(m * MAN);
     return comma(m) + '만 원';
   }
@@ -192,7 +193,7 @@
   /* ------------------------------------------------------------------ */
   /* 소득인정액(기초연금·장애인연금 방식) 추정                               */
   /* ------------------------------------------------------------------ */
-  function pensionCalc(h, earnFlat) {
+  function pensionCalc(h, earnFlat, excludeOwnCar) {
     var p = P().basicPension;
     var e = h.earn;
     // 근로소득 공제는 본인·배우자 각각. 배우자도 벌면 공제를 두 번 적용한다.
@@ -200,7 +201,8 @@
     var earnEval = Math.max(0, e - flat) * (1 - p.earnRate);
     var incomeEval = earnEval + h.other;
     var basic = p.basicProperty[h.rk.bp];
-    var car = h.car;
+    // 장애인연금은 등록장애인 소유 자동차 1대를 재산에서 뺀다.
+    var car = excludeOwnCar ? 0 : h.car;
     var carLux = !h.carExempt && car >= p.luxuryCarValue ? car : 0;
     var general = h.home + h.deposit + h.land + (car - carLux);
     var finAfter = Math.max(0, h.fin - p.finDeduct);
@@ -390,8 +392,8 @@
     r.push(ctx.flags.basicPension ? pass('기초연금 받을 가능성 있음') : fail('공익활동형은 기초연금 수급자 대상'));
     if (ctx.bls.livelihood.ratio <= P().bls.ratio.livelihood) r.push(fail('생계급여를 받을 수 있는 소득 수준. 생계급여 수급자는 공익활동에 참여할 수 없음'));
     if (h.work === 'employee') r.push(ask('건강보험 직장가입자는 참여할 수 없음'));
-    r.push(ask('주로 연말~연초에 수행기관이 모집하고, 인원이 차면 대기'));
-    return verdict('seniorJobs', r, { amount: { text: '월 ' + manwon(sj.monthly), sub: '공익활동 활동비' } });
+    r.push(ask('보통 12월에 다음 해 참여자를 모집하고, 그 뒤에는 기관별로 대기자를 받음'));
+    return verdict('seniorJobs', r, { amount: { text: '월 ' + manwon(sj.monthly) + ' 이내', sub: '공익활동 활동비' } });
   };
 
   RULES.childAllowance = function (h, ctx) {
@@ -521,7 +523,7 @@
     var lim = median(h.size) * limitPct / 100;
     var assetLim = youth ? ne.youthAsset : ne.asset;
     var typeOne = inc <= lim && h.netAssets <= assetLim;
-    r.push(inc <= lim ? pass('가구 소득 ' + won(inc) + '이 기준중위소득 ' + limitPct + '%(' + won(lim) + ') 이하' + (youth ? ', 청년 특례' : ''))
+    r.push(inc <= lim ? pass('가구 소득 ' + won(inc) + '이 기준중위소득 ' + limitPct + '%(' + won(lim) + ') 이하' + (youth ? ', 청년 특례' : ', 본인 소득도 60% 이하여야 함'))
       : ask('가구 소득이 Ⅰ유형 기준(중위 ' + limitPct + '%)을 넘음. ' + (youth ? '청년은 Ⅱ유형으로 소득과 관계없이 참여 가능' : '중위 ' + ne.midRatio + '% 이하면 Ⅱ유형 참여 가능')));
     r.push(h.netAssets <= assetLim ? pass('재산 ' + manwon(h.netAssets) + '이 ' + manwon(assetLim) + ' 이하') : ask('재산이 ' + manwon(assetLim) + '을 넘어 Ⅰ유형은 어렵고 Ⅱ유형만 가능'));
     if (!youth) r.push(ask('최근 2년 안에 100일 또는 800시간 이상 일한 경험이 있어야 Ⅰ유형(청년은 경험 없이도 선발 가능)'));
@@ -565,8 +567,9 @@
     r.push(working ? pass('일하고 있음(2025년 소득이 확인돼야 함)') : fail('2025년 근로·사업소득이 있어야 함'));
     var ratio = (h.earn + h.other) / median(h.size) * 100;
     var pay = h.spouseEarns ? h.annual / 2 : h.annual;
-    var plus = pay <= yf.plus.pay && ratio <= yf.plus.ratio;
-    var normal = pay <= yf.normal.pay && ratio <= yf.normal.ratio;
+    var couple = h.spouse && h.size === 2; // 부부만 사는 2인 가구는 기준 완화
+    var plus = pay <= yf.plus.pay && ratio <= yf.plus.ratio + (couple ? yf.coupleBonus : 0);
+    var normal = pay <= yf.normal.pay && ratio <= yf.normal.ratio + (couple ? yf.coupleBonus : 0);
     if (plus) r.push(pass('2025년 총급여 ' + manwon(pay) + ', 가구 소득 중위 ' + ratio.toFixed(0) + '%로 우대형 범위(중소기업 재직·소상공인이면 정부기여금 12%)'));
     else if (normal) r.push(pass('2025년 총급여 ' + manwon(pay) + ', 가구 소득 중위 ' + ratio.toFixed(0) + '%로 일반형 범위(정부기여금 6%)'));
     else r.push(fail('총급여 ' + manwon(yf.normal.pay) + ' 이하, 가구 소득 기준중위소득 ' + yf.normal.ratio + '% 이하여야 정부기여금 대상'));
@@ -596,9 +599,11 @@
     var med = median(h.size);
     var lim = med * em.ratio / 100;
     r.push(inc <= lim ? pass('월 소득 ' + won(inc) + '이 기준중위소득 ' + em.ratio + '%(' + won(lim) + ') 이하') : fail('월 소득 ' + won(inc) + '이 기준중위소득 ' + em.ratio + '%(' + won(lim) + ')를 넘음'));
+    // 재산 합계 = 일반재산 + 금융재산 − 사는 집 공제 − 부채
     var propLim = em.property[h.rk.bp];
-    var prop = h.home + h.deposit + h.land + h.car;
-    r.push(prop <= propLim ? pass('재산 합계 ' + manwon(prop) + '이 ' + manwon(propLim) + ' 이하') : ask('재산 합계 ' + manwon(prop) + '이 ' + manwon(propLim) + '을 넘음. 사는 집은 일부 공제돼 기준이 올라갈 수 있음'));
+    var homeDed = Math.min(h.home + h.deposit, em.housingDeduct[h.rk.bp]);
+    var prop = Math.max(0, h.home + h.deposit + h.land + h.car + h.fin - homeDed - h.debt);
+    r.push(prop <= propLim ? pass('재산 합계 ' + manwon(prop) + '(사는 집 공제·부채 차감)이 ' + manwon(propLim) + ' 이하') : fail('재산 합계 ' + manwon(prop) + '(사는 집 공제·부채 차감)이 ' + manwon(propLim) + '을 넘음'));
     var finLim = Math.floor((med + em.finAdd) / 1000) * 1000;
     r.push(h.fin <= finLim ? pass('금융재산 ' + manwon(h.fin) + '이 ' + won(finLim) + ' 이하') : fail('금융재산 ' + manwon(h.fin) + '이 ' + won(finLim) + '을 넘음'));
     var t = em.livelihood;
@@ -665,7 +670,8 @@
     var r = [];
     r.push(h.work === 'closed' ? pass('폐업했거나 폐업할 소상공인') : h.work === 'self' ? ask('폐업을 고민 중이라면 폐업 전에 신청할 수 있음') : fail('소상공인(자영업자) 대상'));
     r.push(ask(hr.condition));
-    return verdict('hopeReturn', r, { amount: { text: '철거비 최대 ' + manwon(hr.demolitionMax), sub: '재취업 시 수당 최대 ' + manwon(hr.trainingAllowance + hr.transitionMax + hr.linkMonthly * hr.linkMonths) } });
+    r.push(ask(hr.condition2));
+    return verdict('hopeReturn', r, { amount: { text: '법률·채무 지원', sub: '철거비(최대 ' + manwon(hr.demolitionMax) + ')는 2027년 공고 확인' } });
   };
 
   RULES.freshStart = function (h) {
@@ -695,7 +701,7 @@
       bls[b]._size = h.size;
     });
     var pension = pensionCalc(h, P().basicPension.earnFlat);
-    var disPension = pensionCalc(h, P().disabilityPension.earnFlat);
+    var disPension = pensionCalc(h, P().disabilityPension.earnFlat, h.dis !== 'none');
     var ctx = { bls: bls, pension: pension, disPension: disPension, flags: {} };
     var bp = P().basicPension;
     ctx.flags.basicPension = (h.age >= 65 || (h.spouse && h.spouseAge >= 65)) && pension.recognized <= (h.spouse ? bp.limitCouple : bp.limitSingle);
