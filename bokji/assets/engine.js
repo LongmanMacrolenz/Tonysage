@@ -398,9 +398,14 @@
     var ca = P().childAllowance;
     var n = 0;
     ca.kidKeys.forEach(function (k) { n += h.kids[k]; });
-    var r = [n ? pass('만 ' + ca.ageLimit + '세 미만 자녀 ' + n + '명') : fail('만 ' + ca.ageLimit + '세 미만 자녀가 없음')];
+    var capital = h.region === 'seoul' || h.region === 'incheon' || h.region.indexOf('gyeonggi') === 0;
+    var per = capital ? ca.amountCapital : ca.amountOther;
+    var r = [n ? pass('2026년 대상 나이(2017년 이후 출생) 자녀 ' + n + '명') : fail('2017년 이후 태어난 자녀가 없음')];
     r.push(pass('소득·재산 기준 없음'));
-    return verdict('childAllowance', r, { amount: n ? { text: '월 ' + manwon(n * ca.amount), sub: '자녀 1명당 ' + manwon(ca.amount) } : null, notes: ca.notes || [] });
+    return verdict('childAllowance', r, {
+      amount: n ? { text: '월 ' + won(n * per), sub: (capital ? '수도권' : '비수도권') + ' 1명당 ' + won(per) } : null,
+      notes: ca.notes
+    });
   };
 
   RULES.parentBenefit = function (h) {
@@ -410,32 +415,36 @@
     if (h.kids.c0 || h.kids.c1) r.push(pass('0세 ' + h.kids.c0 + '명, 1세 ' + h.kids.c1 + '명'));
     else r.push(fail('만 2세 미만 자녀가 없음'));
     r.push(pass('소득·재산 기준 없음'));
-    return verdict('parentBenefit', r, { amount: a ? { text: '월 ' + manwon(a), sub: '어린이집 이용 시 보육료로 대체' } : null });
+    return verdict('parentBenefit', r, { amount: a ? { text: '월 ' + manwon(a), sub: '어린이집 이용 시 보육료만큼 차감' } : null });
   };
 
   RULES.firstMeet = function (h) {
     var fm = P().firstMeet;
     var r = [];
     var older = h.kidsTotal - h.kids.c0;
-    if (h.kids.c0) r.push(pass('출생 후 1년 이내 아이가 있음'));
+    if (h.kids.c0) r.push(pass('태어난 지 1년이 안 된 아이가 있음(출생 후 2년 안에 신청·사용)'));
+    else if (h.kids.c1) r.push(ask('출생 후 2년이 지나지 않았다면 아직 신청할 수 있음'));
     else if (h.pregnant) r.push(ask('출산하면 출생신고 때 함께 신청'));
-    else r.push(fail('출생 1년 이내 아이나 임신 중인 사람이 없음'));
-    var amt = older > 0 ? fm.second : fm.first;
-    return verdict('firstMeet', r, { amount: { text: manwon(amt), sub: older > 0 ? '둘째 이상' : '첫째' } });
+    else r.push(fail('출생 2년 이내 아이나 임신 중인 사람이 없음'));
+    var amt = older > 0 || h.kids.c0 > 1 ? fm.second : fm.first;
+    return verdict('firstMeet', r, { amount: { text: manwon(amt), sub: older > 0 ? '둘째 이상' : '첫째, 둘째부터 ' + manwon(fm.second) } });
   };
 
   RULES.pregnancyCare = function (h) {
     var pc = P().pregnancyCare;
     var r = [h.pregnant ? pass('임신 중') : fail('임신 중인 가구원이 없음')];
-    return verdict('pregnancyCare', r, { amount: { text: manwon(pc.single), sub: '다태아 ' + manwon(pc.multiFrom) + ' 이상' } });
+    return verdict('pregnancyCare', r, { amount: { text: manwon(pc.single), sub: '다태아는 태아 1명당 ' + manwon(pc.perFetus) } });
   };
 
   RULES.childcareService = function (h, ctx) {
     var ac = P().childcare;
     var n = h.kids.c0 + h.kids.c1 + h.kids.c2 + h.kids.c3 + h.kids.c4;
     var r = [n ? pass('만 12세 이하 자녀 ' + n + '명') : fail('만 12세 이하 자녀가 없음')];
-    if (n) r.push(ask('정부 지원 비율은 건강보험료로 판정. 기준중위소득 ' + ac.supportRatio + '% 이하면 이용요금 일부 지원'));
-    return verdict('childcareService', r, { amount: n ? { text: '이용요금 일부', sub: '소득에 따라 차등' } : null });
+    var gap = h.spouseEarns || h.singleParent || h.disabledInHousehold || n >= 2;
+    r.push(gap ? pass('양육 공백 가정(맞벌이·한부모·장애·다자녀 등)') : ask('맞벌이·한부모·다자녀처럼 양육 공백이 있어야 정부 지원. 없으면 전액 본인 부담으로 이용'));
+    var ratio = (h.earn + h.other) / median(h.size) * 100;
+    r.push(ratio <= ac.supportRatio ? pass('가구 소득이 기준중위소득 ' + ac.supportRatio + '% 이하로 보임(실제 판정은 건강보험료)') : fail('가구 소득이 기준중위소득 ' + ac.supportRatio + '%를 넘으면 정부 지원 없음'));
+    return verdict('childcareService', r, { amount: n ? { text: '이용요금 15~85%', sub: '소득유형에 따라 정부 지원' } : null });
   };
 
   RULES.singleParent = function (h, ctx) {
@@ -444,8 +453,19 @@
     var r = [];
     r.push(h.singleParent ? pass('한부모 가구') : fail('한부모 가구가 아님'));
     r.push(n ? pass('18세 미만 자녀 ' + n + '명') : fail('18세 미만 자녀가 없음'));
-    r.push(c.ratio <= sp.ratio ? pass('소득인정액이 기준중위소득 ' + sp.ratio + '% 이하') : fail('소득인정액이 기준중위소득 ' + sp.ratio + '%를 넘음'));
-    return verdict('singleParent', r, { amount: n ? { text: '월 ' + manwon(n * sp.amount), sub: '자녀 1명당 ' + manwon(sp.amount) } : null });
+    var lim = median(h.size) * sp.ratio / 100;
+    r.push(c.ratio <= sp.ratio ? pass('소득인정액 추정 ' + won(c.recognized) + '이 기준중위소득 ' + sp.ratio + '%(' + won(lim) + ') 이하') : fail('소득인정액 추정 ' + won(c.recognized) + '이 기준중위소득 ' + sp.ratio + '%(' + won(lim) + ')를 넘음'));
+    var teen = h.age <= 24;
+    var amt, sub;
+    if (teen) {
+      var u2 = h.kids.c0 + h.kids.c1;
+      amt = u2 * sp.teenUnder2 + (n - u2) * sp.teen2plus;
+      sub = '청소년한부모(24세 이하)';
+    } else {
+      amt = n * sp.amount + (h.age >= 25 && h.age <= 34 ? n * sp.extra : 0);
+      sub = h.age >= 25 && h.age <= 34 ? '청년 한부모 추가 포함' : '자녀 1명당 ' + manwon(sp.amount);
+    }
+    return verdict('singleParent', r, { amount: n ? { text: '월 ' + manwon(amt), sub: sub } : null });
   };
 
   RULES.childTax = function (h) {
@@ -453,11 +473,13 @@
     var n = h.kidsUnder18;
     var r = [];
     r.push(n ? pass('18세 미만 자녀 ' + n + '명') : fail('18세 미만 자녀가 없음'));
-    r.push(h.annual < ct.incomeLimit ? pass('2025년 가구 총소득 ' + manwon(h.annual) + '이 ' + manwon(ct.incomeLimit) + ' 미만') : fail('2025년 가구 총소득 ' + manwon(h.annual) + '이 ' + manwon(ct.incomeLimit) + ' 이상'));
+    var works = h.earn > 0 || h.work === 'employee' || h.work === 'self' || h.work === 'closed';
+    r.push(works ? pass('2025년에 근로·사업소득이 있음') : fail('2025년 근로·사업소득이 있어야 함'));
+    r.push(h.annual < ct.incomeLimit ? pass('2025년 부부 합산 총소득 ' + manwon(h.annual) + '이 ' + manwon(ct.incomeLimit) + ' 미만') : fail('2025년 부부 합산 총소득 ' + manwon(h.annual) + '이 ' + manwon(ct.incomeLimit) + ' 이상'));
     r.push(assetCheck(h, ct.assetLimit, ct.assetCut));
     if (!h.annualGiven) r.push(ask('한 해 총소득을 비워 두어 한 달 소득×12로 계산함'));
     return verdict('childTax', r, {
-      amount: n ? { text: '최대 ' + manwon(n * ct.maxPerChild), sub: '자녀 1명당 최대 ' + manwon(ct.maxPerChild) } : null,
+      amount: n ? { text: '최대 ' + manwon(n * ct.maxPerChild), sub: '자녀 1명당 ' + manwon(ct.minPerChild) + '~' + manwon(ct.maxPerChild) } : null,
       deadline: deadlineText(h, ct.deadline)
     });
   };
@@ -558,10 +580,10 @@
     var r = [];
     var lost = h.work === 'seeking' || h.work === 'closed';
     r.push(lost ? pass('일자리를 잃고 구직 중') : fail('지금 일하고 있거나 구직 중이 아님'));
-    if (h.work === 'closed') r.push(ask('자영업자는 고용보험에 1년 이상 가입하고 매출 감소 등 불가피한 사유로 폐업한 경우만 해당'));
+    if (h.work === 'closed') r.push(ask('자영업자는 폐업 전 24개월 중 1년 이상 자영업자 고용보험에 가입했고, 6개월 연속 적자나 매출 20% 이상 감소 같은 부득이한 사유로 폐업해야 함'));
     else r.push(h.insured ? pass('이직 전 18개월 중 고용보험 가입 180일 이상') : fail('이직 전 18개월 중 고용보험 가입 180일 이상이어야 함'));
     r.push(ask('회사 사정 등 비자발적 이직이어야 함. 자발적 퇴사는 원칙적으로 제외'));
-    return verdict('unemploymentBenefit', r, { amount: { text: '하루 ' + manwon(ub.dailyMin) + '~' + manwon(ub.dailyMax), sub: '이전 임금의 60%' } });
+    return verdict('unemploymentBenefit', r, { amount: { text: '하루 ' + won(ub.dailyMin) + '~' + won(ub.dailyMax), sub: '이전 평균임금의 60%' } });
   };
 
   RULES.emergency = function (h, ctx) {
@@ -641,17 +663,27 @@
   RULES.hopeReturn = function (h) {
     var hr = P().hopeReturn;
     var r = [];
-    r.push(h.work === 'closed' ? pass('폐업했거나 폐업 예정인 소상공인') : h.work === 'self' ? ask('폐업을 고민 중이라면 폐업 전에 신청 가능') : fail('소상공인(자영업자) 대상'));
+    r.push(h.work === 'closed' ? pass('폐업했거나 폐업할 소상공인') : h.work === 'self' ? ask('폐업을 고민 중이라면 폐업 전에 신청할 수 있음') : fail('소상공인(자영업자) 대상'));
     r.push(ask(hr.condition));
-    return verdict('hopeReturn', r, { amount: { text: '철거비 최대 ' + manwon(hr.demolitionMax), sub: '재취업 시 전직장려수당 별도' } });
+    return verdict('hopeReturn', r, { amount: { text: '철거비 최대 ' + manwon(hr.demolitionMax), sub: '재취업 시 수당 최대 ' + manwon(hr.trainingAllowance + hr.transitionMax + hr.linkMonthly * hr.linkMonths) } });
   };
 
   RULES.freshStart = function (h) {
+    var fs = P().freshStart;
     var r = [];
     r.push(h.work === 'closed' || h.work === 'self' ? pass('개인사업자·소상공인(폐업 포함)') : fail('개인사업자·소상공인이 대상'));
-    r.push(h.debt > 0 ? pass('갚기 어려운 대출이 있음') : fail('입력한 대출이 없음'));
-    r.push(ask(P().freshStart.condition));
-    return verdict('freshStart', r, { amount: { text: '채무 조정', sub: '상환기간 연장·이자 감면·원금 조정' } });
+    r.push(h.debt > 0 ? pass('갚아야 할 대출이 있음') : fail('입력한 대출이 없음'));
+    r.push(ask(fs.condition));
+    return verdict('freshStart', r, { amount: { text: '채무 조정', sub: '상환 연장·이자 감면·원금 조정' }, deadline: deadlineText(h, fs.deadline) });
+  };
+
+  RULES.bizVoucher = function (h) {
+    var bv = P().bizVoucher;
+    var r = [];
+    r.push(h.work === 'self' ? pass('지금 영업 중인 소상공인') : h.work === 'closed' ? fail('신청일에 휴업·폐업 상태면 받을 수 없음') : fail('영업 중인 소상공인이 대상'));
+    r.push(ask('2025년 매출이 0원 초과 ' + manwon(bv.salesMax) + ' 미만이고 2025년 말까지 개업했어야 함'));
+    r.push(ask('예산이 소진되면 조기 마감. 신청 가능 여부를 사이트에서 확인'));
+    return verdict('bizVoucher', r, { amount: { text: manwon(bv.amount), sub: '공과금·보험료·연료비' }, deadline: deadlineText(h, bv.deadline) });
   };
 
   /* ------------------------------------------------------------------ */

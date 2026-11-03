@@ -111,8 +111,8 @@
       work: 'closed', earn: 80, annual: 2300, housing: 'monthly', deposit: 2000, rent: 60,
       fin: 300, car: 600, carExempt: true, debt: 4000, crisis: ['income-loss'] }) },
     youth: { name: '월세 사는 27세 청년', state: preset({
-      age: 27, region: 'seoul', work: 'employee', insured: true, earn: 210, annual: 2400,
-      housing: 'monthly', deposit: 1000, rent: 55, fin: 600, youthApart: true }) }
+      age: 27, region: 'seoul', work: 'employee', insured: true, earn: 150, annual: 1800,
+      housing: 'monthly', deposit: 1000, rent: 50, fin: 300, youthApart: true }) }
   };
 
   /* ------------------------------------------------------------------ */
@@ -375,6 +375,7 @@
     if (c.how) lines.push('<p class="desc"><b>방법</b> ' + esc(c.how) + '</p>');
     if (!lines.length) lines.push('<p class="desc">응모 자격과 시상은 공식 공고에서 확인하세요.</p>');
     if (c.note) lines.push('<p class="desc">' + esc(c.note) + '</p>');
+    if (c.unverified) lines.push('<p class="desc"><span class="pill warn">공식 공고 미확인</span> 기간과 시상은 언론·모음 사이트 정보입니다. 응모 전에 주최 기관 공고를 꼭 확인하세요.</p>');
     return '<article class="contest">' +
       '<div class="dday' + cls + '"><b>' + esc(st.label) + '</b><span>' + esc(st.sub) + '</span></div>' +
       '<h3>' + esc(c.title) + '</h3>' +

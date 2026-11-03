@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 const here = dirname(fileURLToPath(import.meta.url));
 const ctx = { console };
 ctx.globalThis = ctx;
+ctx.window = ctx;
 vm.createContext(ctx);
 for (const f of ['data-programs.js', 'data-contests.js', 'engine.js']) {
   vm.runInContext(readFileSync(join(here, '..', 'assets', f), 'utf8'), ctx, { filename: f });
@@ -132,9 +133,13 @@ test('폐업한 50대 예시: 긴급복지·희망리턴패키지가 보인다',
   assert.notEqual(status(out, 'hopeReturn'), 'no');
 });
 
-test('월세 사는 27세 청년 예시: 청년월세 확인 필요 이상', () => {
-  const out = E.evaluate(hh({ age: 27, region: 'seoul', insured: true, earn: 210, annual: 2400, deposit: 1000, rent: 55, fin: 600, youthApart: true }));
+test('월세 사는 27세 청년 예시: 청년월세 확인 필요, 근로장려금 가능', () => {
+  const out = E.evaluate(hh({ age: 27, region: 'seoul', insured: true, earn: 150, annual: 1800, deposit: 1000, rent: 50, fin: 300, youthApart: true }));
   assert.notEqual(status(out, 'youthRent'), 'no');
+  assert.equal(status(out, 'eitc'), 'ok');
+  // 월 210만 원이면 청년가구 기준(1인 중위 60%)을 넘는다
+  const rich = E.evaluate(hh({ age: 27, region: 'seoul', earn: 210, deposit: 1000, rent: 55, youthApart: true }));
+  assert.equal(status(rich, 'youthRent'), 'no');
   assert.equal(status(out, 'childAllowance'), 'no');
 });
 
