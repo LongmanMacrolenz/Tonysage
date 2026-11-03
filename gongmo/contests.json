@@ -222,32 +222,31 @@
    ],
    "start": "2026-10-26",
    "end": "2026-11-09",
-   "endTime": null,
-   "who": "공고문 확인 필요",
+   "endTime": "18:00(진흥원 이메일 수신 기준)",
+   "who": "KIMST 혁신에 관심 있는 국민 누구나",
    "team": null,
-   "limit": null,
+   "limit": "1인 최대 2건, 수상은 1인 1건",
    "prize": {
-    "kind": "unknown",
-    "total": null,
-    "top": null,
-    "text": "공고문 확인 필요(KIMST 공지 게시판을 열지 못함)"
+    "kind": "goods",
+    "total": 1300000,
+    "top": 500000,
+    "text": "대상 1명 50만 원, 최우수상 2명 각 30만 원, 우수상 2명 각 10만 원(디지털온누리상품권, KIMST 원장상). 참여상 20명 추첨 1만 원 상당 커피 교환권"
    },
-   "theme": "해양수산과학기술진흥원 ESG 경영과 혁신 아이디어",
-   "submit": "KIMST 홈페이지 공지사항(2026-10-20 게시)의 요강과 양식 확인",
-   "how": "KIMST 홈페이지 공지사항 요강 확인",
-   "judging": null,
-   "announce": null,
+   "theme": "① ESG경영 ② 국민참여소통 ③ 포용·상생 기본사회 ④ 공직혁신 ⑤ 공공 AI 대전환(AX) 등 KIMST ESG경영·정부혁신 아이디어",
+   "submit": "참가신청서(개인정보 수집·이용 동의 포함)와 제안서(2쪽 이내, 초과분은 삭제될 수 있음). 한글 파일 또는 PDF, 서명·동의 누락 주의. 파일명 \"공모전_소속_신청인명\"",
+   "how": "이메일 kimstesg@kimst.re.kr",
+   "judging": "창의성 30점, 실현가능성 30점(KIMST 경영환경 고려), 적합성 30점, 기대효과 10점. 내부 심사로 15건 선정 후 외부전문가 80%·소통24 국민투표 20%",
+   "announce": "11월 말 진흥원 홈페이지 게시와 개별 통지",
    "aiRule": "생성형 AI로 만든 아이디어는 선정이 취소될 수 있음",
-   "contact": "kimstesg@kimst.re.kr",
+   "contact": "ESG혁신실 02-3460-4025, kimstesg@kimst.re.kr",
    "tip": null,
    "url": "https://modu.go.kr/front/epilogue/epilogueNewViewPage.do?menu_id=527&bbs_id=4d4cca19ce1c431287a4edb806428b2f&pagetype=bbs",
    "verified": true,
-   "source": "공식 공고 확인",
+   "source": "KIMST 공모전 안내문과 첨부2 신청 양식 확인",
    "note": null,
    "checkedAt": "2026-11-03",
    "elig": {
-    "unknown": true,
-    "note": "공고문에서 자격 확인 필요"
+    "note": "KIMST 혁신에 관심 있는 국민 누구나"
    }
   },
   {
