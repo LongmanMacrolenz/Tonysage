@@ -523,7 +523,8 @@ const st = {
   dirty: {},
   route: 'home', tab: 'brief',
   f: { view: 'open', q: '', tag: '', org: '', prize: false, team: false, anyone: false, elig: true, sort: 'end' },
-  backend: 'local', canWrite: true,
+  backend: 'local', sharedMode: 'local', workMode: 'local', selfWrite: false,
+  localOv: new Map(), unsub: [],
   db: null, sample: undefined, sampleOff: false, downloads: null,
   busy: {}, sugg: {}, chatErr: {}, includeDraft: {},
   gen: {}, engine: { model: 'claude-opus-5-5', effort: 'high' }, reviewPass: {}, lastModel: '',
@@ -601,8 +602,8 @@ const LS = {
 function loadLocal() {
   st.projects = LS.get('gongmo.projects', {});
   st.chats = LS.get('gongmo.chats', {});
-  const mine = LS.get('gongmo.contests', {});
-  st.overlay = new Map(Object.entries(mine));
+  st.localOv = new Map(Object.entries(LS.get('gongmo.contests', {})));
+  st.overlay = new Map(st.localOv);
 }
 
 const pending = new Map();
@@ -624,21 +625,55 @@ async function flush() {
     }
   } finally { flushing = false; }
 }
-async function writeDoc(path, data) {
-  if (st.backend === 'db') {
-    try { data === null ? await st.db.doc(path).delete() : await st.db.doc(path).set(data); setSync('synced'); }
-    catch (e) {
-      if (e && e.code === 'invalid_argument') { st.canWrite = false; setSync('readonly'); toast('이 페이지에서는 저장할 권한이 없습니다.'); }
-      else if (e && e.code === 'quota_exceeded') toast('저장 공간이 가득 찼습니다. 오래된 대화를 지워 주세요.');
-      else if (e && e.code === 'unavailable') { await new Promise(r => setTimeout(r, 600 + Math.random() * 800)); try { data === null ? await st.db.doc(path).delete() : await st.db.doc(path).set(data); } catch (e2) { setSync('error'); } }
-      else setSync('error');
-    }
-    return;
-  }
-  const [col, id] = path.split('/');
+/* 저장 위치
+   공고(contests): 함께 보는 목록. 편집 권한이 있으면 저장소에, 없으면 이 브라우저에만.
+   초안(projects)·대화(chats): 사람마다 따로. 소유자는 소유자만 읽는 projects·chats에,
+   다른 사람은 본인만 읽는 data/users/<id>/work 아래에, 쓸 수 없으면 이 브라우저에. */
+function workPath(col) { return 'data/users/' + st.uid + '/work/' + col; }
+function refFor(col, id) {
+  if (st.backend !== 'db') return null;
+  if (col === 'contests') return st.sharedMode === 'db' ? st.db.doc('contests/' + id) : null;
+  if (st.workMode === 'owner') return st.db.doc(col + '/' + id);
+  if (st.workMode === 'private') return st.db.doc(workPath(col) + '/' + id);
+  return null;
+}
+function saveLocal(col, id, data) {
   if (col === 'projects') LS.set('gongmo.projects', st.projects);
   else if (col === 'chats') LS.set('gongmo.chats', st.chats);
-  else if (col === 'contests') { const o = {}; for (const [k, v] of st.overlay) o[k] = v; LS.set('gongmo.contests', o); }
+  else if (col === 'contests') {
+    if (data === null) st.localOv.delete(id); else st.localOv.set(id, data);
+    const o = {}; for (const [k, v] of st.localOv) o[k] = v; LS.set('gongmo.contests', o);
+  }
+}
+function syncState() { setSync(st.backend === 'db' && st.workMode !== 'local' ? 'synced' : 'local'); }
+function stopWork() { for (const u of st.unsub) { try { u(); } catch (e) { /* 이미 끊김 */ } } st.unsub = []; }
+function demote(col) {
+  if (col === 'contests') {
+    if (st.sharedMode === 'local') return;
+    st.sharedMode = 'local';
+    toast('공고는 이 브라우저의 목록에만 추가됩니다.');
+    return;
+  }
+  if (st.workMode === 'local') return;
+  st.workMode = 'local'; stopWork();
+  st.projects = Object.assign({}, LS.get('gongmo.projects', {}), st.projects);
+  st.chats = Object.assign({}, LS.get('gongmo.chats', {}), st.chats);
+  LS.set('gongmo.projects', st.projects); LS.set('gongmo.chats', st.chats);
+  syncState();
+  toast('초안은 이 브라우저에 저장됩니다.');
+}
+async function writeDoc(path, data) {
+  const i = path.indexOf('/'), col = path.slice(0, i), id = path.slice(i + 1);
+  const ref = refFor(col, id);
+  if (!ref) { saveLocal(col, id, data); return; }
+  const put = () => data === null ? ref.delete() : ref.set(data);
+  try { await put(); syncState(); }
+  catch (e) {
+    if (e && e.code === 'invalid_argument') { demote(col); saveLocal(col, id, data); }
+    else if (e && e.code === 'quota_exceeded') toast('저장 공간이 가득 찼습니다. 오래된 대화를 지워 주세요.');
+    else if (e && e.code === 'unavailable') { await new Promise(r => setTimeout(r, 600 + Math.random() * 800)); try { await put(); syncState(); } catch (e2) { setSync('error'); } }
+    else setSync('error');
+  }
 }
 function saveProject(id, p) { p.updatedAt = Date.now(); st.projects[id] = p; queue('projects/' + id, JSON.parse(JSON.stringify(p))); }
 function saveChat(id, turns) {
@@ -749,7 +784,7 @@ async function saveProfile(p) {
   st.profile = p;
   LS.set('gongmo.profile', p);
   renderProfileBtn(); rerenderAll();
-  if (st.backend === 'db' && st.uid && st.canWrite) {
+  if (st.backend === 'db' && st.uid && st.selfWrite) {
     try { await st.db.doc('data/users/' + st.uid + '/profile').set(p || { cleared: true }); } catch (e) { /* 이 브라우저에는 남아 있음 */ }
   }
 }
@@ -953,7 +988,7 @@ function renderBrief(c, el) {
     fact('제출물', c.submit) + fact('제출 방법', c.how) + fact('심사', c.judging) + fact('발표', c.announce) +
     fact('생성형 AI', c.aiRule) + fact('문의', c.contact) + (c.tip ? fact('도움말', c.tip) : '') +
     fact('확인', (c.verified ? '공식 공고 확인' : '공식 공고 미확인') + ' · ' + (c.checkedAt || '') + (c.note ? ' · ' + c.note : '')) + '</dl>' +
-    (c.id.startsWith('my-') ? '<div class="actions" style="margin-top:12px"><button class="btn small danger" type="button" data-act="delete">이 공고 지우기</button></div>' : '') +
+    (c.id.startsWith('my-') && (st.sharedMode === 'db' || st.localOv.has(c.id)) ? '<div class="actions" style="margin-top:12px"><button class="btn small danger" type="button" data-act="delete">이 공고 지우기</button></div>' : '') +
     '<details class="handoff"><summary>Claude에게 함께 보내는 공고 요약 보기</summary><pre>' + esc(briefText(c)) + '</pre></details>';
 }
 
@@ -1105,10 +1140,9 @@ function renderDraft(c, el) {
     el.innerHTML = '<div class="draft"><p class="muted" style="margin:0">아직 이 공모의 제안서를 시작하지 않았습니다.</p><div class="actions"><button class="btn talk" type="button" data-act="start-draft">제안서 시작</button></div></div>';
     return;
   }
-  const ro = !st.canWrite;
   const aiOff = !st.sample || st.sampleOff;
   el.innerHTML = '<div class="draft">' +
-    '<div class="dtop"><label>진행 상태 <select id="pStatus"' + (ro ? ' disabled' : '') + '>' + STATUSES.map(s => '<option' + (s === p.status ? ' selected' : '') + '>' + s + '</option>').join('') + '</select></label>' +
+    '<div class="dtop"><label>진행 상태 <select id="pStatus">' + STATUSES.map(s => '<option' + (s === p.status ? ' selected' : '') + '>' + s + '</option>').join('') + '</select></label>' +
     '<span class="muted">' + filled(p) + '/' + SECTIONS.length + '칸 · ' + totalChars(p).toLocaleString('ko-KR') + '자</span>' +
     '<span style="margin-left:auto" class="actions"><button class="btn small" type="button" data-act="review"' + (aiOff ? ' disabled' : '') + '>심사위원처럼 검토받기</button></span></div>' +
     (c.submit ? '<p class="note info" style="margin:0">제출 형식: ' + esc(c.submit) + '</p>' : '') +
@@ -1116,17 +1150,17 @@ function renderDraft(c, el) {
       const v = p.sections[s.key] || '';
       const sg = st.sugg[id + ':' + s.key];
       return '<div class="sec" data-sec="' + s.key + '"><div class="sh"><label for="s_' + s.key + '">' + s.label + '</label><span class="cnt" id="n_' + s.key + '">' + v.length.toLocaleString('ko-KR') + '자</span>' +
-        '<span class="sp"><button class="btn small" type="button" data-ai="' + s.key + '"' + (aiOff || ro || (sg && sg.busy) ? ' disabled' : '') + '>' + (v.trim() ? 'Claude가 다듬기' : 'Claude 초안') + '</button></span></div>' +
+        '<span class="sp"><button class="btn small" type="button" data-ai="' + s.key + '"' + (aiOff || (sg && sg.busy) ? ' disabled' : '') + '>' + (v.trim() ? 'Claude가 다듬기' : 'Claude 초안') + '</button></span></div>' +
         '<p class="hint">' + s.hint + '</p>' +
-        (s.one ? '<input type="text" id="s_' + s.key + '" value="' + esc(v) + '"' + (ro ? ' readonly' : '') + '>' : '<textarea id="s_' + s.key + '" rows="' + s.rows + '"' + (ro ? ' readonly' : '') + '>' + esc(v) + '</textarea>') +
+        (s.one ? '<input type="text" id="s_' + s.key + '" value="' + esc(v) + '">' : '<textarea id="s_' + s.key + '" rows="' + s.rows + '">' + esc(v) + '</textarea>') +
         (sg ? suggHtml(s, sg) : '') + '</div>';
     }).join('') +
     '<section><h3 style="margin:6px 0 6px;font-size:16px">제출 전 점검</h3><ul class="checklist">' +
-    checklist(c).map(([k, t, d]) => '<li><label><input type="checkbox" data-check="' + k + '"' + (p.checks[k] ? ' checked' : '') + (ro ? ' disabled' : '') + '><span><b>' + esc(t) + '</b><small>' + linkify(d) + '</small></span></label></li>').join('') + '</ul></section>' +
+    checklist(c).map(([k, t, d]) => '<li><label><input type="checkbox" data-check="' + k + '"' + (p.checks[k] ? ' checked' : '') + '><span><b>' + esc(t) + '</b><small>' + linkify(d) + '</small></span></label></li>').join('') + '</ul></section>' +
     '<div class="exports"><button class="btn" type="button" data-act="dl-proposal">제안서(.docx)</button><button class="btn" type="button" data-act="copydraft">제안서 복사</button>' +
     (st.downloads ? '<button class="btn" type="button" data-act="savefile">파일로 저장(.md)</button>' : '') +
     '<button class="btn ghost" type="button" data-act="handoff">대화용 요약 복사</button>' +
-    (ro ? '' : '<button class="btn ghost danger" type="button" data-act="resetdraft" style="margin-left:auto">제안서 비우기</button>') + '</div></div>';
+    '<button class="btn ghost danger" type="button" data-act="resetdraft" style="margin-left:auto">제안서 비우기</button>' + '</div></div>';
 }
 function suggHtml(s, sg) {
   return '<div class="sugg" id="sg_' + s.key + '"><span class="st">' + (sg.busy ? 'Claude가 쓰는 중' : sg.err ? '실패' : 'Claude 제안') + '</span>' +
@@ -1381,7 +1415,7 @@ function pick(sec) { const o = {}; HEADS.forEach(h => { if (sec[h[0]] != null &&
 /* ---------- 제출 패키지: 화면 ---------- */
 function renderPkg(c, el) {
   const id = c.id, p = proj(id), inp = (p && p.input) || {}, g = st.gen[id], pk = p && p.pkg;
-  const aiOff = !st.sample || st.sampleOff, ro = !st.canWrite;
+  const aiOff = !st.sample || st.sampleOff;
   const running = !!(g && g.running);
   const hasBody = p && filled(p) >= 4;
   const emails = ((c.how || '') + ' ' + (c.contact || '')).match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g) || [];
@@ -1390,18 +1424,18 @@ function renderPkg(c, el) {
   let html = '<div class="pkg">';
   html += step('1', 'mine', '정책 방향과 아이디어 초안', '내가 할 일',
     '<div class="fld"><label for="in_direction">정책 방향</label><small>어떤 문제를 어느 쪽으로 풀고 싶은지. 예: 청년 1인가구의 고립을 줄이되, 지자체가 내년 예산으로 바로 할 수 있는 작은 정책으로.</small>' +
-    '<textarea id="in_direction" data-in="direction" rows="3"' + (ro ? ' readonly' : '') + '>' + esc(inp.direction || '') + '</textarea></div>' +
+    '<textarea id="in_direction" data-in="direction" rows="3">' + esc(inp.direction || '') + '</textarea></div>' +
     '<div class="fld"><label for="in_idea">아이디어 초안</label><small>떠오른 해법을 편하게 적으세요. 문장이 거칠어도 됩니다.</small>' +
-    '<textarea id="in_idea" data-in="idea" rows="6"' + (ro ? ' readonly' : '') + '>' + esc(inp.idea || '') + '</textarea></div>' +
-    '<div class="fld two"><div class="fld"><label for="in_notes">내 경험·근거 메모 <span class="muted">(선택)</span></label><textarea id="in_notes" data-in="notes" rows="3"' + (ro ? ' readonly' : '') + ' placeholder="직접 겪은 일, 알고 있는 통계나 기사, 강조하고 싶은 점">' + esc(inp.notes || '') + '</textarea></div>' +
-    '<div class="fld"><label for="in_team">참가 형태</label><select id="in_team" data-in="team"' + (ro ? ' disabled' : '') + '><option value="solo"' + (inp.team !== 'team' ? ' selected' : '') + '>개인</option><option value="team"' + (inp.team === 'team' ? ' selected' : '') + '>팀</option></select><small>공고 기준: ' + esc(c.team || '공고 확인') + '</small></div></div>');
+    '<textarea id="in_idea" data-in="idea" rows="6">' + esc(inp.idea || '') + '</textarea></div>' +
+    '<div class="fld two"><div class="fld"><label for="in_notes">내 경험·근거 메모 <span class="muted">(선택)</span></label><textarea id="in_notes" data-in="notes" rows="3" placeholder="직접 겪은 일, 알고 있는 통계나 기사, 강조하고 싶은 점">' + esc(inp.notes || '') + '</textarea></div>' +
+    '<div class="fld"><label for="in_team">참가 형태</label><select id="in_team" data-in="team"><option value="solo"' + (inp.team !== 'team' ? ' selected' : '') + '>개인</option><option value="team"' + (inp.team === 'team' ? ' selected' : '') + '>팀</option></select><small>공고 기준: ' + esc(c.team || '공고 확인') + '</small></div></div>');
   html += step('2', 'claude', '제출 패키지 만들기', 'Claude가 할 일',
     '<div class="engline" id="engNow">' + engineNowHtml() + '</div>' +
     '<label class="chk"><input type="checkbox" id="reviewPass"' + (st.reviewPass[id] !== false ? ' checked' : '') + (running ? ' disabled' : '') + '> 심사위원 관점으로 한 번 더 검토하고 다시 쓰기(권장, 시간이 두 배쯤 걸림)</label>' +
     '<p class="muted" style="margin:0">Claude는 인터넷을 검색하지 않습니다. 확실하지 않은 수치는 <span class="mark">[확인 필요]</span>로 남기니 공식 통계로 채워 주세요. 높은 생각 수준은 단계마다 1~3분 걸릴 수 있습니다.</p>' +
     (hasBody && !running ? '<p class="note" style="margin:0">다시 만들면 지금 제안서 본문을 새 내용으로 바꿉니다. 지금 본문은 \'이전 본문으로 되돌리기\'로 한 번 되돌릴 수 있게 보관합니다.</p>' : '') +
     '<div class="actions">' + (running ? '<button class="btn" type="button" data-act="stopgen">멈추기</button>'
-      : '<button class="btn talk" type="button" data-act="make"' + (aiOff || ro ? ' disabled' : '') + '>' + (pk ? '제출 패키지 다시 만들기' : '제출 패키지 만들기') + '</button>') +
+      : '<button class="btn talk" type="button" data-act="make"' + (aiOff ? ' disabled' : '') + '>' + (pk ? '제출 패키지 다시 만들기' : '제출 패키지 만들기') + '</button>') +
     (p && p.backup && !running ? '<button class="btn ghost" type="button" data-act="restore">이전 본문으로 되돌리기</button>' : '') +
     (aiOff ? '<button class="btn ghost" type="button" data-act="handoff">대화용 요약 복사</button>' : '') + '</div>' +
     (aiOff ? '<p class="muted" style="margin:0">' + (st.sample === undefined && !st.sampleOff ? 'Claude 연결을 확인하는 중입니다.' : '이 화면에서는 Claude를 바로 부를 수 없습니다. 게시된 페이지에서 열거나, 대화용 요약을 복사해 Claude 대화창에서 이어 가세요.') + '</p>' : '') +
@@ -1409,7 +1443,7 @@ function renderPkg(c, el) {
       (running ? '<div class="engline">진행 <b id="genTime">' + Math.round((Date.now() - g.t0) / 1000) + '초</b></div><div class="live" id="genLive">' + esc(g.live.slice(-2500)) + '</div>' : '') +
       (g.err ? '<p class="err" style="margin:0">' + esc(g.err) + '</p>' + (g.live && !running ? '<div class="live">' + esc(g.live.slice(-4000)) + '</div>' : '') : '') +
       (g.warn ? '<p class="note" style="margin:0">' + esc(g.warn) + '</p>' : '') : ''));
-  html += step('3', 'claude', '패키지 확인과 내려받기', pk ? '만든 때 ' + esc(new Date(pk.generatedAt).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })) + (pk.applied ? ' · ' + esc(pk.applied) : '') : '패키지를 만들면 나타납니다', pk ? pkgResultHtml(c, p, pk, ro) : '<p class="muted" style="margin:0">2단계를 마치면 제안서, 1쪽 요약, 신청서 기재 초안, 온라인 접수 입력란, 이메일 문안, 파일 목록, 확인할 것이 여기에 모입니다.</p>');
+  html += step('3', 'claude', '패키지 확인과 내려받기', pk ? '만든 때 ' + esc(new Date(pk.generatedAt).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })) + (pk.applied ? ' · ' + esc(pk.applied) : '') : '패키지를 만들면 나타납니다', pk ? pkgResultHtml(c, p, pk) : '<p class="muted" style="margin:0">2단계를 마치면 제안서, 1쪽 요약, 신청서 기재 초안, 온라인 접수 입력란, 이메일 문안, 파일 목록, 확인할 것이 여기에 모입니다.</p>');
   html += step('4', 'mine', '로그인하고 제출하기', '내가 할 일',
     '<ol class="olist">' + ((pk && pk.steps.length ? pk.steps : defaultSteps(c)).map(t => '<li>' + linkify(t) + '</li>').join('')) + '</ol>' +
     '<div class="fld"><label>제출처</label><div class="actions">' +
@@ -1417,7 +1451,7 @@ function renderPkg(c, el) {
     [...new Set(emails)].map(m => '<span class="addr">' + esc(m) + '</span><button class="btn small ghost" type="button" data-copy-text="' + esc(m) + '">주소 복사</button>').join('') + '</div>' +
     '<small>제출 방법: ' + linkify(c.how || '공식 공고 확인') + '</small></div>' +
     '<div class="actions">' + (p && p.status === '제출 완료' ? '<span class="chip mine">제출 완료 · ' + esc(p.submittedAt ? new Date(p.submittedAt).toLocaleDateString('ko-KR') : '') + '</span><button class="btn small ghost" type="button" data-act="unsubmit">제출 전으로 되돌리기</button>'
-      : '<button class="btn primary" type="button" data-act="submitted"' + (ro || !p ? ' disabled' : '') + '>제출을 마쳤어요</button>') + '</div>');
+      : '<button class="btn primary" type="button" data-act="submitted"' + (!p ? ' disabled' : '') + '>제출을 마쳤어요</button>') + '</div>');
   html += '</div>';
   el.innerHTML = html;
 }
@@ -1427,8 +1461,7 @@ function defaultSteps(c) {
     '제출처에 로그인해 파일을 올리거나 이메일을 보냅니다. ' + (c.how ? '제출 방법: ' + c.how : ''),
     '접수 확인 메일이나 화면을 저장하고, 아래 \'제출을 마쳤어요\'를 누릅니다.'];
 }
-function pkgResultHtml(c, p, pk, ro) {
-  const RO = ro ? ' readonly' : '';
+function pkgResultHtml(c, p, pk) {
   const sec = p.sections;
   const uniq = placeholders(SECTIONS.map(s => sec[s.key] || '').join('\n') + '\n' + pk.summary1p + '\n' + pk.email.subject + '\n' + pk.email.body + '\n' + pk.applicationFields.map(f => f.value).join('\n'));
   let h = '<div class="dl"><button class="btn talk" type="button" data-act="dl-zip">전체 패키지 내려받기(.zip)</button>' +
@@ -1441,15 +1474,15 @@ function pkgResultHtml(c, p, pk, ro) {
   if (uniq.length) h += '<div class="part"><h4>채워야 할 빈칸 <small>' + uniq.length + '곳</small></h4><ul class="olist">' + uniq.slice(0, 30).map(f => '<li><span class="mark">' + esc(f) + '</span></li>').join('') + '</ul></div>';
   if (pk.review) h += '<div class="part"><h4>검토 메모</h4><div class="live" style="max-height:none">' + esc(pk.review) + '</div></div>';
   h += '<div class="part"><h4>1쪽 요약 <small id="cnt_summary1p">' + pk.summary1p.length.toLocaleString('ko-KR') + '자</small><span class="sp"><button class="btn small ghost" type="button" data-copy-pk="summary1p">복사</button></span></h4>' +
-    '<textarea class="copybox" style="font:15px/1.65 var(--f-body)" data-pk="summary1p" rows="8"' + RO + '>' + esc(pk.summary1p) + '</textarea></div>';
+    '<textarea class="copybox" style="font:15px/1.65 var(--f-body)" data-pk="summary1p" rows="8">' + esc(pk.summary1p) + '</textarea></div>';
   if (pk.applicationFields.length) h += '<div class="part"><h4>참가신청서 기재 초안<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="app">복사</button></span></h4><div class="pwrap"><table class="ptable"><tbody>' +
-    pk.applicationFields.map((f, i) => '<tr><td>' + esc(f.label) + '</td><td><input type="text" data-pk="applicationFields.' + i + '.value" value="' + esc(f.value) + '"' + RO + '></td></tr>').join('') + '</tbody></table></div></div>';
+    pk.applicationFields.map((f, i) => '<tr><td>' + esc(f.label) + '</td><td><input type="text" data-pk="applicationFields.' + i + '.value" value="' + esc(f.value) + '"></td></tr>').join('') + '</tbody></table></div></div>';
   if (pk.upload.length) h += '<div class="part"><h4>온라인 접수 입력란<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="upload">전체 복사</button></span></h4><div class="pwrap"><table class="ptable"><tbody>' +
-    pk.upload.map((f, i) => '<tr><td>' + esc(f.field) + (f.limit ? '<br><small class="muted">' + esc(f.limit) + '</small>' : '') + '<br><small class="muted" id="cnt_up' + i + '">' + f.value.length.toLocaleString('ko-KR') + '자</small></td><td><textarea data-pk="upload.' + i + '.value" rows="' + Math.min(8, 2 + Math.ceil(f.value.length / 60)) + '"' + RO + '>' + esc(f.value) + '</textarea><button class="btn small ghost" type="button" data-copy-pk="upload.' + i + '">이 칸 복사</button></td></tr>').join('') + '</tbody></table></div></div>';
+    pk.upload.map((f, i) => '<tr><td>' + esc(f.field) + (f.limit ? '<br><small class="muted">' + esc(f.limit) + '</small>' : '') + '<br><small class="muted" id="cnt_up' + i + '">' + f.value.length.toLocaleString('ko-KR') + '자</small></td><td><textarea data-pk="upload.' + i + '.value" rows="' + Math.min(8, 2 + Math.ceil(f.value.length / 60)) + '">' + esc(f.value) + '</textarea><button class="btn small ghost" type="button" data-copy-pk="upload.' + i + '">이 칸 복사</button></td></tr>').join('') + '</tbody></table></div></div>';
   h += '<div class="part"><h4>이메일 문안<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="email.subject">제목 복사</button><button class="btn small ghost" type="button" data-copy-pk="email.body">본문 복사</button></span></h4>' +
-    '<div class="fld"><label for="em_to">받는 곳</label><input type="text" id="em_to" data-pk="email.to" value="' + esc(pk.email.to) + '"' + RO + '></div>' +
-    '<div class="fld"><label for="em_sub">제목</label><input type="text" id="em_sub" data-pk="email.subject" value="' + esc(pk.email.subject) + '"' + RO + '></div>' +
-    '<div class="fld"><label for="em_body">본문</label><textarea id="em_body" data-pk="email.body" rows="7"' + RO + '>' + esc(pk.email.body) + '</textarea></div>' +
+    '<div class="fld"><label for="em_to">받는 곳</label><input type="text" id="em_to" data-pk="email.to" value="' + esc(pk.email.to) + '"></div>' +
+    '<div class="fld"><label for="em_sub">제목</label><input type="text" id="em_sub" data-pk="email.subject" value="' + esc(pk.email.subject) + '"></div>' +
+    '<div class="fld"><label for="em_body">본문</label><textarea id="em_body" data-pk="email.body" rows="7">' + esc(pk.email.body) + '</textarea></div>' +
     (pk.email.attachments.length ? '<small class="muted">첨부: ' + esc(pk.email.attachments.join(', ')) + '</small>' : '') + '</div>';
   if (pk.files.length) h += '<div class="part"><h4>제출 파일 목록</h4><div class="pwrap"><table class="ptable"><thead><tr><th>파일</th><th>담을 내용과 주의점</th></tr></thead><tbody>' +
     pk.files.map(f => '<tr><td>' + esc(f.name) + '</td><td>' + esc(f.what) + (f.how ? '<br><small class="muted">' + esc(f.how) + '</small>' : '') + '</td></tr>').join('') + '</tbody></table></div></div>';
@@ -1459,7 +1492,7 @@ function pkgResultHtml(c, p, pk, ro) {
     pk.verify.map(v => '<tr><td>' + esc(v.item) + '</td><td>' + linkify(v.where) + '</td></tr>').join('') + '</tbody></table></div></div>';
   h += '<div class="part"><h4>생성형 AI 활용 고지<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="aiNote">복사</button></span></h4>' +
     '<small class="muted">' + esc(c.aiRule ? '공고 규정: ' + c.aiRule : '공고 요약에 AI 규정이 없습니다. 공식 공고에서 확인하고, 필요하면 아래 문안을 고쳐 쓰세요.') + '</small>' +
-    '<textarea class="copybox" style="font:14px/1.6 var(--f-body);min-height:70px" data-pk="aiNote" rows="3"' + RO + '>' + esc(pk.aiNote || '') + '</textarea></div>';
+    '<textarea class="copybox" style="font:14px/1.6 var(--f-body);min-height:70px" data-pk="aiNote" rows="3">' + esc(pk.aiNote || '') + '</textarea></div>';
   return h;
 }
 function setPk(c, path, value) {
@@ -1713,7 +1746,7 @@ function saveAdd() {
   $('#addForm').reset();
   renderFilters(); renderList();
   location.hash = '#' + id;
-  toast('공고를 목록에 추가했습니다.');
+  toast(st.sharedMode === 'db' ? '공고를 목록에 추가했습니다.' : '공고를 이 브라우저의 목록에 추가했습니다.');
 }
 
 /* ---------- 라우팅·이벤트 ---------- */
@@ -1866,8 +1899,10 @@ function applyDocs(col, docs) {
     const ov = new Map();
     for (const [id, v] of Object.entries(next)) ov.set(id, JSON.parse(JSON.stringify(v)));
     for (const [path, at] of Object.entries(st.dirty)) if (path.startsWith('contests/') && Date.now() - at < 5000) { const id = path.slice(9); if (st.overlay.has(id)) ov.set(id, st.overlay.get(id)); else ov.delete(id); }
+    for (const [id, v] of st.localOv) ov.set(id, v);
     st.overlay = ov; renderFilters();
   } else {
+    if (st.workMode === 'local') return;
     const target = col === 'projects' ? st.projects : st.chats;
     const merged = {};
     for (const [id, v] of Object.entries(next)) merged[id] = JSON.parse(JSON.stringify(v));
@@ -1889,7 +1924,17 @@ async function connect() {
   try { db = await cl.use('db'); } catch (e) { db = null; }
   if (!db) { setSync('local'); return; }
   st.db = db; st.backend = 'db';
-  try { const u = await cl.use('user'); if (u) { const w = await u.can('data.write'); if (w === false) { st.canWrite = false; } try { st.uid = await u.id(); } catch (e2) { st.uid = null; } } } catch (e) { /* 모르면 쓰기를 열어 두고 거절되면 막는다 */ }
+  let owner = false, admin = false, canW = null;
+  try {
+    const u = await cl.use('user');
+    if (u) { owner = await u.isOwner(); admin = await u.canEdit(); canW = await u.can('data.write'); st.uid = await u.id(); }
+  } catch (e) { /* 모르면 이 브라우저에 저장 */ }
+  st.sharedMode = admin ? 'db' : 'local';
+  st.selfWrite = !!st.uid && canW !== false;
+  if (st.selfWrite && canW === null && !owner) {
+    try { await db.doc('data/users/' + st.uid + '/work').set({ v: 1 }); } catch (e) { st.selfWrite = false; }
+  }
+  st.workMode = owner ? 'owner' : st.selfWrite ? 'private' : 'local';
   if (st.uid) {
     db.doc('data/users/' + st.uid + '/profile').onSnapshot(snap => {
       if (snap.exists) {
@@ -1897,20 +1942,24 @@ async function connect() {
         st.profile = v && !v.cleared ? JSON.parse(JSON.stringify(v)) : null;
         LS.set('gongmo.profile', st.profile);
         renderProfileBtn(); rerenderAll();
-      } else if (st.profile && st.canWrite) {
+      } else if (st.profile && st.selfWrite) {
         st.db.doc('data/users/' + st.uid + '/profile').set(st.profile).catch(() => {});
       }
     }, () => {});
   }
-  st.projects = {}; st.chats = {}; st.overlay = new Map();
+  st.overlay = new Map(st.localOv);
+  if (st.workMode !== 'local') { st.projects = {}; st.chats = {}; }
   let answered = false;
   const timer = setTimeout(() => { if (!answered) setSync('slow'); }, 10000);
   const onErr = e => { answered = true; clearTimeout(timer); setSync(e && e.code === 'revoked' ? 'readonly' : 'error'); };
-  for (const col of ['contests', 'projects', 'chats']) {
-    db.collection(col).onSnapshot(snap => {
-      if (!snap.metadata.fromCache) { answered = true; clearTimeout(timer); setSync(st.canWrite ? 'synced' : 'readonly'); }
-      applyDocs(col, snap.docs);
-    }, onErr);
+  const listen = (ref, col) => ref.onSnapshot(snap => {
+    if (!snap.metadata.fromCache) { answered = true; clearTimeout(timer); syncState(); }
+    applyDocs(col, snap.docs);
+  }, onErr);
+  listen(db.collection('contests'), 'contests');
+  for (const col of ['projects', 'chats']) {
+    if (st.workMode === 'local') break;
+    st.unsub.push(listen(db.collection(st.workMode === 'owner' ? col : workPath(col)), col));
   }
 }
 
