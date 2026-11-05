@@ -1,0 +1,2037 @@
+<title>정책공모 작업실</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="정부·공공기관 정책 제안 공모전을 모아 참여 조건, 상금, 기간, 내용을 한눈에 보고 Claude와 대화하며 제안서를 쓰는 작업실입니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;700&display=swap">
+<style>
+/* 공고문 서식처럼: 왼쪽은 공모 목록 대장, 오른쪽은 한 건의 공고·대화·제안서를 펼치는 작업대 */
+:root {
+  --paper: #f3f5f8;
+  --sheet: #ffffff;
+  --sheet-2: #f8f9fb;
+  --ink: #131a2b;
+  --ink-2: #4b5468;
+  --ink-3: #737c90;
+  --line: #d8dde6;
+  --line-2: #e7eaf0;
+  --gov: #1f3a8a;
+  --gov-ink: #ffffff;
+  --gov-soft: #e6ecfa;
+  --seal: #c0342a;
+  --seal-soft: #fbe8e5;
+  --talk: #0e6a66;
+  --talk-soft: #e2f3f1;
+  --ok: #17734b;
+  --ok-soft: #e2f3e9;
+  --warn: #9a5600;
+  --warn-soft: #fcf0dc;
+  --hl: #fff1a8;
+  --shadow: 0 1px 2px rgba(19, 26, 43, .06), 0 4px 16px rgba(19, 26, 43, .05);
+  --f-display: "Noto Serif KR", "Nanum Myeongjo", "AppleMyungjo", serif;
+  --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-num: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --head-h: 58px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1220; --sheet: #161b2b; --sheet-2: #1b2133; --ink: #e8ebf3; --ink-2: #aab2c5; --ink-3: #848da2;
+    --line: #2b3247; --line-2: #232a3d; --gov: #8ea7ff; --gov-ink: #0e1220; --gov-soft: #1e2a4d;
+    --seal: #ff7d70; --seal-soft: #3b1e1c; --talk: #5fd0c8; --talk-soft: #12302f; --ok: #63d49d; --ok-soft: #12301f;
+    --warn: #f1b35a; --warn-soft: #36280f; --hl: #4a4213; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e1220; --sheet: #161b2b; --sheet-2: #1b2133; --ink: #e8ebf3; --ink-2: #aab2c5; --ink-3: #848da2;
+  --line: #2b3247; --line-2: #232a3d; --gov: #8ea7ff; --gov-ink: #0e1220; --gov-soft: #1e2a4d;
+  --seal: #ff7d70; --seal-soft: #3b1e1c; --talk: #5fd0c8; --talk-soft: #12302f; --ok: #63d49d; --ok-soft: #12301f;
+  --warn: #f1b35a; --warn-soft: #36280f; --hl: #4a4213; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 15px/1.6 var(--f-body); word-break: keep-all; overflow-wrap: anywhere;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--sheet); }
+a { color: var(--gov); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--gov); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.num { font-family: var(--f-num); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* 머리 */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--sheet); border-bottom: 1px solid var(--line);
+}
+.top-in { display: flex; align-items: center; gap: 12px; min-height: var(--head-h); padding-block: 8px; max-width: 1440px; margin: 0 auto; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: var(--ink); margin-right: auto; }
+.brand b { font: 700 19px/1.2 var(--f-display); letter-spacing: -.02em; }
+.brand span { font-size: 12.5px; color: var(--ink-3); }
+.sync { font-size: 12px; color: var(--ink-3); display: inline-flex; align-items: center; gap: 6px; }
+.sync::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
+.sync[data-s="synced"]::before { background: var(--ok); }
+.sync[data-s="local"]::before { background: var(--warn); }
+.sync[data-s="error"]::before, .sync[data-s="readonly"]::before { background: var(--seal); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 36px; padding: 6px 14px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--sheet); color: var(--ink); font-size: 14px; font-weight: 500; text-decoration: none; white-space: nowrap;
+}
+.btn:hover { border-color: var(--ink-3); }
+.btn.primary { background: var(--gov); border-color: var(--gov); color: var(--gov-ink); }
+.btn.talk { background: var(--talk); border-color: var(--talk); color: var(--sheet); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--ink-2); }
+.btn.small { min-height: 30px; padding: 3px 10px; font-size: 13px; }
+.btn[disabled] { opacity: .5; cursor: default; }
+.btn.danger { color: var(--seal); border-color: var(--seal); }
+
+/* 배치 */
+.app { max-width: 1440px; margin: 0 auto; display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 0; }
+.side { border-right: 1px solid var(--line); background: var(--sheet-2); position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--head-h)); height: calc(100dvh - var(--head-h) - env(safe-area-inset-top, 0px)); overflow: auto; overscroll-behavior: contain; }
+.main { min-width: 0; padding-block: 20px 48px; }
+@media (max-width: 959px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .side { position: static; height: auto; overflow: visible; border-right: 0; border-top: 1px solid var(--line); }
+  body[data-route="contest"] .side { display: none; }
+  body[data-route="home"] .main { padding-bottom: 8px; }
+}
+
+/* 필터 */
+.filters { display: grid; gap: 10px; padding-block: 14px 12px; border-bottom: 1px solid var(--line); background: var(--sheet-2); position: sticky; top: 0; z-index: 2; }
+@media (max-width: 959px) { .filters { position: static; } }
+.seg { display: flex; gap: 4px; flex-wrap: wrap; }
+.seg button { border: 1px solid var(--line); background: var(--sheet); border-radius: 999px; padding: 4px 11px; font-size: 13px; color: var(--ink-2); }
+.seg button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--sheet); }
+.seg button .n { font-family: var(--f-num); font-size: 12px; opacity: .75; margin-left: 3px; }
+.frow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.frow select, .frow input[type="search"] { min-height: 34px; border: 1px solid var(--line); background: var(--sheet); border-radius: 8px; padding: 4px 8px; font-size: 13.5px; min-width: 0; }
+.frow input[type="search"] { flex: 1 1 160px; }
+.frow select { flex: 1 1 120px; }
+.chk { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--ink-2); }
+.chk input { width: 16px; height: 16px; accent-color: var(--gov); }
+
+/* 목록 */
+.list { list-style: none; margin: 0; padding: 8px 0 24px; }
+.item a {
+  display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: start;
+  padding: 12px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px));
+  text-decoration: none; color: inherit; border-bottom: 1px solid var(--line-2);
+}
+.item a:hover { background: var(--sheet); }
+.item a[aria-current="page"] { background: var(--sheet); box-shadow: inset 3px 0 0 var(--gov); }
+.item h3 { margin: 0 0 3px; font-size: 14.5px; line-height: 1.45; font-weight: 600; }
+.item .org { font-size: 12.5px; color: var(--ink-3); }
+.item .chips { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.empty-list { padding: 24px 16px; color: var(--ink-3); font-size: 14px; }
+
+.stamp {
+  width: 56px; min-height: 50px; border-radius: 10px; border: 1.5px solid var(--gov); color: var(--gov);
+  display: grid; place-items: center; text-align: center; padding: 4px 2px; line-height: 1.15;
+}
+.stamp b { font: 600 15px/1.1 var(--f-num); }
+.stamp small { display: block; font-size: 10.5px; margin-top: 2px; }
+.stamp.hot { border-color: var(--seal); color: var(--seal); background: var(--seal-soft); transform: rotate(-3deg); }
+.stamp.always { border-color: var(--line); color: var(--ink-2); border-style: dashed; }
+.stamp.annual { border-color: var(--ink-3); color: var(--ink-2); }
+.stamp.closed { border-color: var(--line); color: var(--ink-3); }
+.stamp.soon { border-style: dotted; }
+
+.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; line-height: 1.4; padding: 2px 8px; border-radius: 6px; background: var(--line-2); color: var(--ink-2); white-space: nowrap; }
+.chip.money { background: var(--ok-soft); color: var(--ok); font-weight: 600; }
+.chip.goods { background: var(--ok-soft); color: var(--ok); }
+.chip.nomoney { background: var(--line-2); color: var(--ink-3); }
+.chip.unv { background: var(--warn-soft); color: var(--warn); }
+.chip.mine { background: var(--talk-soft); color: var(--talk); font-weight: 600; }
+.chip.ai { background: var(--gov-soft); color: var(--gov); }
+
+/* 공통 판 */
+.wrap { max-width: 980px; margin: 0 auto; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+h1, h2 { font-family: var(--f-display); letter-spacing: -.02em; text-wrap: balance; }
+.eyebrow { font-size: 12px; letter-spacing: .06em; color: var(--ink-3); font-weight: 600; }
+
+/* 홈 */
+.home { display: grid; gap: 18px; }
+.hero { padding: 22px 22px 18px; display: grid; gap: 10px; }
+.hero h1 { margin: 0; font-size: clamp(22px, 3.2vw, 30px); line-height: 1.3; }
+.hero p { margin: 0; color: var(--ink-2); max-width: 62ch; }
+.tally { display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; color: var(--ink-2); padding-top: 6px; }
+.tally b { font: 600 20px/1 var(--f-num); color: var(--ink); margin-right: 4px; }
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 6px 0 0; padding: 0; list-style: none; counter-reset: st; }
+.steps li { counter-increment: st; background: var(--sheet-2); border: 1px solid var(--line-2); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; color: var(--ink-2); }
+.steps li::before { content: counter(st); font: 600 12px/1 var(--f-num); color: var(--talk); display: block; margin-bottom: 5px; }
+.steps b { color: var(--ink); }
+@media (max-width: 640px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+.panel { padding: 18px 20px; display: grid; gap: 12px; }
+.panel h2 { margin: 0; font-size: 18px; display: flex; align-items: baseline; gap: 8px; }
+.panel h2 small { font: 500 12.5px var(--f-body); color: var(--ink-3); }
+.rows { display: grid; gap: 0; }
+.row { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line-2); text-decoration: none; color: inherit; }
+.row:first-child { border-top: 0; }
+.row .d { font: 600 13px var(--f-num); color: var(--gov); }
+.row .d.hot { color: var(--seal); }
+.row .t { min-width: 0; font-size: 14px; }
+.row .t small { display: block; color: var(--ink-3); font-size: 12px; }
+.muted { color: var(--ink-3); font-size: 13.5px; }
+.cal { overflow-x: auto; }
+.cal-grid { display: grid; grid-template-columns: minmax(150px, 1.3fr) repeat(12, minmax(26px, 1fr)); min-width: 560px; font-size: 12.5px; }
+.cal-grid > div { padding: 6px 4px; border-top: 1px solid var(--line-2); }
+.cal-grid .mh { font: 500 11.5px var(--f-num); color: var(--ink-3); text-align: center; border-top: 0; }
+.cal-grid .mh.now { color: var(--seal); font-weight: 600; }
+.cal-grid .nm { padding-right: 10px; }
+.cal-grid .nm a { color: var(--ink); text-decoration: none; }
+.cal-grid .nm a:hover { text-decoration: underline; }
+.cal-grid .cell { position: relative; }
+.cal-grid .cell.on::after { content: ""; position: absolute; inset: 9px 0; background: var(--gov); opacity: .75; }
+.cal-grid .cell.on.first::after { border-radius: 4px 0 0 4px; left: 3px; }
+.cal-grid .cell.on.last::after { border-radius: 0 4px 4px 0; right: 3px; }
+.cal-grid .cell.now { background: var(--seal-soft); }
+.finders { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.finders a { display: block; padding: 10px 12px; border: 1px solid var(--line-2); border-radius: 10px; text-decoration: none; color: var(--ink); font-size: 13.5px; font-weight: 600; background: var(--sheet-2); }
+.finders a small { display: block; font-weight: 400; color: var(--ink-3); font-size: 12px; margin-top: 3px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* 공고 상세 */
+.back { display: none; margin-bottom: 10px; }
+@media (max-width: 959px) { .back { display: inline-flex; } }
+.dhead { padding: 20px 22px 0; display: grid; gap: 10px; }
+.dhead .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px; color: var(--ink-2); }
+.dhead h1 { margin: 0; font-size: clamp(20px, 2.6vw, 27px); line-height: 1.35; }
+.dline { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 14px; }
+.dline .when { font-weight: 600; }
+.dline .when.hot { color: var(--seal); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); padding: 0 14px; margin-top: 14px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--head-h)); background: var(--sheet); z-index: 5; border-radius: 0; overflow-x: auto; }
+.tabs button { border: 0; background: none; padding: 12px 12px 10px; font-size: 14.5px; font-weight: 600; color: var(--ink-3); border-bottom: 2.5px solid transparent; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--gov); }
+.tabs button .badge { font: 600 11px var(--f-num); background: var(--talk-soft); color: var(--talk); border-radius: 999px; padding: 1px 6px; margin-left: 4px; }
+.tabpanel { padding: 18px 22px 24px; }
+
+.facts { margin: 0; display: grid; grid-template-columns: 132px minmax(0, 1fr); border-top: 1px solid var(--line-2); }
+.facts dt, .facts dd { margin: 0; padding: 11px 0; border-bottom: 1px solid var(--line-2); }
+.facts dt { font-size: 13px; font-weight: 600; color: var(--ink-2); padding-right: 12px; }
+.facts dd { font-size: 14.5px; min-width: 0; white-space: pre-line; }
+.facts dd .miss { color: var(--ink-3); font-size: 13.5px; }
+.facts dd.key { font-weight: 600; }
+@media (max-width: 600px) {
+  .facts { grid-template-columns: minmax(0, 1fr); }
+  .facts dt { border-bottom: 0; padding-bottom: 0; }
+  .facts dd { padding-top: 3px; }
+}
+.note { border-radius: 10px; padding: 10px 12px; font-size: 13.5px; background: var(--warn-soft); color: var(--ink); }
+.note.info { background: var(--gov-soft); }
+.note.talk { background: var(--talk-soft); }
+details.handoff { margin-top: 14px; border: 1px dashed var(--line); border-radius: 10px; padding: 10px 12px; }
+details.handoff summary { cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--ink-2); }
+details.handoff pre { white-space: pre-wrap; font: 12.5px/1.55 var(--f-num); color: var(--ink-2); max-height: 320px; overflow: auto; margin: 10px 0 0; }
+
+/* 대화 */
+.chat { display: grid; gap: 14px; }
+.starters { display: flex; gap: 6px; flex-wrap: wrap; }
+.starters button { border: 1px solid var(--talk); color: var(--talk); background: var(--sheet); border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 500; }
+.starters button:hover { background: var(--talk-soft); }
+.log { display: grid; gap: 12px; }
+.msg { max-width: 92%; border-radius: 12px; padding: 10px 14px; font-size: 14.5px; }
+.msg.user { justify-self: end; background: var(--gov-soft); white-space: pre-wrap; }
+.msg.assistant { justify-self: start; background: var(--sheet-2); border: 1px solid var(--line-2); max-width: 100%; }
+.msg.assistant > *:first-child { margin-top: 0; }
+.msg.assistant > *:last-child { margin-bottom: 0; }
+.msg.assistant h4 { font-size: 14.5px; margin: 12px 0 4px; }
+.msg.assistant p { margin: 0 0 8px; }
+.msg.assistant ul, .msg.assistant ol { margin: 0 0 8px; padding-left: 20px; }
+.msg.assistant li { margin: 2px 0; }
+.msg.assistant code { font: 13px var(--f-num); background: var(--line-2); padding: 0 4px; border-radius: 4px; }
+.msg.assistant .tbl { overflow-x: auto; margin: 0 0 8px; }
+.msg.assistant table { border-collapse: collapse; font-size: 13px; }
+.msg.assistant th, .msg.assistant td { border: 1px solid var(--line); padding: 4px 8px; text-align: left; vertical-align: top; }
+.msg .who { font-size: 11.5px; font-weight: 600; color: var(--ink-3); margin-bottom: 4px; letter-spacing: .02em; }
+.msg.assistant .who { color: var(--talk); }
+.msg .tools { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+.msg .tools select { font-size: 12.5px; min-height: 28px; border: 1px solid var(--line); border-radius: 6px; background: var(--sheet); }
+.thinking { color: var(--ink-3); font-size: 14px; }
+.thinking::after { content: " ●"; animation: blink 1.2s infinite; color: var(--talk); }
+@keyframes blink { 50% { opacity: .2; } }
+@media (prefers-reduced-motion: reduce) { .thinking::after { animation: none; } .stamp.hot { transform: none; } }
+.composer { display: grid; gap: 8px; position: sticky; bottom: 0; background: var(--sheet); padding: 10px 0 calc(6px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line-2); }
+.composer textarea { width: 100%; min-height: 76px; max-height: 40vh; resize: vertical; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--sheet); font-size: 15px; line-height: 1.55; }
+.composer .bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.composer .bar .sp { margin-left: auto; display: flex; gap: 8px; }
+.err { color: var(--seal); font-size: 13.5px; }
+
+/* 제안서 */
+.draft { display: grid; gap: 18px; }
+.dtop { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.dtop label { font-size: 13.5px; color: var(--ink-2); display: inline-flex; gap: 6px; align-items: center; }
+.dtop select { min-height: 34px; border: 1px solid var(--line); border-radius: 8px; background: var(--sheet); padding: 4px 8px; }
+.sec { display: grid; gap: 6px; }
+.sec .sh { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.sec .sh label { font-weight: 700; font-size: 15px; }
+.sec .sh .cnt { font: 500 12px var(--f-num); color: var(--ink-3); }
+.sec .sh .sp { margin-left: auto; display: flex; gap: 6px; }
+.sec .hint { font-size: 12.5px; color: var(--ink-3); margin: -2px 0 2px; }
+.sec textarea, .sec input[type="text"] { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--sheet); font-size: 15px; line-height: 1.65; resize: vertical; }
+.sec input[type="text"] { font-family: var(--f-display); font-weight: 600; font-size: 17px; }
+.sugg { border: 1.5px solid var(--talk); border-radius: 10px; padding: 10px 12px; background: var(--talk-soft); display: grid; gap: 8px; }
+.sugg .st { font-size: 12px; font-weight: 600; color: var(--talk); }
+.sugg .tx { white-space: pre-wrap; font-size: 14.5px; }
+.sugg .bar { display: flex; gap: 6px; flex-wrap: wrap; }
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.checklist li label { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line-2); font-size: 14px; align-items: start; }
+.checklist input { width: 17px; height: 17px; margin-top: 3px; accent-color: var(--ok); }
+.checklist b { font-weight: 600; }
+.checklist small { display: block; color: var(--ink-3); font-size: 12.5px; }
+.exports { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 6px; border-top: 1px solid var(--line-2); }
+
+/* AI 엔진 */
+.engine { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); }
+.engine label:first-child { font-weight: 600; }
+.engine select { min-height: 32px; border: 1px solid var(--line); border-radius: 8px; background: var(--sheet); padding: 2px 6px; font-size: 13px; }
+@media (max-width: 640px) { .engine { order: 3; width: 100%; } .engine select { flex: 1 1 0; } }
+
+/* 제출 패키지 */
+.pkg { display: grid; gap: 16px; }
+.stepbox { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px 16px; display: grid; gap: 12px; background: var(--sheet); }
+.stepbox.mine { border-color: var(--gov); }
+.stepbox.claude { border-color: var(--talk); }
+.stepbox > h3 { margin: 0; font-size: 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.stepbox > h3 .no { font: 600 12px/1 var(--f-num); border-radius: 999px; padding: 4px 8px; background: var(--gov-soft); color: var(--gov); }
+.stepbox.claude > h3 .no { background: var(--talk-soft); color: var(--talk); }
+.stepbox > h3 .by { margin-left: auto; font: 500 12px var(--f-body); color: var(--ink-3); }
+.fld { display: grid; gap: 5px; }
+.fld > label { font-weight: 600; font-size: 13.5px; }
+.fld > small { color: var(--ink-3); font-size: 12.5px; margin-top: -3px; }
+.fld textarea, .fld input[type="text"], .fld select { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; background: var(--sheet); font-size: 15px; line-height: 1.6; resize: vertical; }
+.fld.two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+@media (max-width: 600px) { .fld.two { grid-template-columns: minmax(0, 1fr); } }
+.engline { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; font-size: 13.5px; color: var(--ink-2); }
+.engline b { color: var(--ink); }
+.progress { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.progress li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 14px; color: var(--ink-3); }
+.progress li::before { content: ""; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); justify-self: center; }
+.progress li[data-s="run"] { color: var(--ink); font-weight: 600; }
+.progress li[data-s="run"]::before { border-color: var(--talk); border-top-color: transparent; animation: spin 1s linear infinite; }
+.progress li[data-s="done"] { color: var(--ink-2); }
+.progress li[data-s="done"]::before { background: var(--ok); border-color: var(--ok); }
+.progress li[data-s="err"]::before { background: var(--seal); border-color: var(--seal); }
+.progress li .t { font: 500 12px var(--f-num); color: var(--ink-3); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .progress li[data-s="run"]::before { animation: none; } }
+.live { max-height: 180px; overflow: auto; font-size: 12.5px; line-height: 1.55; color: var(--ink-2); white-space: pre-wrap; background: var(--sheet-2); border: 1px solid var(--line-2); border-radius: 8px; padding: 8px 10px; }
+.dl { display: flex; gap: 8px; flex-wrap: wrap; }
+.part { border-top: 1px solid var(--line-2); padding-top: 12px; display: grid; gap: 8px; }
+.part > h4 { margin: 0; font-size: 15px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.part > h4 .sp { margin-left: auto; display: flex; gap: 6px; }
+.part > h4 small { font: 500 12px var(--f-num); color: var(--ink-3); }
+.ptable { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ptable th, .ptable td { border-bottom: 1px solid var(--line-2); padding: 7px 6px; text-align: left; vertical-align: top; }
+.ptable th { font-size: 12.5px; color: var(--ink-3); font-weight: 600; }
+.ptable td:first-child { font-weight: 600; width: 32%; }
+.ptable input, .ptable textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; background: var(--sheet); font-size: 14px; resize: vertical; }
+.pwrap { overflow-x: auto; }
+.olist { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 14px; }
+.olist small { color: var(--ink-3); }
+.mark { background: var(--hl); border-radius: 3px; padding: 0 2px; }
+.addr { font: 500 14px var(--f-num); user-select: all; background: var(--sheet-2); border: 1px solid var(--line-2); border-radius: 6px; padding: 3px 8px; }
+
+/* 내 조건과 자격 */
+.prof span { margin-left: 6px; font-weight: 600; color: var(--gov); }
+.chip.no { background: var(--seal-soft); color: var(--seal); font-weight: 600; }
+.chip.ok { background: var(--ok-soft); color: var(--ok); }
+.item.dim a { opacity: .55; }
+.note.ok { background: var(--ok-soft); }
+.note.no { background: var(--seal-soft); }
+.elig { margin: 0 0 14px; display: grid; gap: 6px; }
+.elig ul { margin: 0; padding-left: 18px; }
+.elig .actions { margin-top: 2px; }
+.hidnote { font-size: 12.5px; color: var(--ink-3); margin: 0; padding-block: 0 20px; }
+.hidnote button { border: 0; background: none; padding: 0; color: var(--gov); text-decoration: underline; font-size: 12.5px; cursor: pointer; }
+.checks { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 6px; }
+.fgrid .chk, .checks .chk { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; color: var(--ink); font-size: 13.5px; }
+.fgrid .chk input { width: 16px; height: 16px; }
+.flabel { font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
+
+/* 공고 추가 */
+dialog { border: 1px solid var(--line); border-radius: 14px; padding: 0; width: min(760px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); background: var(--sheet); color: var(--ink); box-shadow: var(--shadow); }
+dialog::backdrop { background: rgba(10, 14, 25, .45); }
+.dlg { padding: 18px 20px 20px; display: grid; gap: 12px; }
+.dlg h2 { margin: 0; font-size: 19px; }
+.dlg textarea, .dlg input, .dlg select { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; background: var(--sheet); font-size: 14px; }
+.dlg textarea { min-height: 120px; resize: vertical; }
+.fgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.fgrid .wide { grid-column: 1 / -1; }
+.fgrid label { display: grid; gap: 4px; font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
+.fgrid label textarea { min-height: 60px; }
+@media (max-width: 560px) { .fgrid { grid-template-columns: minmax(0, 1fr); } }
+.dlg .bar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+.foot { max-width: 1440px; margin: 0 auto; padding-block: 18px 28px; font-size: 12.5px; color: var(--ink-3); border-top: 1px solid var(--line); display: grid; gap: 4px; }
+.foot p { margin: 0; max-width: 90ch; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--sheet); padding: 8px 14px; border-radius: 8px; font-size: 13.5px; z-index: 50; max-width: calc(100vw - 32px); }
+.copybox { width: 100%; min-height: 140px; font: 12.5px/1.5 var(--f-num); border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: var(--sheet-2); }
+</style>
+
+<header class="top">
+  <div class="top-in gutter">
+    <a class="brand" href="#home"><b>정책공모 작업실</b><span>Claude와 함께 쓰는 정책 제안</span></a>
+    <button class="btn small prof" id="profBtn" type="button" title="거주지·나이·신분으로 참여 자격을 확인합니다">내 조건<span id="profSum">미설정</span></button>
+    <div class="engine" id="engine" title="Claude가 답할 때 쓰는 모델과 생각 수준입니다. 웹 검색은 하지 않습니다.">
+      <label for="engModel">AI 엔진</label>
+      <select id="engModel"></select>
+      <label class="sr-only" for="engEffort">생각 수준</label>
+      <select id="engEffort"></select>
+    </div>
+    <span class="sync" id="sync" data-s="local">이 브라우저에 저장</span>
+    <button class="btn small" id="addBtn" type="button">공고 추가</button>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="side" aria-label="공모전 목록">
+    <div class="filters gutter">
+      <div class="seg" role="group" aria-label="보기" id="viewSeg">
+        <button type="button" data-v="open" aria-pressed="true">접수 중<span class="n" data-n="open"></span></button>
+        <button type="button" data-v="always" aria-pressed="false">상시 창구<span class="n" data-n="always"></span></button>
+        <button type="button" data-v="annual" aria-pressed="false">해마다<span class="n" data-n="annual"></span></button>
+        <button type="button" data-v="mine" aria-pressed="false">내 작업<span class="n" data-n="mine"></span></button>
+        <button type="button" data-v="all" aria-pressed="false">전체</button>
+      </div>
+      <div class="frow">
+        <label class="sr-only" for="q">검색</label>
+        <input type="search" id="q" placeholder="제목·기관·주제 검색" autocomplete="off">
+        <label class="sr-only" for="sort">정렬</label>
+        <select id="sort"><option value="end">마감 가까운 순</option><option value="prize">상금 큰 순</option><option value="new">최근 시작 순</option></select>
+      </div>
+      <div class="frow">
+        <label class="sr-only" for="tag">주제</label>
+        <select id="tag"><option value="">주제 전체</option></select>
+        <label class="sr-only" for="org">주최</label>
+        <select id="org"><option value="">주최 전체</option></select>
+      </div>
+      <div class="frow">
+        <label class="chk"><input type="checkbox" id="fElig" checked> 참여 가능한 것만</label>
+        <label class="chk"><input type="checkbox" id="fPrize"> 상금·상품 있음</label>
+        <label class="chk"><input type="checkbox" id="fTeam"> 팀 참가 가능</label>
+        <label class="chk"><input type="checkbox" id="fAll"> 누구나 참여</label>
+      </div>
+    </div>
+    <ul class="list" id="list"></ul>
+    <p class="hidnote gutter" id="hidNote" hidden></p>
+  </aside>
+
+  <main class="main gutter" id="main"></main>
+</div>
+
+<footer class="foot gutter">
+  <p><b>정부 서비스가 아닙니다.</b> 공고 내용은 확인일 기준으로 정리한 것이며, 응모 전에 반드시 공식 공고를 다시 확인하세요. '공식 공고 미확인' 표시는 모음 사이트나 보도로만 확인한 항목입니다.</p>
+  <p>대화와 제안서 초안은 이 페이지의 저장소(또는 이 브라우저)에 저장됩니다. 페이지를 다른 사람과 공유하면 그 사람도 초안을 볼 수 있습니다. 목록 기준일 <span class="num" id="asOf"></span>.</p>
+</footer>
+
+<dialog id="addDlg" aria-labelledby="addTitle">
+  <form class="dlg" id="addForm" method="dialog">
+    <h2 id="addTitle">공고 추가</h2>
+    <p class="muted" style="margin:0">공고문 본문을 붙여 넣고 'Claude로 정리'를 누르면 항목을 채웁니다. 직접 입력해도 됩니다. 추가한 공고는 '공식 공고 미확인'으로 표시됩니다.</p>
+    <label class="sr-only" for="pasteText">공고문</label>
+    <textarea id="pasteText" placeholder="공고문 전체를 붙여 넣으세요. 기간, 대상, 시상, 제출 방법이 들어 있으면 좋습니다."></textarea>
+    <div class="bar" style="justify-content:flex-start">
+      <button class="btn talk" type="button" id="extractBtn">Claude로 정리</button>
+      <span class="muted" id="extractMsg"></span>
+    </div>
+    <div class="fgrid">
+      <label class="wide">공모 이름<input id="a_title" required></label>
+      <label>주최 기관<input id="a_org"></label>
+      <label>기관 유형<select id="a_orgType"><option>중앙부처</option><option>광역지자체</option><option>기초지자체</option><option>공공기관</option><option>국회</option><option>학회·민간</option></select></label>
+      <label>접수 시작<input id="a_start" type="date"></label>
+      <label>접수 마감<input id="a_end" type="date"></label>
+      <label>마감 시각<input id="a_endTime" placeholder="예: 18:00"></label>
+      <label>참가 형태<input id="a_team" placeholder="예: 개인 또는 3인 이내 팀"></label>
+      <label class="wide">참여 조건<textarea id="a_who"></textarea></label>
+      <label>상금 종류<select id="a_prizeKind"><option value="cash">상금</option><option value="goods">상품·상품권</option><option value="none">없음</option><option value="unknown">확인 필요</option></select></label>
+      <label>최고 상금(원)<input id="a_prizeTop" inputmode="numeric" placeholder="예: 1000000"></label>
+      <label class="wide">시상 내역<textarea id="a_prizeText"></textarea></label>
+      <label class="wide">공모 내용·분야<textarea id="a_theme"></textarea></label>
+      <label class="wide">제출물·형식<textarea id="a_submit"></textarea></label>
+      <label class="wide">제출 방법<textarea id="a_how"></textarea></label>
+      <label class="wide">심사 기준<textarea id="a_judging"></textarea></label>
+      <label>발표<input id="a_announce"></label>
+      <label>문의<input id="a_contact"></label>
+      <label class="wide">생성형 AI 규정<input id="a_aiRule"></label>
+      <label class="wide">공식 공고 주소<input id="a_url" type="url" placeholder="https://"></label>
+      <label class="wide">주제 태그(쉼표로 구분)<input id="a_tags" placeholder="예: 청년, 주거"></label>
+      <label>거주지 제한 시·도<select id="a_esido"></select></label>
+      <label>거주지 제한 시·군·구<input id="a_esigungu" placeholder="제한이 없으면 비워 두기"></label>
+      <label>최소 나이<input id="a_eminage" inputmode="numeric"></label>
+      <label>최대 나이<input id="a_emaxage" inputmode="numeric"></label>
+      <div class="wide checks"><label class="chk"><input type="checkbox" id="a_eworkok"> 그 지역 직장·학교에 다녀도 됨</label><label class="chk"><input type="checkbox" id="a_estudent"> 대학(원)생만</label></div>
+    </div>
+    <p class="err" id="addErr" hidden></p>
+    <div class="bar">
+      <button class="btn ghost" type="button" id="addCancel">닫기</button>
+      <button class="btn primary" type="button" id="addSave">목록에 추가</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="profDlg" aria-labelledby="profTitle">
+  <form class="dlg" id="profForm" method="dialog">
+    <h2 id="profTitle">내 조건</h2>
+    <p class="muted" style="margin:0">사는 곳, 나이, 신분을 넣으면 공모마다 참여 자격을 확인하고, 참여할 수 없는 공모는 목록에서 숨깁니다. 이 정보는 이 페이지에 저장되고, Claude와 대화할 때 자격 판단에 함께 쓰입니다.</p>
+    <div class="fgrid">
+      <label>사는 곳 시·도<select id="p_sido"></select></label>
+      <label>사는 곳 시·군·구<input id="p_sigungu" placeholder="예: 성동구"></label>
+      <label>직장·학교 시·도 (선택)<select id="p_wsido"></select></label>
+      <label>직장·학교 시·군·구 (선택)<input id="p_wsigungu" placeholder="지역 직장인·학생도 받는 공모 확인용"></label>
+      <label>출생 연도<input id="p_birth" inputmode="numeric" placeholder="예: 1994"></label>
+      <div class="wide"><span class="flabel">해당하는 것을 모두 고르세요</span><div class="checks" id="p_status"></div></div>
+    </div>
+    <p class="err" id="profErr" hidden></p>
+    <div class="bar"><button class="btn ghost" type="button" id="profClear">모두 지우기</button><button class="btn ghost" type="button" id="profCancel">닫기</button><button class="btn primary" type="button" id="profSave">저장</button></div>
+  </form>
+</dialog>
+
+<script async id="lib-docx" src="https://cdn.jsdelivr.net/npm/docx@9.5.1/dist/index.iife.js"></script>
+<script async id="lib-jszip" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script id="snapshot" type="application/json">__SNAPSHOT__</script>
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const SNAP = JSON.parse($('#snapshot').textContent);
+
+const SECTIONS = [
+  { key: 'title', label: '제안 제목', hint: '무엇을 어떻게 바꾸자는 제안인지 한 줄로. 40자 안팎', one: true },
+  { key: 'summary', label: '한 줄 요약', hint: '심사위원이 10초 안에 이해하도록 100자 안팎', rows: 2 },
+  { key: 'problem', label: '현황 및 문제점', hint: '누가, 언제, 어떤 불편을 겪는지. 숫자는 출처와 함께', rows: 7 },
+  { key: 'solution', label: '개선 방안', hint: '무엇을 어떻게 바꾸는지. 대상, 방법, 단계', rows: 9 },
+  { key: 'effect', label: '기대 효과', hint: '누구에게 어떤 변화가 생기는지. 가능하면 잴 수 있게', rows: 5 },
+  { key: 'plan', label: '실행 방안', hint: '추진 주체, 일정, 소요 예산, 바꿔야 할 법령·제도', rows: 5 },
+  { key: 'refs', label: '근거 자료', hint: '통계·법령·기사 출처와 확인한 날짜', rows: 4 }
+];
+const STATUSES = ['아이디어 구상', '작성 중', '검토 중', '제출 완료', '결과 대기', '수상·채택', '미선정'];
+const ORG_ORDER = ['중앙부처', '광역지자체', '기초지자체', '공공기관', '국회', '학회·민간'];
+
+const st = {
+  base: new Map(SNAP.contests.map(c => [c.id, c])),
+  overlay: new Map(),
+  projects: {}, chats: {},
+  dirty: {},
+  route: 'home', tab: 'brief',
+  f: { view: 'open', q: '', tag: '', org: '', prize: false, team: false, anyone: false, elig: true, sort: 'end' },
+  backend: 'local', sharedMode: 'local', workMode: 'local', selfWrite: false,
+  localOv: new Map(), unsub: [],
+  db: null, sample: undefined, sampleOff: false, downloads: null,
+  busy: {}, sugg: {}, chatErr: {}, includeDraft: {},
+  gen: {}, engine: { model: 'claude-opus-5-5', effort: 'high' }, reviewPass: {}, lastModel: '',
+  profile: null, uid: null, forceElig: {}
+};
+
+/* ---------- 날짜·금액 ---------- */
+function today() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function days(a, b) { return Math.round((Date.parse(b + 'T00:00:00') - Date.parse(a + 'T00:00:00')) / 864e5); }
+const WD = ['일', '월', '화', '수', '목', '금', '토'];
+function kdate(s, withDay = true) {
+  if (!s) return '';
+  const d = new Date(s + 'T00:00:00');
+  return (d.getMonth() + 1) + '월 ' + d.getDate() + '일' + (withDay ? '(' + WD[d.getDay()] + ')' : '');
+}
+function won(n) {
+  if (n == null) return '';
+  if (n >= 1e8) { const e = Math.floor(n / 1e8), m = Math.round((n % 1e8) / 1e4); return e + '억' + (m ? ' ' + m.toLocaleString('ko-KR') + '만' : '') + ' 원'; }
+  if (n >= 1e4) return (n / 1e4).toLocaleString('ko-KR', { maximumFractionDigits: 1 }) + '만 원';
+  if (n >= 1e3) return (n / 1e3) + '천 원';
+  return n.toLocaleString('ko-KR') + '원';
+}
+function status(c) {
+  const t = today();
+  if (c.always) return { k: 'always', label: '상시', sort: 9e4 };
+  if (c.annual) return { k: 'annual', label: '해마다', sort: 9e4 + 1 };
+  if (c.end && c.end < t) return { k: 'closed', label: '마감', sort: 1e5 };
+  if (c.start && c.start > t) { const n = days(t, c.start); return { k: 'soon', label: n + '일 뒤 시작', n: days(t, c.end || c.start), sort: days(t, c.end || c.start) }; }
+  const n = c.end ? days(t, c.end) : null;
+  return { k: 'open', label: n === 0 ? '오늘 마감' : 'D-' + n, n, sort: n == null ? 8e4 : n };
+}
+function stampHtml(c) {
+  const s = status(c);
+  if (s.k === 'always') return '<span class="stamp always"><b>상시</b><small>창구</small></span>';
+  if (s.k === 'annual') return '<span class="stamp annual"><b>' + esc(seasonShort(c)) + '</b><small>해마다</small></span>';
+  if (s.k === 'closed') return '<span class="stamp closed"><b>마감</b><small>' + esc(kdate(c.end, false)) + '</small></span>';
+  if (s.k === 'soon') return '<span class="stamp soon"><b>예정</b><small>' + esc(kdate(c.start, false)) + '</small></span>';
+  const hot = s.n != null && s.n <= 3;
+  return '<span class="stamp' + (hot ? ' hot' : '') + '"><b>' + (s.n === 0 ? '오늘' : 'D-' + s.n) + '</b><small>' + esc(kdate(c.end, false)) + '</small></span>';
+}
+function seasonShort(c) { const a = +c.start.slice(5, 7), b = +c.end.slice(5, 7); return a === b ? a + '월' : a + '~' + b + '월'; }
+function prizeChip(c) {
+  const p = c.prize || {};
+  if (p.kind === 'cash') return p.top ? '<span class="chip money">최대 ' + won(p.top) + '</span>' : p.total ? '<span class="chip money">총 ' + won(p.total) + '</span>' : '<span class="chip money">상금 있음</span>';
+  if (p.kind === 'goods') return '<span class="chip goods">상품 ' + (p.top ? '최대 ' + won(p.top) : p.total ? '총 ' + won(p.total) : '있음') + '</span>';
+  if (p.kind === 'reward') return '<span class="chip goods">채택 시 포상</span>';
+  if (p.kind === 'none') return '<span class="chip nomoney">상금 없음</span>';
+  return '<span class="chip unv">상금 확인 필요</span>';
+}
+function prizeValue(c) { const p = c.prize || {}; return (p.kind === 'cash' || p.kind === 'goods') ? (p.top || p.total || 1) : 0; }
+function teamOk(c) { return !!c.team && /팀|단체|공동|법인/.test(c.team) && !/팀 불가/.test(c.team); }
+function anyone(c) { return /누구나|전 국민|제한 없음/.test(c.who || '') && !/대학|학부생|양천구민|대전에 거주|도민 누구나/.test(c.who || ''); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch])); }
+function linkify(s) { return esc(s).replace(/(https?:\/\/[^\s)，,]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>'); }
+
+/* ---------- 데이터 ---------- */
+function contests() {
+  const m = new Map(st.base);
+  for (const [id, c] of st.overlay) { if (c.hidden) m.delete(id); else m.set(id, Object.assign({}, m.get(id) || {}, c)); }
+  return [...m.values()];
+}
+function getC(id) { return contests().find(c => c.id === id); }
+function blankProject(id) { return { contestId: id, status: '아이디어 구상', sections: {}, checks: {}, updatedAt: 0 }; }
+function proj(id) { return st.projects[id] || null; }
+function chatOf(id) { return (st.chats[id] && st.chats[id].turns) || []; }
+function hasWork(id) { const p = proj(id); return !!p; }
+
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가: 메모리에만 */ } }
+};
+function loadLocal() {
+  st.projects = LS.get('gongmo.projects', {});
+  st.chats = LS.get('gongmo.chats', {});
+  st.localOv = new Map(Object.entries(LS.get('gongmo.contests', {})));
+  st.overlay = new Map(st.localOv);
+}
+
+const pending = new Map();
+let flushTimer = null, flushing = false;
+function queue(path, data) {
+  st.dirty[path] = Date.now();
+  pending.set(path, data);
+  clearTimeout(flushTimer);
+  flushTimer = setTimeout(flush, 800);
+}
+async function flush() {
+  if (flushing) return;
+  flushing = true;
+  try {
+    while (pending.size) {
+      const [path, data] = pending.entries().next().value;
+      pending.delete(path);
+      await writeDoc(path, data);
+    }
+  } finally { flushing = false; }
+}
+/* 저장 위치
+   공고(contests): 함께 보는 목록. 편집 권한이 있으면 저장소에, 없으면 이 브라우저에만.
+   초안(projects)·대화(chats): 사람마다 따로. 소유자는 소유자만 읽는 projects·chats에,
+   다른 사람은 본인만 읽는 data/users/<id>/work 아래에, 쓸 수 없으면 이 브라우저에. */
+function workPath(col) { return 'data/users/' + st.uid + '/work/' + col; }
+function refFor(col, id) {
+  if (st.backend !== 'db') return null;
+  if (col === 'contests') return st.sharedMode === 'db' ? st.db.doc('contests/' + id) : null;
+  if (st.workMode === 'owner') return st.db.doc(col + '/' + id);
+  if (st.workMode === 'private') return st.db.doc(workPath(col) + '/' + id);
+  return null;
+}
+function saveLocal(col, id, data) {
+  if (col === 'projects') LS.set('gongmo.projects', st.projects);
+  else if (col === 'chats') LS.set('gongmo.chats', st.chats);
+  else if (col === 'contests') {
+    if (data === null) st.localOv.delete(id); else st.localOv.set(id, data);
+    const o = {}; for (const [k, v] of st.localOv) o[k] = v; LS.set('gongmo.contests', o);
+  }
+}
+function syncState() { setSync(st.backend === 'db' && st.workMode !== 'local' ? 'synced' : 'local'); }
+function stopWork() { for (const u of st.unsub) { try { u(); } catch (e) { /* 이미 끊김 */ } } st.unsub = []; }
+function demote(col) {
+  if (col === 'contests') {
+    if (st.sharedMode === 'local') return;
+    st.sharedMode = 'local';
+    toast('공고는 이 브라우저의 목록에만 추가됩니다.');
+    return;
+  }
+  if (st.workMode === 'local') return;
+  st.workMode = 'local'; stopWork();
+  st.projects = Object.assign({}, LS.get('gongmo.projects', {}), st.projects);
+  st.chats = Object.assign({}, LS.get('gongmo.chats', {}), st.chats);
+  LS.set('gongmo.projects', st.projects); LS.set('gongmo.chats', st.chats);
+  syncState();
+  toast('초안은 이 브라우저에 저장됩니다.');
+}
+async function writeDoc(path, data) {
+  const i = path.indexOf('/'), col = path.slice(0, i), id = path.slice(i + 1);
+  const ref = refFor(col, id);
+  if (!ref) { saveLocal(col, id, data); return; }
+  const put = () => data === null ? ref.delete() : ref.set(data);
+  try { await put(); syncState(); }
+  catch (e) {
+    if (e && e.code === 'invalid_argument') { demote(col); saveLocal(col, id, data); }
+    else if (e && e.code === 'quota_exceeded') toast('저장 공간이 가득 찼습니다. 오래된 대화를 지워 주세요.');
+    else if (e && e.code === 'unavailable') { await new Promise(r => setTimeout(r, 600 + Math.random() * 800)); try { await put(); syncState(); } catch (e2) { setSync('error'); } }
+    else setSync('error');
+  }
+}
+function saveProject(id, p) { p.updatedAt = Date.now(); st.projects[id] = p; queue('projects/' + id, JSON.parse(JSON.stringify(p))); }
+function saveChat(id, turns) {
+  let t = turns.slice(-30);
+  while (t.length > 2 && t.reduce((n, m) => n + m.content.length, 0) > 50000) t = t.slice(1);
+  st.chats[id] = { contestId: id, turns: t, updatedAt: Date.now() };
+  queue('chats/' + id, JSON.parse(JSON.stringify(st.chats[id])));
+}
+
+function setSync(s) {
+  const el = $('#sync');
+  const text = { synced: 'Claude 계정에 저장', local: '이 브라우저에 저장', connecting: '저장소 연결 중', slow: '저장소 응답 대기 중', error: '저장 실패, 다시 시도 필요', readonly: '읽기 전용' }[s] || s;
+  el.dataset.s = s; el.textContent = text;
+}
+
+/* ---------- 내 조건과 참여 자격 ---------- */
+const SIDO = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '대전광역시', '울산광역시', '세종특별자치시', '경기도', '강원특별자치도', '충청북도', '충청남도', '전북특별자치도', '전라남도', '경상북도', '경상남도', '제주특별자치도'];
+const STATUS_OPTS = ['대학(원)생', '고등학생 이하', '직장인', '소상공인·자영업', '공무원'];
+const shortSido = s => String(s || '').replace(/특별자치시|특별자치도|특별시|광역시/, '').replace(/^(충청|전라|경상)(북|남)도$/, (m, a, b) => ({ 충청: '충', 전라: '전', 경상: '경' }[a] + b));
+function normGu(s) { return String(s || '').replace(/\s+/g, ''); }
+function sameGu(a, b) { a = normGu(a); b = normGu(b); if (!a || !b) return false; return a === b || a.replace(/[시군구]$/, '') === b.replace(/[시군구]$/, ''); }
+function placeMatch(place, r) {
+  if (!place || !place.sido) return null;
+  if (place.sido !== r.sido) return false;
+  if (!r.sigungu) return true;
+  if (!place.sigungu) return null;
+  return sameGu(place.sigungu, r.sigungu);
+}
+function placeText(r) { return r.sigungu ? shortSido(r.sido) + ' ' + r.sigungu : r.sido; }
+function profileSet() { const p = st.profile; return !!(p && (p.sido || p.birthYear || (p.statuses && p.statuses.length))); }
+function ageRange(by) { const y = +today().slice(0, 4); return [y - by - 1, y - by]; }
+function eligOf(c) {
+  const e = c.elig || {}, p = st.profile || {};
+  const why = []; let k = 'ok';
+  const rank = { ok: 0, ask: 1, no: 2 };
+  const worse = n => { if (rank[n] > rank[k]) k = n; };
+  if (e.unknown) { worse('ask'); why.push('공고 요약에 참여 자격이 없어 공식 공고에서 확인해야 합니다.'); }
+  if (e.own) why.push(p.sido ? '내 지역(' + (p.sigungu ? shortSido(p.sido) + ' ' + p.sigungu : p.sido) + ')의 주민참여예산에 제안하는 창구입니다.' : '내가 사는 지자체의 주민참여예산에 제안하는 창구입니다.');
+  if (e.regions && e.regions.length) {
+    const places = e.regions.map(placeText).join(', ');
+    const whoTxt = places + (e.workSchoolOk ? ' 주민이나 그 지역 직장·학교에 다니는 사람' : ' 주민');
+    const home = e.regions.map(r => placeMatch({ sido: p.sido, sigungu: p.sigungu }, r));
+    const work = e.workSchoolOk ? e.regions.map(r => placeMatch({ sido: p.wsido, sigungu: p.wsigungu }, r)) : [];
+    if (home.includes(true)) why.push(places + '에 살고 있어 해당합니다.');
+    else if (work.includes(true)) why.push(places + '에 있는 직장·학교에 다녀 해당합니다.');
+    else if (!p.sido) { worse('ask'); why.push(whoTxt + '만 참여할 수 있습니다. 내 조건에 사는 곳을 넣으면 확인합니다.'); }
+    else if (home.includes(null)) { worse('ask'); why.push(whoTxt + '만 참여할 수 있습니다. 내 조건에 시·군·구를 넣으면 확인합니다.'); }
+    else if (e.soft) { worse('ask'); why.push('주로 ' + whoTxt + ' 대상입니다. 다른 지역 주민도 되는지 이용 안내를 확인하세요.'); }
+    else { worse('no'); why.push(whoTxt + '만 참여할 수 있습니다.' + (e.workSchoolOk && !p.wsido ? ' 그 지역에 직장·학교가 있으면 내 조건에 넣으세요.' : '')); }
+  }
+  if (e.minAge || e.maxAge) {
+    const rng = e.minAge && e.maxAge ? '만 ' + e.minAge + '~' + e.maxAge + '세' : e.minAge ? '만 ' + e.minAge + '세 이상' : '만 ' + e.maxAge + '세 이하';
+    const by = +p.birthYear;
+    if (!by) { worse('ask'); why.push(rng + '만 참여할 수 있습니다. 출생 연도를 넣으면 확인합니다.'); }
+    else {
+      const [lo, hi] = ageRange(by);
+      const out = (e.minAge && hi < e.minAge) || (e.maxAge && lo > e.maxAge);
+      const inside = (!e.minAge || lo >= e.minAge) && (!e.maxAge || hi <= e.maxAge);
+      if (out) { worse('no'); why.push(rng + '만 참여할 수 있습니다(지금 만 ' + lo + '~' + hi + '세).'); }
+      else if (inside) why.push(rng + ' 조건에 맞습니다.');
+      else { worse('ask'); why.push(rng + ' 경계에 있어 생일 기준으로 확인해야 합니다.'); }
+    }
+  }
+  if (e.statuses && e.statuses.length) {
+    const mine = p.statuses || [];
+    if (e.statuses.some(x => mine.includes(x))) why.push(e.statuses.join('·') + ' 조건에 맞습니다.');
+    else { worse(profileSet() ? 'no' : 'ask'); why.push(e.statuses.join('·') + '만 참여할 수 있습니다.'); }
+  }
+  if (e.extra) { worse('ask'); why.push(e.extra + '.'); }
+  if (!why.length) why.push((e.note || '누구나 참여할 수 있습니다') + '.');
+  return { k, why };
+}
+function eligChip(c) {
+  const r = eligOf(c);
+  if (r.k === 'no') return '<span class="chip no">참여 불가</span>';
+  if (r.k === 'ask') return '<span class="chip unv">자격 확인</span>';
+  return '';
+}
+function profileSummary() {
+  const p = st.profile;
+  if (!profileSet()) return '미설정';
+  const parts = [];
+  if (p.sido) parts.push(p.sigungu ? p.sigungu : shortSido(p.sido));
+  if (p.birthYear) { const r = ageRange(+p.birthYear); parts.push('만 ' + r[1] + '세'); }
+  if (p.statuses && p.statuses.length) parts.push(p.statuses[0] + (p.statuses.length > 1 ? ' 외' : ''));
+  return parts.join(' · ');
+}
+function profileText() {
+  const p = st.profile;
+  if (!profileSet()) return '';
+  const where = p.sido ? (p.sido + (p.sigungu ? ' ' + p.sigungu : '')) : '모름';
+  const work = p.wsido ? (p.wsido + (p.wsigungu ? ' ' + p.wsigungu : '')) : '없음 또는 모름';
+  return '[사용자 조건] 사는 곳: ' + where + ' / 직장·학교: ' + work + ' / 출생 연도: ' + (p.birthYear || '모름') + ' / 신분: ' + ((p.statuses || []).join(', ') || '해당 없음');
+}
+function renderProfileBtn() { const el = $('#profSum'); if (el) el.textContent = profileSummary(); }
+function fillSido(sel, val, blank) { sel.innerHTML = '<option value="">' + blank + '</option>' + SIDO.map(x => '<option' + (x === val ? ' selected' : '') + '>' + x + '</option>').join(''); }
+function openProfile() {
+  const p = st.profile || {};
+  fillSido($('#p_sido'), p.sido, '고르세요');
+  fillSido($('#p_wsido'), p.wsido, '없음');
+  $('#p_sigungu').value = p.sigungu || ''; $('#p_wsigungu').value = p.wsigungu || ''; $('#p_birth').value = p.birthYear || '';
+  $('#p_status').innerHTML = STATUS_OPTS.map((x, i) => '<label class="chk"><input type="checkbox" id="p_st' + i + '" value="' + x + '"' + ((p.statuses || []).includes(x) ? ' checked' : '') + '> ' + x + '</label>').join('');
+  $('#profErr').hidden = true;
+  const d = $('#profDlg'); if (d.showModal) d.showModal(); else d.setAttribute('open', '');
+}
+function closeDlg(id) { const d = $(id); if (d.close) d.close(); else d.removeAttribute('open'); }
+async function saveProfile(p) {
+  st.profile = p;
+  LS.set('gongmo.profile', p);
+  renderProfileBtn(); rerenderAll();
+  if (st.backend === 'db' && st.uid && st.selfWrite) {
+    try { await st.db.doc('data/users/' + st.uid + '/profile').set(p || { cleared: true }); } catch (e) { /* 이 브라우저에는 남아 있음 */ }
+  }
+}
+function readProfileForm() {
+  const raw = ($('#p_birth').value || '').trim();
+  const by = parseInt(raw.replace(/[^0-9]/g, ''), 10);
+  const y = +today().slice(0, 4);
+  if (raw && !(by >= 1900 && by <= y)) { const e = $('#profErr'); e.textContent = '출생 연도를 네 자리로 넣어 주세요. 예: 1994'; e.hidden = false; return null; }
+  return {
+    sido: $('#p_sido').value || '', sigungu: $('#p_sigungu').value.trim(),
+    wsido: $('#p_wsido').value || '', wsigungu: $('#p_wsigungu').value.trim(),
+    birthYear: by || null,
+    statuses: $$('#p_status input:checked').map(x => x.value),
+    updatedAt: Date.now()
+  };
+}
+function rerenderAll() {
+  renderList();
+  const focusIn = document.activeElement && $('#main').contains(document.activeElement) && /TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName);
+  if (st.route === 'home') renderHome();
+  else if (!focusIn && !(st.gen[st.route] && st.gen[st.route].running) && !st.busy[st.route]) renderContest(st.route);
+}
+
+/* ---------- 목록 ---------- */
+function inView(c, v) {
+  const s = status(c).k;
+  if (v === 'open') return s === 'open' || s === 'soon';
+  if (v === 'always') return s === 'always';
+  if (v === 'annual') return s === 'annual';
+  if (v === 'mine') return hasWork(c.id);
+  return true;
+}
+function filtered() {
+  const f = st.f, q = f.q.trim().toLowerCase();
+  let arr = contests().filter(c => inView(c, f.view));
+  if (q) arr = arr.filter(c => [c.title, c.org, c.theme, (c.tags || []).join(' '), c.who].join(' ').toLowerCase().includes(q));
+  if (f.tag) arr = arr.filter(c => (c.tags || []).includes(f.tag));
+  if (f.org) arr = arr.filter(c => c.orgType === f.org);
+  if (f.prize) arr = arr.filter(c => prizeValue(c) > 0);
+  if (f.team) arr = arr.filter(teamOk);
+  if (f.anyone) arr = arr.filter(anyone);
+  if (f.elig && f.view !== 'mine') arr = arr.filter(c => eligOf(c).k !== 'no');
+  const by = { end: (a, b) => status(a).sort - status(b).sort, prize: (a, b) => prizeValue(b) - prizeValue(a) || status(a).sort - status(b).sort, new: (a, b) => String(b.start || '').localeCompare(String(a.start || '')) }[f.sort];
+  return arr.sort(by);
+}
+function renderCounts() {
+  const all = contests();
+  const n = v => all.filter(c => inView(c, v) && (!st.f.elig || v === 'mine' || eligOf(c).k !== 'no')).length;
+  for (const v of ['open', 'always', 'annual', 'mine']) { const el = $('[data-n="' + v + '"]'); if (el) el.textContent = n(v) || ''; }
+}
+function renderFilters() {
+  const all = contests();
+  const tags = [...new Set(all.flatMap(c => c.tags || []))].sort((a, b) => a.localeCompare(b, 'ko'));
+  const tagSel = $('#tag'), orgSel = $('#org');
+  tagSel.innerHTML = '<option value="">주제 전체</option>' + tags.map(t => '<option' + (t === st.f.tag ? ' selected' : '') + '>' + esc(t) + '</option>').join('');
+  const orgs = ORG_ORDER.filter(o => all.some(c => c.orgType === o));
+  orgSel.innerHTML = '<option value="">주최 전체</option>' + orgs.map(o => '<option' + (o === st.f.org ? ' selected' : '') + '>' + esc(o) + '</option>').join('');
+}
+function renderList() {
+  renderCounts();
+  const arr = filtered();
+  const cur = st.route;
+  $('#list').innerHTML = arr.length ? arr.map(c => {
+    const p = proj(c.id);
+    const el = eligOf(c);
+    const chips = [eligChip(c), prizeChip(c)].filter(Boolean);
+    if (c.team) chips.push('<span class="chip">' + esc(shortTeam(c.team)) + '</span>');
+    if (!c.verified) chips.push('<span class="chip unv">공식 공고 미확인</span>');
+    if (c.aiRule) chips.push('<span class="chip ai">AI 규정 있음</span>');
+    if (p) chips.push('<span class="chip mine">' + esc(p.status) + '</span>');
+    return '<li class="item' + (el.k === 'no' ? ' dim' : '') + '"><a href="#' + esc(c.id) + '"' + (c.id === cur ? ' aria-current="page"' : '') + '>' + stampHtml(c) +
+      '<div><h3>' + esc(c.title) + '</h3><div class="org">' + esc(c.org) + ' · ' + esc(c.kind) + '</div><div class="chips">' + chips.join('') + '</div></div></a></li>';
+  }).join('') : '<li class="empty-list">' + (st.f.view === 'mine' ? '아직 시작한 제안이 없습니다. 공모를 고르고 \'작업 시작\'을 누르세요.' : '조건에 맞는 공모가 없습니다. 필터를 풀어 보세요.') + '</li>';
+  const hid = $('#hidNote');
+  if (hid) {
+    let n = 0;
+    if (st.f.elig && st.f.view !== 'mine') { st.f.elig = false; n = filtered().filter(c => eligOf(c).k === 'no').length; st.f.elig = true; }
+    hid.hidden = !n;
+    hid.innerHTML = n ? '내 조건으로 참여할 수 없는 ' + n + '건을 숨겼습니다. <button type="button" id="showAll">모두 보기</button>' : '';
+  }
+}
+function shortTeam(t) { return t.length > 14 ? t.replace(/\(.*?\)/g, '').slice(0, 14) : t; }
+
+/* ---------- 홈 ---------- */
+function renderHome() {
+  const all = contests(), t = today();
+  const can = c => !st.f.elig || eligOf(c).k !== 'no';
+  const open = all.filter(c => status(c).k === 'open' && can(c)).sort((a, b) => status(a).sort - status(b).sort);
+  const week = open.filter(c => status(c).n != null && status(c).n <= 7);
+  const live = all.filter(c => ['open', 'soon'].includes(status(c).k) && can(c));
+  const blocked = all.filter(c => ['open', 'soon'].includes(status(c).k) && eligOf(c).k === 'no').length;
+  const money = live.filter(c => prizeValue(c) > 0);
+  const mine = Object.values(st.projects).map(p => ({ p, c: getC(p.contestId) })).filter(x => x.c).sort((a, b) => (b.p.updatedAt || 0) - (a.p.updatedAt || 0));
+  const annual = all.filter(c => c.annual && can(c));
+  const m = +t.slice(5, 7);
+  const cal = '<div class="cal"><div class="cal-grid"><div class="mh"></div>' + Array.from({ length: 12 }, (_, i) => '<div class="mh' + (i + 1 === m ? ' now' : '') + '">' + (i + 1) + '월</div>').join('') +
+    annual.map(c => { const a = +c.start.slice(5, 7), b = +c.end.slice(5, 7);
+      return '<div class="nm"><a href="#' + esc(c.id) + '">' + esc(c.title) + '</a></div>' + Array.from({ length: 12 }, (_, i) => { const on = i + 1 >= a && i + 1 <= b; return '<div class="cell' + (on ? ' on' : '') + (i + 1 === a ? ' first' : '') + (i + 1 === b ? ' last' : '') + (i + 1 === m ? ' now' : '') + '" ' + (on ? 'title="' + esc(c.season || '') + '"' : '') + '></div>'; }).join(''); }).join('') + '</div></div>';
+  $('#main').innerHTML = '<div class="wrap home">' +
+    '<section class="sheet hero"><span class="eyebrow">' + esc(kdate(t)) + ' 기준</span>' +
+    '<h1>좋은 정책 아이디어를, 마감 안에 제안서로</h1>' +
+    '<p>정부·지자체·공공기관의 정책 제안 공모를 모았습니다. 공모를 고르면 참여 조건, 상금, 기간, 제출 방법을 한 장으로 보여 주고, 그 내용을 그대로 Claude에게 넘겨 아이디어를 다듬고 제안서를 함께 씁니다.</p>' +
+    (profileSet() ? '<p class="note ok" style="margin:0">내 조건(' + esc(profileSummary()) + ')으로 참여할 수 있는 공모만 셉니다.' + (blocked ? ' 자격이 맞지 않는 ' + blocked + '건은 뺐습니다.' : '') + ' <button class="btn small ghost" type="button" data-act="profile">내 조건 바꾸기</button></p>'
+      : '<p class="note" style="margin:0">사는 곳과 나이, 신분을 넣으면 참여할 수 있는 공모만 골라 보여 줍니다. <button class="btn small" type="button" data-act="profile">내 조건 넣기</button></p>') +
+    '<div class="tally"><span><b>' + live.length + '</b>건 ' + (profileSet() ? '참여 가능' : '접수 중·예정') + '</span><span><b>' + week.length + '</b>건 7일 안 마감</span><span><b>' + money.length + '</b>건 상금·상품</span><span><b>' + all.filter(c => c.always).length + '</b>곳 상시 창구</span></div>' +
+    '<ol class="steps"><li><b>공모 고르기</b><br>왼쪽 목록에서 조건과 마감을 보고 고릅니다.</li><li><b>Claude와 대화</b><br>공고 요약이 자동으로 들어가서 바로 아이디어부터 묻습니다.</li><li><b>제안서와 점검</b><br>칸별로 초안을 받고, 심사위원처럼 검토받은 뒤 제출 전 점검을 합니다.</li></ol></section>' +
+    '<section class="sheet panel"><h2>내 작업 <small>' + mine.length + '건</small></h2>' +
+    (mine.length ? '<div class="rows">' + mine.map(({ p, c }) => { const s = status(c); return '<a class="row" href="#' + esc(c.id) + '"><span class="d' + (s.k === 'open' && s.n <= 3 ? ' hot' : '') + '">' + esc(s.k === 'open' ? (s.n === 0 ? '오늘' : 'D-' + s.n) : s.label) + '</span><span class="t">' + esc(c.title) + '<small>' + esc(p.status) + ' · 제안서 ' + filled(p) + '/' + SECTIONS.length + '칸</small></span><span class="chip mine">' + esc(p.status) + '</span></a>'; }).join('') + '</div>'
+      : '<p class="muted" style="margin:0">아직 시작한 제안이 없습니다. 공모를 열고 \'작업 시작\'을 누르면 여기에 모입니다.</p>') + '</section>' +
+    '<section class="sheet panel"><h2>마감이 가까운 공모 <small>접수 중 ' + open.length + '건</small></h2><div class="rows">' +
+    open.slice(0, 6).map(c => { const s = status(c); return '<a class="row" href="#' + esc(c.id) + '"><span class="d' + (s.n <= 3 ? ' hot' : '') + '">' + (s.n === 0 ? '오늘' : 'D-' + s.n) + '</span><span class="t">' + esc(c.title) + '<small>' + esc(c.org) + '</small></span>' + prizeChip(c) + '</a>'; }).join('') + '</div></section>' +
+    '<section class="sheet panel"><h2>해마다 열리는 공모 <small>2026년 일정 기준</small></h2><p class="muted" style="margin:0">큰 정책 공모는 상반기에 몰립니다. 다음 회차 공고 전에 아이디어를 미리 다듬어 두세요.</p>' + cal + '</section>' +
+    '<section class="sheet panel"><h2>새 공모를 찾는 곳</h2><p class="muted" style="margin:0">여기서 찾은 공고는 오른쪽 위 \'공고 추가\'로 붙여 넣으면 Claude가 항목을 정리합니다.</p><div class="finders">' +
+    (SNAP.finders || []).map(f => '<a href="' + esc(f.url) + '" target="_blank" rel="noopener">' + esc(f.name) + '<small>' + esc(f.note) + '</small></a>').join('') + '</div></section>' +
+    '</div>';
+}
+function filled(p) { return SECTIONS.filter(s => (p.sections[s.key] || '').trim()).length; }
+
+/* ---------- Claude에게 넘기는 글 ---------- */
+function briefText(c) {
+  const s = status(c), t = today();
+  const when = c.always ? '상시 접수' : c.annual ? '해마다 열림. 2026년 일정 ' + c.start + ' ~ ' + c.end + ' (' + (c.season || '') + '). 다음 회차는 공고 확인 필요'
+    : (c.start || '?') + ' ~ ' + (c.end || '?') + (c.endTime ? ' ' + c.endTime : '') + ' (오늘 ' + t + ' 기준 ' + s.label + ')';
+  const L = (k, v) => '- ' + k + ': ' + (v && String(v).trim() ? v : '공고 요약에 없음. 공식 공고 확인 필요');
+  return ['[공고 요약] ' + c.title,
+    L('주최', c.org + (c.orgType ? ' (' + c.orgType + ')' : '')), L('종류', c.kind), L('접수', when),
+    L('참여 조건', c.who), L('참가 형태', c.team), L('응모 제한', c.limit), L('상금·시상', c.prize && c.prize.text),
+    L('공모 내용·분야', c.theme), L('제출물·형식·분량', c.submit), L('제출 방법', c.how), L('심사', c.judging), L('발표', c.announce),
+    L('생성형 AI 규정', c.aiRule), L('문의', c.contact), c.tip ? L('참고', c.tip) : null, L('공식 공고', c.url),
+    '- 확인 상태: ' + (c.verified ? '공식 공고로 확인' : '공식 공고 미확인(2차 출처 기준)') + ', ' + (c.checkedAt || '') + ' 확인' + (c.note ? '. 메모: ' + c.note : '')
+  ].filter(Boolean).join('\n');
+}
+function draftText(c, p) {
+  if (!p) return '';
+  const lines = SECTIONS.map(s => { const v = (p.sections[s.key] || '').trim(); return v ? '## ' + s.label + '\n' + v : null; }).filter(Boolean);
+  return lines.length ? '[내 제안서 초안] 상태: ' + p.status + '\n' + lines.join('\n\n') : '';
+}
+function rules(c, withDraft) {
+  const d = withDraft ? draftText(c, proj(c.id)) : '';
+  return '너는 대한민국 정책 공모에 함께 응모하는 파트너다. 사용자와 한국어로, 존댓말로 대화한다.\n' +
+    '원칙:\n' +
+    '1. 공모 조건(자격, 기간, 상금, 제출물)은 아래 공고 요약에 있는 사실만 말한다. 요약에 없거나 미확인인 내용은 짐작하지 말고 공식 공고에서 확인하라고 말한다.\n' +
+    '2. 너는 인터넷을 볼 수 없다. 통계·법령·예산·기존 정책을 말할 때 확실하지 않으면 [확인 필요]라고 붙이고, 확인할 공식 출처(국가통계포털 KOSIS, 공공데이터포털, 열린재정, 국가법령정보센터, 정책브리핑, 해당 기관 누리집 등)와 검색어를 알려 준다. 수치를 지어내지 않는다.\n' +
+    '3. 제안은 공모 주제와 심사 기준에 맞추고, 제출물 형식과 분량을 지킨다.\n' +
+    '4. 공고에 생성형 AI 관련 규정이 있으면 먼저 알려 준다. 제출하는 글은 사용자가 자기 경험과 판단으로 고쳐 쓰도록 돕고, 표절과 중복 응모를 피하게 한다.\n' +
+    '5. 이미 시행 중인 정책과 겹칠 수 있으면 그 점을 짚고 차별점을 묻는다.\n' +
+    '6. 짧은 문단과 목록으로 답한다. 정보가 모자라면 먼저 한두 가지를 묻는다.\n' +
+    '오늘 날짜: ' + today() + '\n\n' + briefText(c) + (profileSet() ? '\n\n' + profileText() + '\n- 화면의 자격 판정: ' + ({ ok: '참여 가능', ask: '확인 필요', no: '참여 불가' }[eligOf(c).k]) + ' (' + eligOf(c).why.join(' ') + ')' : '') + (d ? '\n\n' + d : '');
+}
+function handoffText(c) {
+  return rules(c, true) + '\n\n[요청]\n이 공모에 낼 정책 제안을 함께 준비하고 싶습니다. 먼저 제 상황과 관심 주제를 물어봐 주세요.';
+}
+
+/* ---------- 상세 ---------- */
+function renderContest(id) {
+  const c = getC(id);
+  if (!c) { st.route = 'home'; renderHome(); return; }
+  const s = status(c), p = proj(id);
+  const when = c.always ? '상시 접수' : c.annual ? '2026년 ' + kdate(c.start) + ' ~ ' + kdate(c.end) + ' 접수. 다음 회차는 공고 확인'
+    : kdate(c.start) + ' ~ ' + kdate(c.end) + (c.endTime ? ' ' + c.endTime : '') + ' 마감';
+  const nChat = chatOf(id).length;
+  $('#main').innerHTML = '<div class="wrap"><a class="btn small ghost back" href="#home">← 목록</a>' +
+    '<article class="sheet"><div class="dhead">' +
+    '<div class="meta">' + stampHtml(c) + '<span>' + esc(c.org) + '</span><span class="chip">' + esc(c.orgType || '') + '</span><span class="chip">' + esc(c.kind) + '</span>' + (c.verified ? '' : '<span class="chip unv">공식 공고 미확인</span>') + eligChip(c) + (p ? '<span class="chip mine">' + esc(p.status) + '</span>' : '') + '</div>' +
+    '<h1>' + esc(c.title) + '</h1>' +
+    '<div class="dline"><span class="when' + (s.k === 'open' && s.n <= 3 ? ' hot' : '') + '">' + esc(when) + (s.k === 'open' ? ' · ' + (s.n === 0 ? '오늘 마감' : s.n + '일 남음') : s.k === 'closed' ? ' · 접수 끝남' : '') + '</span>' + prizeChip(c) + '</div>' +
+    '<div class="actions">' + (p ? '<button class="btn talk" type="button" data-tab="pkg">제출 패키지 열기</button>' : '<button class="btn talk" type="button" data-act="start">작업 시작</button>') +
+    '<button class="btn" type="button" data-act="ask">Claude에게 묻기</button>' +
+    (c.url ? '<a class="btn" href="' + esc(c.url) + '" target="_blank" rel="noopener">공식 공고 열기</a>' : '') +
+    '<button class="btn ghost" type="button" data-act="handoff">대화용 요약 복사</button></div></div>' +
+    '<div class="tabs" role="tablist">' +
+    '<button role="tab" type="button" data-tab="brief" aria-selected="' + (st.tab === 'brief') + '">공고 한 장</button>' +
+    '<button role="tab" type="button" data-tab="pkg" aria-selected="' + (st.tab === 'pkg') + '">제출 패키지' + (p && p.pkg ? '<span class="badge">완성</span>' : (st.gen[id] && st.gen[id].running ? '<span class="badge">만드는 중</span>' : '')) + '</button>' +
+    '<button role="tab" type="button" data-tab="chat" aria-selected="' + (st.tab === 'chat') + '">Claude와 대화' + (nChat ? '<span class="badge">' + nChat + '</span>' : '') + '</button>' +
+    '<button role="tab" type="button" data-tab="draft" aria-selected="' + (st.tab === 'draft') + '">제안서 편집' + (p ? '<span class="badge">' + filled(p) + '/' + SECTIONS.length + '</span>' : '') + '</button></div>' +
+    '<div class="tabpanel" id="panel"></div></article></div>';
+  renderTab(c);
+}
+function renderTab(c) {
+  const el = $('#panel');
+  if (!el) return;
+  if (st.tab === 'chat') renderChat(c, el);
+  else if (st.tab === 'draft') renderDraft(c, el);
+  else if (st.tab === 'pkg') renderPkg(c, el);
+  else renderBrief(c, el);
+}
+function fact(k, v, cls) { return '<dt>' + k + '</dt><dd' + (cls ? ' class="' + cls + '"' : '') + '>' + (v && String(v).trim() ? linkify(v) : '<span class="miss">공고 요약에 없음 · 공식 공고에서 확인</span>') + '</dd>'; }
+function renderBrief(c, el) {
+  const s = status(c);
+  const period = c.always ? '상시 접수' : (c.start ? kdate(c.start) : '?') + ' ~ ' + (c.end ? kdate(c.end) : '?') + (c.endTime ? ' ' + c.endTime : '') + (c.annual ? ' (2026년 회차, ' + (c.season || '') + ')' : '');
+  const prize = c.prize ? c.prize.text + (c.prize.total && c.prize.kind !== 'none' ? '\n총액 ' + won(c.prize.total) : '') : '';
+  const eg = eligOf(c);
+  const eligBox = '<div class="note ' + (eg.k === 'ok' ? 'ok' : eg.k === 'no' ? 'no' : '') + ' elig"><b>' + (eg.k === 'ok' ? '참여할 수 있습니다' : eg.k === 'no' ? '참여할 수 없습니다' : '참여 자격을 확인해야 합니다') + (profileSet() ? ' · 내 조건 ' + esc(profileSummary()) : '') + '</b><ul>' + eg.why.map(w => '<li>' + esc(w) + '</li>').join('') + '</ul>' +
+    '<div class="actions"><button class="btn small ghost" type="button" data-act="profile">' + (profileSet() ? '내 조건 바꾸기' : '내 조건 넣기') + '</button></div></div>';
+  el.innerHTML = eligBox + (c.verified ? '' : '<p class="note">이 공모는 공식 공고를 직접 열어 대조하지 못했습니다. ' + esc(c.source || '') + '. 응모 전에 공식 공고를 꼭 확인하세요.</p>') +
+    (s.k === 'closed' ? '<p class="note">접수가 끝난 공모입니다. 비슷한 공모나 상시 창구로 아이디어를 낼 수 있습니다.</p>' : '') +
+    (c.annual ? '<p class="note info">해마다 열리는 공모입니다. 아래는 2026년 회차 기준이며, 다음 회차 조건은 바뀔 수 있습니다.</p>' : '') +
+    '<dl class="facts" style="margin-top:' + (c.verified && s.k !== 'closed' && !c.annual ? '0' : '14px') + '">' +
+    fact('참여 조건', c.who, 'key') + fact('참가 형태', c.team) + (c.limit ? fact('응모 제한', c.limit) : '') +
+    fact('상금·시상', prize, 'key') + fact('접수 기간', period, 'key') + fact('공모 내용', c.theme) +
+    fact('제출물', c.submit) + fact('제출 방법', c.how) + fact('심사', c.judging) + fact('발표', c.announce) +
+    fact('생성형 AI', c.aiRule) + fact('문의', c.contact) + (c.tip ? fact('도움말', c.tip) : '') +
+    fact('확인', (c.verified ? '공식 공고 확인' : '공식 공고 미확인') + ' · ' + (c.checkedAt || '') + (c.note ? ' · ' + c.note : '')) + '</dl>' +
+    (c.id.startsWith('my-') && (st.sharedMode === 'db' || st.localOv.has(c.id)) ? '<div class="actions" style="margin-top:12px"><button class="btn small danger" type="button" data-act="delete">이 공고 지우기</button></div>' : '') +
+    '<details class="handoff"><summary>Claude에게 함께 보내는 공고 요약 보기</summary><pre>' + esc(briefText(c)) + '</pre></details>';
+}
+
+/* ---------- 마크다운(간단) ---------- */
+function md(src) {
+  const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>');
+  const lines = String(src).replace(/\r/g, '').split('\n');
+  let html = '', list = null, para = [], tbl = [];
+  const fp = () => { if (para.length) { html += '<p>' + para.map(inline).join('<br>') + '</p>'; para = []; } };
+  const fl = () => { if (list) { html += '</' + list + '>'; list = null; } };
+  const ft = () => {
+    if (!tbl.length) return;
+    const rows = tbl.filter(r => !/^\s*\|?\s*:?-{2,}/.test(r)).map(r => r.trim().replace(/^\||\|$/g, '').split('|').map(x => x.trim()));
+    html += '<div class="tbl"><table>' + rows.map((r, i) => '<tr>' + r.map(x => i === 0 ? '<th>' + inline(x) + '</th>' : '<td>' + inline(x) + '</td>').join('') + '</tr>').join('') + '</table></div>';
+    tbl = [];
+  };
+  for (const raw of lines) {
+    const l = raw.replace(/\s+$/, '');
+    let m;
+    if (/^\s*\|.*\|\s*$/.test(l)) { fp(); fl(); tbl.push(l); continue; } else ft();
+    if (!l.trim()) { fp(); fl(); continue; }
+    if ((m = l.match(/^#{1,6}\s+(.*)/))) { fp(); fl(); html += '<h4>' + inline(m[1]) + '</h4>'; continue; }
+    if ((m = l.match(/^\s*[-*•]\s+(.*)/))) { fp(); if (list !== 'ul') { fl(); html += '<ul>'; list = 'ul'; } html += '<li>' + inline(m[1]) + '</li>'; continue; }
+    if ((m = l.match(/^\s*(\d+)[.)]\s+(.*)/))) { fp(); if (list !== 'ol') { fl(); html += '<ol>'; list = 'ol'; } html += '<li>' + inline(m[2]) + '</li>'; continue; }
+    if (/^\s*(-{3,}|\*{3,})\s*$/.test(l)) { fp(); fl(); html += '<hr>'; continue; }
+    fl(); para.push(l);
+  }
+  ft(); fp(); fl();
+  return html;
+}
+
+function plain(src) {
+  return String(src).replace(/\r/g, '').split('\n')
+    .filter(l => !/^\s*\|?\s*:?-{2,}/.test(l) && !/^\s*(-{3,}|\*{3,})\s*$/.test(l))
+    .map(l => l.replace(/^#{1,6}\s+/, '').replace(/\*\*(.+?)\*\*/g, '$1').replace(/`([^`]+)`/g, '$1')
+      .replace(/^\s*\|(.*)\|\s*$/, (m, x) => x.split('|').map(t => t.trim()).join(' · ')).replace(/^\s*[*•]\s+/, '- '))
+    .join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+/* ---------- 대화 ---------- */
+const STARTERS = [
+  ['참여 자격 점검', '이 공모에 제가 참여할 수 있는지 확인하고 싶어요. 공고의 참여 조건을 항목별로 나누고, 저에게 확인할 질문을 해 주세요.'],
+  ['아이디어 5개', '공모 주제와 심사 기준에 맞는 정책 아이디어 5개를 제안해 주세요. 각각 해결하려는 문제, 핵심 해법, 이 공모에 맞는 이유, 이미 비슷한 정책이 있는지 확인할 점을 적어 주세요.'],
+  ['내 경험으로 문제 정의', '제가 겪은 불편을 정책 문제로 바꾸고 싶어요. 질문을 하나씩 해서 현황과 문제점을 정리하도록 도와주세요.'],
+  ['근거 자료 찾을 곳', '이 주제의 현황을 뒷받침할 통계와 자료를 어디서 찾으면 되는지 공식 출처와 검색어로 알려 주세요. 수치는 지어내지 말아 주세요.'],
+  ['제안서 뼈대', '제출물 형식과 분량에 맞춰 제안서 목차와 칸별로 쓸 내용을 뼈대로 잡아 주세요.'],
+  ['심사위원처럼 검토', '제 제안서 초안을 이 공모의 심사위원 입장에서 검토해 주세요. 심사 기준별로 강점과 약점, 바로 고칠 수 있는 문장 수정안, 형식·분량 점검을 알려 주세요.'],
+  ['제출 전 점검', '제출 직전에 확인할 것을 점검표로 만들어 주세요. 마감 시각, 제출처, 파일 형식과 분량, 동의서, 생성형 AI 규정, 중복 응모를 포함해 주세요.']
+];
+function renderChat(c, el) {
+  const id = c.id, turns = chatOf(id), busy = !!st.busy[id];
+  const p = proj(id);
+  if (st.includeDraft[id] == null) st.includeDraft[id] = !!(p && filled(p));
+  const waiting = st.sample === undefined && !st.sampleOff;
+  const off = !st.sample || st.sampleOff;
+  el.innerHTML = '<div class="chat">' +
+    (waiting ? '<p class="muted" style="margin:0">Claude 연결을 확인하는 중입니다.</p>' : off ? '<div class="note talk">' + (st.sampleOff ? 'Claude 호출이 허용되지 않았습니다.' : '이 화면에서는 Claude를 바로 부를 수 없습니다.') + ' \'대화용 요약 복사\'를 눌러 Claude 대화창에 붙여 넣으면 같은 내용으로 이어 갈 수 있습니다.<div class="actions" style="margin-top:8px"><button class="btn small talk" type="button" data-act="handoff">대화용 요약 복사</button></div></div>' : '') +
+    '<div class="starters">' + STARTERS.map((s, i) => '<button type="button" data-starter="' + i + '"' + (busy ? ' disabled' : '') + '>' + esc(s[0]) + '</button>').join('') + '</div>' +
+    '<div class="log" id="log">' + (turns.length ? turns.map((m, i) => msgHtml(m, i)).join('') : '<p class="muted" style="margin:0">위 버튼을 누르거나 아래에 질문을 쓰세요. 공고 한 장의 내용이 Claude에게 함께 전달됩니다.</p>') +
+    (busy ? '<div class="msg assistant" id="live"><div class="who">Claude</div><div class="body"><span class="thinking">생각하는 중</span></div></div>' : '') + '</div>' +
+    (st.chatErr[id] ? '<p class="err">' + esc(st.chatErr[id]) + '</p>' : '') +
+    '<div class="composer"><label class="sr-only" for="ask">질문</label><textarea id="ask" placeholder="예: 우리 동네 버스 배차 간격 문제로 제안하고 싶은데, 이 공모에 맞을까요?"' + (off ? ' disabled' : '') + '></textarea>' +
+    '<div class="bar"><label class="chk"><input type="checkbox" id="incDraft"' + (st.includeDraft[id] ? ' checked' : '') + '> 내 제안서 초안도 보내기</label>' +
+    '<div class="sp">' + (turns.length && !busy ? '<button class="btn small ghost" type="button" data-act="clearchat">대화 지우기</button>' : '') +
+    (busy ? '<button class="btn small" type="button" data-act="stop">멈추기</button>' : '<button class="btn talk" type="button" data-act="send"' + (off ? ' disabled' : '') + '>보내기</button>') + '</div></div></div></div>';
+  const log = $('#log');
+  if (log && turns.length) requestAnimationFrame(() => { const last = log.lastElementChild; if (last && st.scrollChat) { last.scrollIntoView({ block: 'nearest' }); st.scrollChat = false; } });
+}
+function msgHtml(m, i) {
+  if (m.role === 'user') return '<div class="msg user"><div class="who">나</div>' + esc(m.content) + '</div>';
+  return '<div class="msg assistant"><div class="who">Claude</div><div class="body">' + md(m.content) + '</div>' +
+    '<div class="tools"><button class="btn small ghost" type="button" data-copy-msg="' + i + '">복사</button>' +
+    '<label class="sr-only" for="to' + i + '">넣을 칸</label><select id="to' + i + '">' + SECTIONS.map(s => '<option value="' + s.key + '">' + s.label + '</option>').join('') + '</select>' +
+    '<button class="btn small" type="button" data-into="' + i + '">제안서 칸에 붙이기</button></div></div>';
+}
+function errText(e) {
+  const c = e && e.code;
+  if (['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'].includes(c)) { st.sampleOff = true; return 'Claude 호출이 허용되지 않아 이 화면에서는 대화를 쓸 수 없습니다. \'대화용 요약 복사\'로 Claude 대화창에서 이어 가세요.'; }
+  return ({
+    rate_limited: '요청이 많아 잠시 쉬어야 합니다. 조금 뒤에 다시 보내 주세요.',
+    refused: 'Claude가 이 요청에는 답하지 않았습니다. 질문을 바꿔 보세요.',
+    prompt_too_large: '보낼 내용이 너무 깁니다. 대화를 지우거나 초안 보내기를 끄고 다시 보내 주세요.',
+    empty_completion: '답이 비어 있습니다. 질문을 조금 바꿔 보세요.',
+    session_expired: 'Claude에 다시 로그인한 뒤 보내 주세요.',
+    invalid_json: '정리한 결과를 읽지 못했습니다. 다시 시도하거나 직접 입력하세요.',
+    cancelled: ''
+  })[c] ?? '연결이 끊겼습니다. 다시 보내 주세요.';
+}
+async function sendChat(c, text) {
+  text = String(text || '').trim();
+  if (!text || !st.sample || st.sampleOff || st.busy[c.id]) return;
+  const id = c.id;
+  const turns = chatOf(id).slice();
+  turns.push({ role: 'user', content: text, at: Date.now() });
+  saveChat(id, turns);
+  ensureProject(id, false);
+  const ctl = new AbortController();
+  st.busy[id] = ctl; st.chatErr[id] = ''; st.scrollChat = true;
+  if (st.route === id && st.tab === 'chat') renderChat(c, $('#panel'));
+  const input = [{ role: 'user', content: rules(c, !!st.includeDraft[id]) }].concat(turns.slice(-20).map(m => ({ role: m.role, content: m.content })));
+  let answer = '';
+  try {
+    const r = await st.sample(input, engineOpts({
+      cache: false, signal: ctl.signal,
+      onText: ({ text }) => { answer = text; const live = $('#live .body'); if (live && st.route === id) live.innerHTML = md(text); }
+    }));
+    noteApplied(r);
+    answer = r.text + (r.truncated ? '\n\n(답이 길어 중간에 끊겼습니다. "이어서"라고 보내 주세요.)' : '');
+    turns.push({ role: 'assistant', content: answer, at: Date.now() });
+  } catch (e) {
+    if (e && e.text && e.code !== 'refused') turns.push({ role: 'assistant', content: e.text + '\n\n(중간에 멈춤)', at: Date.now() });
+    st.chatErr[id] = errText(e);
+  } finally {
+    delete st.busy[id];
+    saveChat(id, turns);
+    st.scrollChat = true;
+    if (st.route === id) renderContest(id);
+    renderList();
+  }
+}
+
+/* ---------- 제안서 ---------- */
+function ensureProject(id, render = true) {
+  if (proj(id)) return proj(id);
+  const p = blankProject(id);
+  saveProject(id, p);
+  if (render) { renderList(); }
+  return p;
+}
+function checklist(c) {
+  const items = [];
+  if (c.end && !c.always) items.push(['deadline', '마감 전에 제출', kdate(c.end) + (c.endTime ? ' ' + c.endTime : '') + '까지. 시스템 접수는 마감 직전에 몰립니다.']);
+  items.push(['who', '참여 조건 다시 확인', c.who || '공식 공고 확인']);
+  if (c.team) items.push(['team', '참가 형태와 팀원 정보', c.team + (c.limit ? ' · ' + c.limit : '')]);
+  items.push(['submit', '제출물·서식·분량', c.submit || '공식 공고 양식 확인']);
+  items.push(['how', '제출처와 방법', c.how || '공식 공고 확인']);
+  if (/동의서/.test((c.submit || '') + (c.how || ''))) items.push(['consent', '개인정보 동의서 서명·첨부', '빠뜨리면 접수가 안 될 수 있습니다.']);
+  items.push(['ai', '생성형 AI 규정 확인', c.aiRule || '이 공고 요약에는 규정이 없습니다. 공식 공고에서 다시 확인하세요.']);
+  items.push(['own', '내 말로 고쳐 쓰기', 'Claude가 쓴 문장은 내 경험과 판단으로 다시 다듬었는지 확인합니다.']);
+  items.push(['facts', '숫자와 출처 확인', '[확인 필요] 표시가 남아 있지 않은지, 통계마다 출처가 있는지 봅니다.']);
+  items.push(['dup', '중복·표절 점검', '이미 시행 중인 정책이나 다른 공모 수상작과 겹치지 않는지 확인합니다.']);
+  if (c.url) items.push(['official', '공식 공고 마지막 확인', c.url]);
+  return items;
+}
+function renderDraft(c, el) {
+  const id = c.id;
+  const p = proj(id);
+  if (!p) {
+    el.innerHTML = '<div class="draft"><p class="muted" style="margin:0">아직 이 공모의 제안서를 시작하지 않았습니다.</p><div class="actions"><button class="btn talk" type="button" data-act="start-draft">제안서 시작</button></div></div>';
+    return;
+  }
+  const aiOff = !st.sample || st.sampleOff;
+  el.innerHTML = '<div class="draft">' +
+    '<div class="dtop"><label>진행 상태 <select id="pStatus">' + STATUSES.map(s => '<option' + (s === p.status ? ' selected' : '') + '>' + s + '</option>').join('') + '</select></label>' +
+    '<span class="muted">' + filled(p) + '/' + SECTIONS.length + '칸 · ' + totalChars(p).toLocaleString('ko-KR') + '자</span>' +
+    '<span style="margin-left:auto" class="actions"><button class="btn small" type="button" data-act="review"' + (aiOff ? ' disabled' : '') + '>심사위원처럼 검토받기</button></span></div>' +
+    (c.submit ? '<p class="note info" style="margin:0">제출 형식: ' + esc(c.submit) + '</p>' : '') +
+    SECTIONS.map(s => {
+      const v = p.sections[s.key] || '';
+      const sg = st.sugg[id + ':' + s.key];
+      return '<div class="sec" data-sec="' + s.key + '"><div class="sh"><label for="s_' + s.key + '">' + s.label + '</label><span class="cnt" id="n_' + s.key + '">' + v.length.toLocaleString('ko-KR') + '자</span>' +
+        '<span class="sp"><button class="btn small" type="button" data-ai="' + s.key + '"' + (aiOff || (sg && sg.busy) ? ' disabled' : '') + '>' + (v.trim() ? 'Claude가 다듬기' : 'Claude 초안') + '</button></span></div>' +
+        '<p class="hint">' + s.hint + '</p>' +
+        (s.one ? '<input type="text" id="s_' + s.key + '" value="' + esc(v) + '">' : '<textarea id="s_' + s.key + '" rows="' + s.rows + '">' + esc(v) + '</textarea>') +
+        (sg ? suggHtml(s, sg) : '') + '</div>';
+    }).join('') +
+    '<section><h3 style="margin:6px 0 6px;font-size:16px">제출 전 점검</h3><ul class="checklist">' +
+    checklist(c).map(([k, t, d]) => '<li><label><input type="checkbox" data-check="' + k + '"' + (p.checks[k] ? ' checked' : '') + '><span><b>' + esc(t) + '</b><small>' + linkify(d) + '</small></span></label></li>').join('') + '</ul></section>' +
+    '<div class="exports"><button class="btn" type="button" data-act="dl-proposal">제안서(.docx)</button><button class="btn" type="button" data-act="copydraft">제안서 복사</button>' +
+    (st.downloads ? '<button class="btn" type="button" data-act="savefile">파일로 저장(.md)</button>' : '') +
+    '<button class="btn ghost" type="button" data-act="handoff">대화용 요약 복사</button>' +
+    '<button class="btn ghost danger" type="button" data-act="resetdraft" style="margin-left:auto">제안서 비우기</button>' + '</div></div>';
+}
+function suggHtml(s, sg) {
+  return '<div class="sugg" id="sg_' + s.key + '"><span class="st">' + (sg.busy ? 'Claude가 쓰는 중' : sg.err ? '실패' : 'Claude 제안') + '</span>' +
+    '<div class="tx">' + (sg.text ? esc(sg.text) : sg.busy ? '<span class="thinking">생각하는 중</span>' : '') + '</div>' +
+    (sg.err ? '<p class="err" style="margin:0">' + esc(sg.err) + '</p>' : '') +
+    '<div class="bar">' + (sg.busy ? '<button class="btn small" type="button" data-sg="stop" data-k="' + s.key + '">멈추기</button>'
+      : (sg.text ? '<button class="btn small talk" type="button" data-sg="replace" data-k="' + s.key + '">이걸로 바꾸기</button><button class="btn small" type="button" data-sg="append" data-k="' + s.key + '">뒤에 붙이기</button>' : '') +
+      '<button class="btn small ghost" type="button" data-sg="drop" data-k="' + s.key + '">닫기</button>') + '</div></div>';
+}
+function totalChars(p) { return SECTIONS.reduce((n, s) => n + (p.sections[s.key] || '').length, 0); }
+const SECTION_GUIDE = {
+  title: '40자 안팎의 제안 제목 한 줄. 무엇을 어떻게 바꾸는지 드러나게.',
+  summary: '100자 안팎의 한두 문장 요약.',
+  problem: '현황 → 문제 → 원인 순서. 누가 어떤 불편을 겪는지 구체적으로. 확실하지 않은 수치는 [확인 필요: 찾을 곳]으로 표시.',
+  solution: '핵심 해법을 번호 목록으로. 대상, 방법, 단계, 기존 제도와 다른 점.',
+  effect: '대상별 기대 효과를 잴 수 있는 지표와 함께. 과장하지 말 것.',
+  plan: '추진 주체, 단계별 일정, 소요 예산(모르면 산정 방법), 바꿔야 할 법령·제도.',
+  refs: '근거 자료 목록. 실제로 있는지 확실하지 않은 자료는 [확인 필요]로 표시하고 찾을 곳과 검색어를 적을 것.'
+};
+async function aiSection(c, key) {
+  const id = c.id, p = proj(id), s = SECTIONS.find(x => x.key === key);
+  if (!p || !st.sample || st.sampleOff) return;
+  const cur = (p.sections[key] || '').trim();
+  const ctl = new AbortController();
+  const k = id + ':' + key;
+  st.sugg[k] = { busy: true, text: '', ctl };
+  rerenderSugg(c, key);
+  const prompt = rules(c, true) + '\n\n[요청]\n제안서의 \'' + s.label + '\' 칸을 ' + (cur ? '다듬어' : '새로 써') + ' 주세요.\n' +
+    '- 지침: ' + SECTION_GUIDE[key] + '\n- 공모 주제, 심사 기준, 제출 분량에 맞출 것.\n- 다른 칸과 내용이 이어지게 할 것.\n' +
+    '- 출력은 이 칸에 그대로 넣을 본문만. 머리말, 칸 이름, 설명, 따옴표, 마크다운 기호 없이.' +
+    (cur ? '\n\n[지금 쓴 내용]\n' + cur : '');
+  try {
+    const r = await st.sample(prompt, engineOpts({ cache: false, signal: ctl.signal, onText: ({ text }) => { st.sugg[k].text = text; const tx = $('#sg_' + key + ' .tx'); if (tx && st.route === id) tx.textContent = text; } }));
+    noteApplied(r);
+    st.sugg[k] = { busy: false, text: plain(r.text) };
+  } catch (e) {
+    st.sugg[k] = { busy: false, text: (e && e.text) || '', err: errText(e) };
+    if (e && e.code === 'cancelled') st.sugg[k].err = '';
+  }
+  if (st.route === id && st.tab === 'draft') renderDraft(c, $('#panel'));
+}
+function rerenderSugg(c, key) {
+  if (st.route !== c.id || st.tab !== 'draft') return;
+  const sec = $('[data-sec="' + key + '"]');
+  if (!sec) return;
+  const old = $('#sg_' + key);
+  const html = suggHtml(SECTIONS.find(s => s.key === key), st.sugg[c.id + ':' + key]);
+  if (old) old.outerHTML = html; else sec.insertAdjacentHTML('beforeend', html);
+  const btn = $('[data-ai="' + key + '"]'); if (btn) btn.disabled = true;
+}
+function setSection(c, key, value) {
+  const p = JSON.parse(JSON.stringify(proj(c.id) || blankProject(c.id)));
+  p.sections[key] = value;
+  if (p.status === '아이디어 구상' && value.trim().length > 40) p.status = '작성 중';
+  saveProject(c.id, p);
+}
+function draftMarkdown(c, p) {
+  return '# ' + ((p.sections.title || '').trim() || c.title + ' 제안서') + '\n\n' +
+    '- 공모: ' + c.title + ' (' + c.org + ')\n- 마감: ' + (c.always ? '상시' : (c.end || '') + (c.endTime ? ' ' + c.endTime : '')) + '\n- 공식 공고: ' + (c.url || '') + '\n\n' +
+    SECTIONS.filter(s => s.key !== 'title').map(s => '## ' + s.label + '\n\n' + ((p.sections[s.key] || '').trim() || '(비어 있음)')).join('\n\n') + '\n';
+}
+
+/* ---------- AI 엔진 ---------- */
+const ENGINES = [
+  { id: 'claude-opus-5-5', label: 'Opus 5.5' },
+  { id: 'claude-fable-5-1', label: 'Fable 5.1' },
+  { id: '', label: '자동(기본 모델)' }
+];
+const EFFORTS = [['low', '낮음'], ['medium', '보통'], ['high', '높음']];
+function engineLabel(id) { const e = ENGINES.find(x => x.id === id); return e ? e.label : (id || '기본 모델'); }
+function effortLabel(v) { const e = EFFORTS.find(x => x[0] === v); return e ? e[1] : v; }
+function initEngine() {
+  const saved = LS.get('gongmo.engine', null);
+  st.engine = saved && ENGINES.some(e => e.id === saved.model) && EFFORTS.some(e => e[0] === saved.effort) ? saved : { model: 'claude-opus-5-5', effort: 'high' };
+  $('#engModel').innerHTML = ENGINES.map(e => '<option value="' + e.id + '"' + (e.id === st.engine.model ? ' selected' : '') + '>' + e.label + '</option>').join('');
+  $('#engEffort').innerHTML = EFFORTS.map(e => '<option value="' + e[0] + '"' + (e[0] === st.engine.effort ? ' selected' : '') + '>생각 ' + e[1] + '</option>').join('');
+  const onChange = () => {
+    st.engine = { model: $('#engModel').value, effort: $('#engEffort').value };
+    LS.set('gongmo.engine', st.engine);
+    const eng = $('#engNow'); if (eng) eng.innerHTML = engineNowHtml();
+  };
+  $('#engModel').addEventListener('change', onChange);
+  $('#engEffort').addEventListener('change', onChange);
+}
+function engineOpts(extra) {
+  const o = Object.assign({}, extra || {});
+  if (st.engine.model) { o.model = st.engine.model; o.modelTier = 'complex'; }
+  if (st.engine.effort) o.effort = st.engine.effort;
+  return o;
+}
+function noteApplied(r) {
+  if (!r) return '';
+  const name = r.modelApplied ? engineLabel(r.modelApplied) : '기본 모델';
+  if (st.engine.model && !r.modelApplied) toast('선택한 ' + engineLabel(st.engine.model) + '을(를) 이 계정에서 쓸 수 없어 기본 모델이 답했습니다.');
+  st.lastModel = name;
+  return name;
+}
+function engineNowHtml() { return 'AI 엔진 <b>' + esc(engineLabel(st.engine.model)) + '</b> · 생각 <b>' + esc(effortLabel(st.engine.effort)) + '</b> <span class="muted">(오른쪽 위에서 바꿉니다)</span>'; }
+
+/* 빈칸 표시: [이름], [연락처], [확인 필요: …] 같은 것만. 공고의 메일 제목 규칙 같은 대괄호는 제외 */
+const PH_SRC = '\\[(?:확인 필요|공고 확인|빈칸)[^\\]\\n]{0,80}\\]|\\[(?:이름|성명|연락처|전화번호|휴대전화|이메일|소속|학교|학과|직업|주소|생년월일|제출일|팀명|대표자|작성자|서명)[^\\]\\n]{0,20}\\]';
+const PH_SPLIT = new RegExp('(' + PH_SRC + ')');
+const PH_ONE = new RegExp('^(?:' + PH_SRC + ')$');
+function placeholders(text) { return [...new Set(String(text || '').match(new RegExp(PH_SRC, 'g')) || [])]; }
+
+/* ---------- 제출 패키지: 프롬프트 ---------- */
+const HEADS = [['title', '제목'], ['summary', '한 줄 요약'], ['problem', '현황 및 문제점'], ['solution', '개선 방안'], ['effect', '기대 효과'], ['plan', '실행 방안'], ['refs', '근거 자료']];
+function headsText() { return HEADS.map(h => '=== ' + h[1] + ' ===').join('\n'); }
+function sectionsText(sec) { return HEADS.map(h => '=== ' + h[1] + ' ===\n' + ((sec && sec[h[0]]) || '').trim()).join('\n\n'); }
+function parseSections(text) {
+  const map = {}; HEADS.forEach(h => { map[h[1]] = h[0]; }); map['검토 메모'] = 'review';
+  const out = {}; let cur = null, n = 0;
+  for (const line of String(text).replace(/\r/g, '').split('\n')) {
+    const m = line.match(/^\s*={2,}\s*(.+?)\s*={2,}\s*$/);
+    const key = m && map[m[1].replace(/\s+/g, ' ').trim()];
+    if (key) { cur = key; out[cur] = []; n++; continue; }
+    if (cur) out[cur].push(line);
+  }
+  if (n < 4) return null;
+  const res = {};
+  for (const k in out) res[k] = plain(out[k].join('\n'));
+  return res;
+}
+function userInputText(inp) {
+  return '[사용자가 정한 정책 방향]\n' + ((inp.direction || '').trim() || '(적지 않음)') +
+    '\n\n[사용자의 아이디어 초안]\n' + ((inp.idea || '').trim() || '(적지 않음)') +
+    ((inp.notes || '').trim() ? '\n\n[사용자의 경험·근거 메모]\n' + inp.notes.trim() : '') +
+    '\n\n[참가 형태] ' + (inp.team === 'team' ? '팀' : '개인');
+}
+const WRITE_RULES =
+  '- 사용자의 방향과 아이디어를 중심에 두고 구체화하라. 논리의 빈틈은 메워도 되지만 주제를 바꾸지 마라.\n' +
+  '- 공모 주제·분야·심사 기준에 맞춰라. 심사 기준이 있으면 각 기준을 본문 어디에서 충족하는지 드러나게 써라.\n' +
+  '- 분량은 공고의 제출물·분량 규정 안에서 넉넉히 채우되 넘지 마라. A4 1쪽은 약 1,300자다. 규정이 없으면 본문 전체 4,000자 안팎.\n' +
+  '- 정책은 실행 주체(어느 기관·부서), 대상, 방법, 단계, 소요 예산 산정 방식, 바꿔야 할 법령·조례까지 구체적으로 써라.\n' +
+  '- 통계·법령·예산·기존 정책은 확실한 것만 쓰고, 확실하지 않으면 그 자리에 [확인 필요: 무엇을, 어디서]를 붙여라. 수치를 지어내지 마라.\n' +
+  '- 개인정보(이름, 연락처, 소속)는 지어내지 말고 [이름]처럼 빈칸으로 둬라.\n' +
+  '- 정책제안서 문체로 써라. 소제목과 번호(1. 가. -)를 쓰고, 마크다운 기호(#, **, 표)는 쓰지 마라.';
+function bodyPrompt(c, inp) {
+  return rules(c, false) + '\n\n' + userInputText(inp) + '\n\n[요청]\n위 방향과 아이디어로 이 공모에 낼 정책 제안서 본문을 완성하라.\n' + WRITE_RULES +
+    '\n\n출력 형식: 아래 머리표 일곱 개를 이 순서 그대로 한 줄씩 쓰고, 각 머리표 다음 줄부터 그 칸의 내용을 써라. 머리표 밖에는 아무것도 쓰지 마라.\n' + headsText();
+}
+function reviewPrompt(c, inp, sec) {
+  return rules(c, false) + '\n\n' + userInputText(inp) + '\n\n[제안서 본문 초안]\n' + sectionsText(sec) +
+    '\n\n[요청]\n이 공모의 심사위원이 되어 초안을 냉정하게 검토한 뒤, 고친 최종본을 써라.\n' +
+    '점검할 것: 공모 주제 적합성, 심사 기준별 충족, 실현 가능성(주체·예산·법령), 구체성, 독창성, 기존 정책과의 차별점, 분량·형식, [확인 필요] 표시가 빠진 단정, 문장의 군더더기.\n' +
+    WRITE_RULES + '\n\n출력 형식: 같은 머리표 일곱 개로 고친 최종본 전체를 쓰고, 맨 끝에 \'=== 검토 메모 ===\' 머리표를 달아 무엇을 왜 고쳤는지와 사용자가 직접 채우거나 확인할 것을 다섯 줄 이내 목록으로 써라.\n' + headsText() + '\n=== 검토 메모 ===';
+}
+function extrasPrompt(c, inp, sec) {
+  return rules(c, false) + '\n\n' + userInputText(inp) + '\n\n[최종 제안서 본문]\n' + sectionsText(sec) +
+    '\n\n[요청]\n사용자가 로그인해 업로드하거나 이메일로 보내기만 하면 되도록 제출 부속 자료를 만들어라.\n' +
+    '- 공고의 제출물, 제출 방법, 메일 제목 규칙, 파일 형식을 그대로 따른다. 공고 요약에 없는 규칙은 지어내지 말고 [공고 확인]이라고 쓴다.\n' +
+    '- 개인정보는 지어내지 말고 [이름], [연락처], [소속]처럼 빈칸으로 둔다.\n' +
+    '- 제출물이 발표 자료(PPT·PT 심사)면 slides에 슬라이드 구성을, 영상·포스터·카드뉴스면 장면이나 면 구성을 담는다. 해당 없으면 빈 배열.\n' +
+    'JSON 객체 하나로만 답하라. 형식:\n' +
+    '{"summary1p":"1쪽 요약본 본문. 600~900자. 문제-해법-기대효과-실행 순서. 제목 제외",' +
+    '"applicationFields":[{"label":"참가신청서 항목","value":"기재할 내용 또는 [빈칸]"}],' +
+    '"email":{"to":"접수 이메일 주소 또는 null","subject":"공고 규칙에 맞춘 메일 제목","body":"정중한 메일 본문","attachments":["첨부 파일명"]},' +
+    '"upload":[{"field":"온라인 접수 입력란 이름","value":"그대로 붙여 넣을 내용","limit":"글자 수 제한 등 또는 null"}],' +
+    '"slides":[{"title":"슬라이드나 장면 제목","points":["핵심 문장"]}],' +
+    '"files":[{"name":"파일명.확장자","what":"담을 내용","how":"서식·형식 주의점"}],' +
+    '"verify":[{"item":"제출 전에 확인할 사실·수치","where":"확인할 곳과 검색어"}],' +
+    '"aiNote":"공고에 생성형 AI 규정이 있으면 그에 맞춘 활용 고지 문안, 없으면 null",' +
+    '"steps":["사용자가 제출할 때 할 일을 순서대로"]}';
+}
+function cleanExtras(o) {
+  const arr = v => Array.isArray(v) ? v : [];
+  const str = v => (v == null ? '' : String(v));
+  o = o && typeof o === 'object' ? o : {};
+  const em = o.email && typeof o.email === 'object' ? o.email : {};
+  return {
+    summary1p: plain(str(o.summary1p)),
+    applicationFields: arr(o.applicationFields).filter(x => x && x.label).map(x => ({ label: str(x.label), value: str(x.value) })),
+    email: { to: em.to ? str(em.to) : '', subject: str(em.subject), body: plain(str(em.body)), attachments: arr(em.attachments).map(str) },
+    upload: arr(o.upload).filter(x => x && x.field).map(x => ({ field: str(x.field), value: plain(str(x.value)), limit: x.limit ? str(x.limit) : '' })),
+    slides: arr(o.slides).filter(x => x && x.title).map(x => ({ title: str(x.title), points: arr(x.points).map(str) })),
+    files: arr(o.files).filter(x => x && x.name).map(x => ({ name: str(x.name), what: str(x.what), how: str(x.how) })),
+    verify: arr(o.verify).filter(x => x && x.item).map(x => ({ item: str(x.item), where: str(x.where) })),
+    aiNote: o.aiNote ? plain(str(o.aiNote)) : '',
+    steps: arr(o.steps).map(str).filter(Boolean)
+  };
+}
+
+/* ---------- 제출 패키지: 만들기 ---------- */
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+function rerPkg(c) { if (st.route === c.id && st.tab === 'pkg') renderPkg(c, $('#panel')); }
+function updLive(c) {
+  if (st.route !== c.id || st.tab !== 'pkg') return;
+  const g = st.gen[c.id], el = $('#genLive');
+  if (el && g) { el.textContent = g.live.slice(-2500); el.scrollTop = el.scrollHeight; }
+  const t = $('#genTime'); if (t && g) t.textContent = Math.round((Date.now() - g.t0) / 1000) + '초';
+}
+const STEP_LIMIT_MS = 7 * 60 * 1000;
+async function runStep(c, g, k, prompt) {
+  const s = g.steps.find(x => x.k === k);
+  s.state = 'run'; s.t0 = Date.now(); g.live = ''; rerPkg(c);
+  const ctl = g.ctl = new AbortController();
+  const o = engineOpts({ cache: false, signal: ctl.signal, onText: ({ text }) => { if (!g.stopped) { g.live = text; updLive(c); } } });
+  let timer = null;
+  const guard = new Promise((_, rej) => {
+    g.stopNow = () => rej({ code: 'cancelled' });
+    timer = setTimeout(() => { try { ctl.abort(); } catch (e) { /* 이미 끝남 */ } rej({ code: 'timeout' }); }, STEP_LIMIT_MS);
+  });
+  let r;
+  try { r = await Promise.race([st.sample(prompt, o), guard]); }
+  finally { clearTimeout(timer); g.stopNow = null; }
+  s.state = 'done'; s.secs = Math.round((Date.now() - s.t0) / 1000);
+  g.applied = noteApplied(r);
+  if (r.truncated) g.warn = '답이 길어 중간에 끊겼습니다. 생각 수준을 낮추거나 아이디어를 줄여 다시 만들어 보세요.';
+  return r;
+}
+/* Claude가 준 JSON을 너그럽게 읽는다: 코드 울타리, 앞뒤 설명, 끝 쉼표, 문자열 안 줄바꿈 */
+function parseJsonLoose(text) {
+  let t = String(text || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if (a < 0 || b <= a) return null;
+  t = t.slice(a, b + 1);
+  const tries = [t, t.replace(/,\s*([}\]])/g, '$1')];
+  let fixed = '', inStr = false, esc = false;
+  for (const ch of tries[1]) {
+    if (inStr) {
+      if (esc) { esc = false; fixed += ch; continue; }
+      if (ch === '\\') { esc = true; fixed += ch; continue; }
+      if (ch === '"') { inStr = false; fixed += ch; continue; }
+      if (ch === '\n') { fixed += '\\n'; continue; }
+      if (ch === '\r') continue;
+      if (ch === '\t') { fixed += '\\t'; continue; }
+      fixed += ch;
+    } else { if (ch === '"') inStr = true; fixed += ch; }
+  }
+  tries.push(fixed);
+  for (const x of tries) { try { const o = JSON.parse(x); if (o && typeof o === 'object') return o; } catch (e) { /* 다음 방법 */ } }
+  return null;
+}
+function stopGen(c) {
+  const g = st.gen[c.id];
+  if (!g || !g.running) return;
+  g.stopped = true;
+  try { if (g.ctl) g.ctl.abort(); } catch (e) { /* 무시 */ }
+  if (g.stopNow) g.stopNow();
+}
+async function makePackage(c, mode) {
+  const id = c.id;
+  if (st.gen[id] && st.gen[id].running) return;
+  const rest = mode === 'rest';
+  if (!st.sample || st.sampleOff) { toast('이 화면에서는 Claude를 부를 수 없습니다. \'대화용 요약 복사\'를 쓰세요.'); return; }
+  ensureProject(id, false);
+  const inp = proj(id).input || {};
+  if (eligOf(c).k === 'no' && !st.forceElig[id]) { toast('내 조건으로는 참여할 수 없는 공모라 패키지를 만들지 않았습니다. 공고 한 장에서 이유를 확인하세요.'); return; }
+  if (!(inp.direction || '').trim() && !(inp.idea || '').trim()) { toast('정책 방향이나 아이디어 초안을 먼저 적어 주세요.'); const el = $('#in_direction'); if (el) el.focus(); return; }
+  if (rest && !(proj(id) && filled(proj(id)) >= 4)) { toast('제안서 본문이 먼저 있어야 합니다. \'제출 패키지 만들기\'를 눌러 주세요.'); return; }
+  const review = !rest && st.reviewPass[id] !== false;
+  const EXTRAS = { k: 'extras', label: '1쪽 요약, 신청서·업로드·이메일 문안, 파일 목록 만들기' };
+  const g = st.gen[id] = {
+    running: true, t0: Date.now(), live: '', err: '', warn: '', applied: '', rest,
+    steps: (rest ? [EXTRAS] : [{ k: 'body', label: '제안서 본문 쓰기' }].concat(review ? [{ k: 'review', label: '심사위원 관점으로 검토하고 다시 쓰기' }] : [], [EXTRAS])).map(s => Object.assign({}, s, { state: 'wait' }))
+  };
+  const live = () => st.gen[id] === g && !g.stopped;
+  const tick = setInterval(() => updLive(c), 1000);
+  let p = clone(proj(id));
+  if (!rest) { if (filled(p)) p.backup = { sections: clone(p.sections), at: Date.now() }; saveProject(id, p); }
+  try {
+    let r, sec, reviewNote = (p.pkg && p.pkg.review) || '';
+    if (rest) sec = clone(p.sections);
+    else {
+    r = await runStep(c, g, 'body', bodyPrompt(c, inp));
+    if (!live()) return;
+    sec = parseSections(r.text);
+    if (!sec) throw { code: 'format', text: r.text };
+    reviewNote = '';
+    p = clone(proj(id)); Object.assign(p.sections, pick(sec)); saveProject(id, p);
+    if (review) {
+      r = await runStep(c, g, 'review', reviewPrompt(c, inp, sec));
+      if (!live()) return;
+      const sec2 = parseSections(r.text);
+      if (sec2) { reviewNote = sec2.review || ''; sec = sec2; p = clone(proj(id)); Object.assign(p.sections, pick(sec)); saveProject(id, p); }
+      else g.warn = '검토본의 형식을 읽지 못해 첫 초안을 그대로 썼습니다.';
+    }
+    }
+    r = await runStep(c, g, 'extras', extrasPrompt(c, inp, sec));
+    if (!live()) return;
+    const obj = parseJsonLoose(r.text);
+    if (!obj) throw { code: 'extras_format', text: r.text };
+    const ex = cleanExtras(obj);
+    p = clone(proj(id));
+    p.pkg = Object.assign(ex, { review: reviewNote, generatedAt: Date.now(), engine: { model: st.engine.model, effort: st.engine.effort }, applied: g.applied || '' });
+    if (['아이디어 구상', '작성 중'].includes(p.status)) p.status = '검토 중';
+    saveProject(id, p);
+    toast('제출 패키지를 만들었습니다.');
+  } catch (e) {
+    if (st.gen[id] !== g) return;
+    const s = g.steps.find(x => x.state === 'run');
+    if (s) s.state = 'err';
+    const after = proj(id) && filled(proj(id)) >= 4 ? ' 본문은 저장돼 있으니 \'남은 단계만 만들기\'로 이어서 만드세요.' : '';
+    if (e && e.code === 'extras_format') { g.err = '마지막 단계(요약·제출 문안)의 답을 읽지 못했습니다.' + after; g.live = e.text || g.live; }
+    else if (e && e.code === 'timeout') g.err = '한 단계가 7분을 넘겨 멈췄습니다. 생각 수준을 낮추거나 잠시 뒤 다시 시도하세요.' + after;
+    else if (g.stopped || (e && e.code === 'cancelled')) g.err = '멈췄습니다.' + after;
+    else if (e && e.code === 'format') { g.err = 'Claude 답의 형식을 읽지 못했습니다. 다시 만들어 보세요. 받은 내용은 아래에 남겨 두었습니다.'; g.live = e.text || g.live; }
+    else g.err = (errText(e) || '만들지 못했습니다. 다시 시도해 주세요.') + after;
+  } finally {
+    clearInterval(tick);
+    if (st.gen[id] === g) { g.running = false; g.ctl = null; }
+    if (st.route === id) renderContest(id);
+    renderList();
+  }
+}
+function pick(sec) { const o = {}; HEADS.forEach(h => { if (sec[h[0]] != null && sec[h[0]] !== '') o[h[0]] = sec[h[0]]; }); return o; }
+
+/* ---------- 제출 패키지: 화면 ---------- */
+function renderPkg(c, el) {
+  const id = c.id, p = proj(id), inp = (p && p.input) || {}, g = st.gen[id], pk = p && p.pkg;
+  const aiOff = !st.sample || st.sampleOff;
+  const running = !!(g && g.running);
+  const hasBody = p && filled(p) >= 4;
+  const emails = ((c.how || '') + ' ' + (c.contact || '')).match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g) || [];
+  const links = ((c.how || '').match(/https?:\/\/[^\s)，,]+/g) || []).concat(c.url ? [c.url] : []);
+  const step = (no, cls, title, by, inner) => '<section class="stepbox ' + cls + '"><h3><span class="no">' + no + '</span>' + title + '<span class="by">' + by + '</span></h3>' + inner + '</section>';
+  let html = '<div class="pkg">';
+  html += step('1', 'mine', '정책 방향과 아이디어 초안', '내가 할 일',
+    '<div class="fld"><label for="in_direction">정책 방향</label><small>어떤 문제를 어느 쪽으로 풀고 싶은지. 예: 청년 1인가구의 고립을 줄이되, 지자체가 내년 예산으로 바로 할 수 있는 작은 정책으로.</small>' +
+    '<textarea id="in_direction" data-in="direction" rows="3">' + esc(inp.direction || '') + '</textarea></div>' +
+    '<div class="fld"><label for="in_idea">아이디어 초안</label><small>떠오른 해법을 편하게 적으세요. 문장이 거칠어도 됩니다.</small>' +
+    '<textarea id="in_idea" data-in="idea" rows="6">' + esc(inp.idea || '') + '</textarea></div>' +
+    '<div class="fld two"><div class="fld"><label for="in_notes">내 경험·근거 메모 <span class="muted">(선택)</span></label><textarea id="in_notes" data-in="notes" rows="3" placeholder="직접 겪은 일, 알고 있는 통계나 기사, 강조하고 싶은 점">' + esc(inp.notes || '') + '</textarea></div>' +
+    '<div class="fld"><label for="in_team">참가 형태</label><select id="in_team" data-in="team"><option value="solo"' + (inp.team !== 'team' ? ' selected' : '') + '>개인</option><option value="team"' + (inp.team === 'team' ? ' selected' : '') + '>팀</option></select><small>공고 기준: ' + esc(c.team || '공고 확인') + '</small></div></div>');
+  html += step('2', 'claude', '제출 패키지 만들기', 'Claude가 할 일',
+    '<div class="engline" id="engNow">' + engineNowHtml() + '</div>' +
+    '<label class="chk"><input type="checkbox" id="reviewPass"' + (st.reviewPass[id] !== false ? ' checked' : '') + (running ? ' disabled' : '') + '> 심사위원 관점으로 한 번 더 검토하고 다시 쓰기(권장, 시간이 두 배쯤 걸림)</label>' +
+    '<p class="muted" style="margin:0">Claude는 인터넷을 검색하지 않습니다. 확실하지 않은 수치는 <span class="mark">[확인 필요]</span>로 남기니 공식 통계로 채워 주세요. 높은 생각 수준은 단계마다 1~3분 걸릴 수 있습니다.</p>' +
+    (hasBody && !running && !pk ? '<p class="note" style="margin:0">본문은 이미 있습니다. \'남은 단계만 만들기\'는 지금 본문으로 1쪽 요약과 제출 문안만 만듭니다. \'처음부터 다시 만들기\'는 본문도 새로 씁니다(지금 본문은 되돌릴 수 있게 보관).</p>' : '') +
+    (hasBody && !running && pk ? '<p class="note" style="margin:0">다시 만들면 지금 제안서 본문을 새 내용으로 바꿉니다. 지금 본문은 \'이전 본문으로 되돌리기\'로 한 번 되돌릴 수 있게 보관합니다.</p>' : '') +
+    '<div class="actions">' + (running ? '<button class="btn" type="button" data-act="stopgen">멈추기</button>'
+      : (hasBody && !pk ? '<button class="btn talk" type="button" data-act="makerest"' + (aiOff ? ' disabled' : '') + '>남은 단계만 만들기 (요약·제출 문안)</button><button class="btn ghost" type="button" data-act="make"' + (aiOff ? ' disabled' : '') + '>처음부터 다시 만들기</button>'
+        : '<button class="btn talk" type="button" data-act="make"' + (aiOff ? ' disabled' : '') + '>' + (pk ? '제출 패키지 다시 만들기' : '제출 패키지 만들기') + '</button>' + (pk ? '<button class="btn ghost" type="button" data-act="makerest"' + (aiOff ? ' disabled' : '') + '>제출 문안만 다시 만들기</button>' : ''))) +
+    (p && p.backup && !running ? '<button class="btn ghost" type="button" data-act="restore">이전 본문으로 되돌리기</button>' : '') +
+    (aiOff ? '<button class="btn ghost" type="button" data-act="handoff">대화용 요약 복사</button>' : '') + '</div>' +
+    (aiOff ? '<p class="muted" style="margin:0">' + (st.sample === undefined && !st.sampleOff ? 'Claude 연결을 확인하는 중입니다.' : '이 화면에서는 Claude를 바로 부를 수 없습니다. 게시된 페이지에서 열거나, 대화용 요약을 복사해 Claude 대화창에서 이어 가세요.') + '</p>' : '') +
+    (g ? '<ol class="progress">' + g.steps.map(s => '<li data-s="' + s.state + '"><span>' + esc(s.label) + '</span><span class="t">' + (s.secs ? s.secs + '초' : '') + '</span></li>').join('') + '</ol>' +
+      (running ? '<div class="engline">진행 <b id="genTime">' + Math.round((Date.now() - g.t0) / 1000) + '초</b></div><div class="live" id="genLive">' + esc(g.live.slice(-2500)) + '</div>' : '') +
+      (g.err ? '<p class="err" style="margin:0">' + esc(g.err) + '</p>' + (g.live && !running ? '<div class="live">' + esc(g.live.slice(-4000)) + '</div>' : '') : '') +
+      (g.warn ? '<p class="note" style="margin:0">' + esc(g.warn) + '</p>' : '') : ''));
+  html += step('3', 'claude', '패키지 확인과 내려받기', pk ? '만든 때 ' + esc(new Date(pk.generatedAt).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })) + (pk.applied ? ' · ' + esc(pk.applied) : '') : '패키지를 만들면 나타납니다', pk ? pkgResultHtml(c, p, pk) : '<p class="muted" style="margin:0">2단계를 마치면 제안서, 1쪽 요약, 신청서 기재 초안, 온라인 접수 입력란, 이메일 문안, 파일 목록, 확인할 것이 여기에 모입니다.</p>');
+  html += step('4', 'mine', '로그인하고 제출하기', '내가 할 일',
+    '<ol class="olist">' + ((pk && pk.steps.length ? pk.steps : defaultSteps(c)).map(t => '<li>' + linkify(t) + '</li>').join('')) + '</ol>' +
+    '<div class="fld"><label>제출처</label><div class="actions">' +
+    [...new Set(links)].slice(0, 3).map(u => '<a class="btn small" href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(u.replace(/^https?:\/\//, '').slice(0, 38)) + '</a>').join('') +
+    [...new Set(emails)].map(m => '<span class="addr">' + esc(m) + '</span><button class="btn small ghost" type="button" data-copy-text="' + esc(m) + '">주소 복사</button>').join('') + '</div>' +
+    '<small>제출 방법: ' + linkify(c.how || '공식 공고 확인') + '</small></div>' +
+    '<div class="actions">' + (p && p.status === '제출 완료' ? '<span class="chip mine">제출 완료 · ' + esc(p.submittedAt ? new Date(p.submittedAt).toLocaleDateString('ko-KR') : '') + '</span><button class="btn small ghost" type="button" data-act="unsubmit">제출 전으로 되돌리기</button>'
+      : '<button class="btn primary" type="button" data-act="submitted"' + (!p ? ' disabled' : '') + '>제출을 마쳤어요</button>') + '</div>');
+  html += '</div>';
+  el.innerHTML = html;
+}
+function defaultSteps(c) {
+  return ['3단계에서 \'전체 패키지\'를 내려받고 [확인 필요]와 [이름] 같은 빈칸을 모두 채웁니다.',
+    '공고에 전용 양식이 있으면 제안서 내용을 양식 칸에 옮겨 붙입니다.',
+    '제출처에 로그인해 파일을 올리거나 이메일을 보냅니다. ' + (c.how ? '제출 방법: ' + c.how : ''),
+    '접수 확인 메일이나 화면을 저장하고, 아래 \'제출을 마쳤어요\'를 누릅니다.'];
+}
+function pkgResultHtml(c, p, pk) {
+  const sec = p.sections;
+  const uniq = placeholders(SECTIONS.map(s => sec[s.key] || '').join('\n') + '\n' + pk.summary1p + '\n' + pk.email.subject + '\n' + pk.email.body + '\n' + pk.applicationFields.map(f => f.value).join('\n'));
+  let h = '<div class="dl"><button class="btn talk" type="button" data-act="dl-zip">전체 패키지 내려받기(.zip)</button>' +
+    '<button class="btn" type="button" data-act="dl-proposal">제안서(.docx)</button>' +
+    '<button class="btn" type="button" data-act="dl-summary">1쪽 요약(.docx)</button>' +
+    '<button class="btn" type="button" data-act="dl-guide">패키지 안내서(.docx)</button></div>' +
+    '<p class="muted" style="margin:0">Word 파일은 한컴오피스 한글에서도 열립니다. 공고에 HWP 양식이 있으면 내용을 양식에 옮겨 붙이세요.</p>';
+  h += '<div class="part"><h4>제안서 본문 <small>' + filled(p) + '/' + SECTIONS.length + '칸 · ' + totalChars(p).toLocaleString('ko-KR') + '자</small><span class="sp"><button class="btn small" type="button" data-tab="draft">제안서 편집에서 고치기</button></span></h4>' +
+    '<p style="margin:0;font-weight:600">' + esc(sec.title || '') + '</p><p class="muted" style="margin:0">' + esc(sec.summary || '') + '</p></div>';
+  if (uniq.length) h += '<div class="part"><h4>채워야 할 빈칸 <small>' + uniq.length + '곳</small></h4><ul class="olist">' + uniq.slice(0, 30).map(f => '<li><span class="mark">' + esc(f) + '</span></li>').join('') + '</ul></div>';
+  if (pk.review) h += '<div class="part"><h4>검토 메모</h4><div class="live" style="max-height:none">' + esc(pk.review) + '</div></div>';
+  h += '<div class="part"><h4>1쪽 요약 <small id="cnt_summary1p">' + pk.summary1p.length.toLocaleString('ko-KR') + '자</small><span class="sp"><button class="btn small ghost" type="button" data-copy-pk="summary1p">복사</button></span></h4>' +
+    '<textarea class="copybox" style="font:15px/1.65 var(--f-body)" data-pk="summary1p" rows="8">' + esc(pk.summary1p) + '</textarea></div>';
+  if (pk.applicationFields.length) h += '<div class="part"><h4>참가신청서 기재 초안<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="app">복사</button></span></h4><div class="pwrap"><table class="ptable"><tbody>' +
+    pk.applicationFields.map((f, i) => '<tr><td>' + esc(f.label) + '</td><td><input type="text" data-pk="applicationFields.' + i + '.value" value="' + esc(f.value) + '"></td></tr>').join('') + '</tbody></table></div></div>';
+  if (pk.upload.length) h += '<div class="part"><h4>온라인 접수 입력란<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="upload">전체 복사</button></span></h4><div class="pwrap"><table class="ptable"><tbody>' +
+    pk.upload.map((f, i) => '<tr><td>' + esc(f.field) + (f.limit ? '<br><small class="muted">' + esc(f.limit) + '</small>' : '') + '<br><small class="muted" id="cnt_up' + i + '">' + f.value.length.toLocaleString('ko-KR') + '자</small></td><td><textarea data-pk="upload.' + i + '.value" rows="' + Math.min(8, 2 + Math.ceil(f.value.length / 60)) + '">' + esc(f.value) + '</textarea><button class="btn small ghost" type="button" data-copy-pk="upload.' + i + '">이 칸 복사</button></td></tr>').join('') + '</tbody></table></div></div>';
+  const hasEmail = !!(pk.email && (pk.email.to || pk.email.subject || pk.email.body));
+  if (hasEmail) h += '<div class="part"><h4>이메일 문안<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="email.subject">제목 복사</button><button class="btn small ghost" type="button" data-copy-pk="email.body">본문 복사</button></span></h4>' +
+    '<div class="fld"><label for="em_to">받는 곳</label><input type="text" id="em_to" data-pk="email.to" value="' + esc(pk.email.to) + '"></div>' +
+    '<div class="fld"><label for="em_sub">제목</label><input type="text" id="em_sub" data-pk="email.subject" value="' + esc(pk.email.subject) + '"></div>' +
+    '<div class="fld"><label for="em_body">본문</label><textarea id="em_body" data-pk="email.body" rows="7">' + esc(pk.email.body) + '</textarea></div>' +
+    (pk.email.attachments.length ? '<small class="muted">첨부: ' + esc(pk.email.attachments.join(', ')) + '</small>' : '') + '</div>';
+  if (pk.files.length) h += '<div class="part"><h4>제출 파일 목록</h4><div class="pwrap"><table class="ptable"><thead><tr><th>파일</th><th>담을 내용과 주의점</th></tr></thead><tbody>' +
+    pk.files.map(f => '<tr><td>' + esc(f.name) + '</td><td>' + esc(f.what) + (f.how ? '<br><small class="muted">' + esc(f.how) + '</small>' : '') + '</td></tr>').join('') + '</tbody></table></div></div>';
+  if (pk.slides.length) h += '<div class="part"><h4>발표·장면 구성 <small>' + pk.slides.length + '장</small><span class="sp"><button class="btn small ghost" type="button" data-copy-pk="slides">복사</button></span></h4><ol class="olist">' +
+    pk.slides.map(s => '<li><b>' + esc(s.title) + '</b>' + (s.points.length ? '<br><small>' + esc(s.points.join(' / ')) + '</small>' : '') + '</li>').join('') + '</ol></div>';
+  if (pk.verify.length) h += '<div class="part"><h4>제출 전에 확인할 사실</h4><div class="pwrap"><table class="ptable"><thead><tr><th>확인할 것</th><th>확인할 곳</th></tr></thead><tbody>' +
+    pk.verify.map(v => '<tr><td>' + esc(v.item) + '</td><td>' + linkify(v.where) + '</td></tr>').join('') + '</tbody></table></div></div>';
+  h += '<div class="part"><h4>생성형 AI 활용 고지<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="aiNote">복사</button></span></h4>' +
+    '<small class="muted">' + esc(c.aiRule ? '공고 규정: ' + c.aiRule : '공고 요약에 AI 규정이 없습니다. 공식 공고에서 확인하고, 필요하면 아래 문안을 고쳐 쓰세요.') + '</small>' +
+    '<textarea class="copybox" style="font:14px/1.6 var(--f-body);min-height:70px" data-pk="aiNote" rows="3">' + esc(pk.aiNote || '') + '</textarea></div>';
+  return h;
+}
+function setPk(c, path, value) {
+  const p = clone(proj(c.id));
+  if (!p.pkg) return;
+  const keys = path.split('.');
+  let o = p.pkg;
+  for (let i = 0; i < keys.length - 1; i++) { o = o[/^\d+$/.test(keys[i]) ? +keys[i] : keys[i]]; if (o == null) return; }
+  o[keys[keys.length - 1]] = value;
+  saveProject(c.id, p);
+}
+function pkText(pk, what) {
+  if (what === 'summary1p') return pk.summary1p;
+  if (what === 'aiNote') return pk.aiNote || '';
+  if (what === 'email.subject') return pk.email.subject;
+  if (what === 'email.body') return pk.email.body;
+  if (what === 'app') return pk.applicationFields.map(f => f.label + ': ' + f.value).join('\n');
+  if (what === 'upload') return pk.upload.map(f => '■ ' + f.field + (f.limit ? ' (' + f.limit + ')' : '') + '\n' + f.value).join('\n\n');
+  if (what.startsWith('upload.')) { const f = pk.upload[+what.split('.')[1]]; return f ? f.value : ''; }
+  if (what === 'slides') return pk.slides.map((s, i) => (i + 1) + '. ' + s.title + (s.points.length ? '\n   - ' + s.points.join('\n   - ') : '')).join('\n');
+  return '';
+}
+
+/* ---------- 문서 파일 ---------- */
+function lib(globalName, id) {
+  if (window[globalName]) return Promise.resolve(window[globalName]);
+  const el = document.getElementById(id);
+  return new Promise((res, rej) => {
+    let done = false;
+    const ok = () => { if (!done && window[globalName]) { done = true; res(window[globalName]); } };
+    if (el) { el.addEventListener('load', ok); el.addEventListener('error', () => { if (!done) { done = true; rej(new Error('load')); } }); }
+    const iv = setInterval(() => { ok(); if (done) clearInterval(iv); }, 300);
+    setTimeout(() => { clearInterval(iv); if (!done) { done = true; rej(new Error('timeout')); } }, 25000);
+  });
+}
+function shortName(c) { return (c.title || '공모').replace(/[\\/:*?"<>|「」『』'()]/g, '').replace(/\s+/g, ' ').trim().slice(0, 28); }
+function stamp() { const t = today(); return t.replace(/-/g, ''); }
+async function buildDocs(c, p, kinds) {
+  const d = await lib('docx', 'lib-docx');
+  const { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, AlignmentType, ShadingType } = d;
+  const FONT = { ascii: 'Malgun Gothic', eastAsia: '맑은 고딕', hAnsi: 'Malgun Gothic', cs: 'Malgun Gothic' };
+  const W = 9298;
+  const runs = (text, o) => String(text == null ? '' : text).split(PH_SPLIT).filter(t => t !== '' && t !== undefined).map(t =>
+    PH_ONE.test(t) ? new TextRun(Object.assign({ text: t, font: FONT, bold: true, color: 'C0342A', highlight: 'yellow' }, o || {})) : new TextRun(Object.assign({ text: t, font: FONT }, o || {})));
+  const P = (text, o) => new Paragraph(Object.assign({ children: runs(text, o && o.run) }, (o && o.para) || {}));
+  const body = text => {
+    const out = [];
+    for (const raw of String(text || '').replace(/\r/g, '').split('\n')) {
+      const t = raw.trim(); if (!t) continue;
+      let m;
+      if ((m = t.match(/^[-•·▪]\s+(.*)/))) out.push(new Paragraph({ children: runs('• ' + m[1]), indent: { left: 400, hanging: 200 } }));
+      else if (/^(\d+[.)]|[가-하][.)]|\(\d+\)|[①-⑳])\s*/.test(t)) out.push(new Paragraph({ children: runs(t), indent: { left: 320, hanging: 320 } }));
+      else out.push(new Paragraph({ children: runs(t) }));
+    }
+    return out.length ? out : [new Paragraph({ children: [] })];
+  };
+  const H1 = t => new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: t, font: FONT })] });
+  const H2 = t => new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: t, font: FONT })] });
+  const TITLE = t => new Paragraph({ heading: HeadingLevel.TITLE, children: runs(t) });
+  const cell = (t, w, fill, bold) => new TableCell({ width: { size: w, type: WidthType.DXA }, shading: fill ? { type: ShadingType.CLEAR, color: 'auto', fill } : undefined, margins: { top: 60, bottom: 60, left: 100, right: 100 }, children: bold ? [P(t, { run: { bold: true } })] : body(t) });
+  const kv = (rows, w1) => { w1 = w1 || 2300; return new Table({ width: { size: W, type: WidthType.DXA }, columnWidths: [w1, W - w1], rows: rows.map(([k, v]) => new TableRow({ children: [cell(k, w1, 'E6ECFA', true), cell(v, W - w1)] })) }); };
+  const grid = (head, rows, widths) => new Table({ width: { size: W, type: WidthType.DXA }, columnWidths: widths, rows: [new TableRow({ tableHeader: true, children: head.map((t, i) => cell(t, widths[i], 'E6ECFA', true)) })].concat(rows.map(r => new TableRow({ children: r.map((t, i) => cell(t, widths[i])) }))) });
+  const gap = () => new Paragraph({ children: [] });
+  const styles = {
+    default: {
+      document: { run: { font: FONT, size: 21 }, paragraph: { spacing: { line: 336, after: 100 } } },
+      title: { run: { font: FONT, size: 34, bold: true, color: '131A2B' }, paragraph: { alignment: AlignmentType.CENTER, spacing: { before: 120, after: 280 } } },
+      heading1: { run: { font: FONT, size: 27, bold: true, color: '1F3A8A' }, paragraph: { spacing: { before: 320, after: 120 }, keepNext: true } },
+      heading2: { run: { font: FONT, size: 23, bold: true, color: '131A2B' }, paragraph: { spacing: { before: 220, after: 80 }, keepNext: true } }
+    }
+  };
+  const props = { page: { size: { width: 11906, height: 16838 }, margin: { top: 1418, right: 1304, bottom: 1418, left: 1304 } } };
+  const sec = p.sections || {}, pk = p.pkg || cleanExtras({});
+  const title = (sec.title || '').trim() || c.title + ' 정책 제안';
+  const deadline = c.always ? '상시' : (c.end || '') + (c.endTime ? ' ' + c.endTime : '');
+  const proposalChildren = () => [
+    TITLE(title),
+    kv([['공모명', c.title], ['주최', c.org], ['제안자', (p.input && p.input.team === 'team') ? '[팀명] / 대표 [이름]' : '[이름]'], ['연락처', '[연락처]'], ['제출일', '[제출일]']]),
+    gap(),
+    H1('1. 제안 요약'), ...body(sec.summary),
+    H1('2. 현황 및 문제점'), ...body(sec.problem),
+    H1('3. 개선 방안'), ...body(sec.solution),
+    H1('4. 기대 효과'), ...body(sec.effect),
+    H1('5. 실행 방안'), ...body(sec.plan),
+    H1('6. 근거 자료'), ...body(sec.refs)
+  ];
+  const make = children => new Document({ creator: '[작성자]', title, styles, sections: [{ properties: props, children }] });
+  const out = {};
+  if (kinds.includes('proposal')) out.proposal = await Packer.toBlob(make(proposalChildren()));
+  if (kinds.includes('summary')) out.summary = await Packer.toBlob(make([TITLE(title), kv([['공모명', c.title], ['제안자', '[이름]']]), gap(), H1('제안 요약'), ...body(pk.summary1p || sec.summary)]));
+  if (kinds.includes('guide')) {
+    const flags = placeholders(SECTIONS.map(s => sec[s.key] || '').join('\n') + '\n' + (pk.summary1p || '') + '\n' + pk.email.subject + '\n' + pk.email.body + '\n' + pk.applicationFields.map(f => f.value).join('\n'));
+    const steps = pk.steps && pk.steps.length ? pk.steps : defaultSteps(c);
+    const ch = [
+      TITLE('제출 패키지 안내'),
+      kv([['공모', c.title], ['주최', c.org], ['마감', deadline], ['제출 방법', c.how || '공식 공고 확인'], ['제출물', c.submit || '공식 공고 확인'], ['공식 공고', c.url || ''], ['확인 상태', (c.verified ? '공식 공고 확인' : '공식 공고 미확인') + ' (' + (c.checkedAt || '') + ')'], ['만든 날', today() + (pk.applied ? ' · ' + pk.applied : '')]]),
+      gap(),
+      H1('1. 제출 순서'), ...steps.map((t, i) => P((i + 1) + '. ' + t, { para: { indent: { left: 320, hanging: 320 } } })),
+      H1('2. 파일 목록'), pk.files.length ? grid(['파일', '담을 내용', '주의점'], pk.files.map(f => [f.name, f.what, f.how]), [2600, 3700, W - 6300]) : P('공고의 제출물 목록을 따르세요: ' + (c.submit || '공식 공고 확인')), gap(),
+      H1('3. 먼저 채우고 확인할 것'),
+      flags.length ? P('본문의 빈칸과 확인 필요 표시 ' + flags.length + '곳: ' + flags.join(', ')) : P('본문에 남은 빈칸 표시가 없습니다.'),
+      pk.verify.length ? grid(['확인할 것', '확인할 곳'], pk.verify.map(v => [v.item, v.where]), [4400, W - 4400]) : gap(), gap(),
+      H1('4. 제안서 본문'), ...proposalChildren().slice(2),
+      H1('5. 1쪽 요약'), ...body(pk.summary1p),
+      H1('6. 참가신청서 기재 초안'), pk.applicationFields.length ? kv(pk.applicationFields.map(f => [f.label, f.value])) : P('공고 양식을 확인하세요.'), gap(),
+      H1('7. 온라인 접수 입력란'), pk.upload.length ? grid(['입력란', '붙여 넣을 내용'], pk.upload.map(f => [f.field + (f.limit ? '\n(' + f.limit + ')' : ''), f.value]), [2300, W - 2300]) : P('온라인 입력란 정보가 공고 요약에 없습니다.'), gap(),
+      H1('8. 이메일 문안'), ...(pk.email && (pk.email.to || pk.email.subject || pk.email.body) ? [kv([['받는 곳', pk.email.to || '[공고 확인]'], ['제목', pk.email.subject], ['본문', pk.email.body], ['첨부', pk.email.attachments.join('\n')]])] : [P('이메일 접수가 아닙니다. 위 온라인 접수 입력란을 쓰세요.')]), gap()
+    ];
+    if (pk.slides.length) { ch.push(H1('9. 발표·장면 구성')); pk.slides.forEach((s, i) => { ch.push(H2((i + 1) + '. ' + s.title)); s.points.forEach(t => ch.push(P('• ' + t, { para: { indent: { left: 400, hanging: 200 } } }))); }); }
+    ch.push(H1((pk.slides.length ? '10' : '9') + '. 생성형 AI 활용 고지'), P(c.aiRule ? '공고 규정: ' + c.aiRule : '공고 요약에 규정 없음. 공식 공고에서 확인하세요.'), ...body(pk.aiNote || '(필요하면 작성)'));
+    if (pk.review) ch.push(H1((pk.slides.length ? '11' : '10') + '. 검토 메모'), ...body(pk.review));
+    ch.push(gap(), P('이 안내서는 정책공모 작업실에서 만든 초안입니다. 제출 전에 공식 공고와 모든 수치를 다시 확인하세요.', { run: { size: 17, color: '737C90' } }));
+    out.guide = await Packer.toBlob(make(ch));
+  }
+  return out;
+}
+function textFiles(c, p) {
+  const pk = p.pkg || cleanExtras({});
+  const files = {};
+  files['04_이메일문안.txt'] = '받는 곳: ' + (pk.email.to || '[공고 확인]') + '\n제목: ' + pk.email.subject + '\n첨부: ' + pk.email.attachments.join(', ') + '\n\n' + pk.email.body + '\n';
+  if (pk.upload.length) files['05_온라인접수_입력란.txt'] = pkText(pk, 'upload') + '\n';
+  if (pk.applicationFields.length) files['06_신청서_기재초안.txt'] = pkText(pk, 'app') + '\n';
+  if (pk.slides.length) files['07_발표장면_구성.txt'] = pkText(pk, 'slides') + '\n';
+  files['08_제안서_본문.md'] = draftMarkdown(c, p);
+  return files;
+}
+async function saveBlob(name, blob) {
+  if (st.downloads) {
+    try { await st.downloads.save({ filename: name, data: blob }); return true; }
+    catch (e) { if (e && e.code === 'declined') return false; if (!(e && ['unavailable', 'not_granted', 'capability_disabled', 'capability_removed'].includes(e.code))) { toast('파일을 저장하지 못했습니다.'); return false; } st.downloads = null; }
+  }
+  try {
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    return true;
+  } catch (e) { toast('이 화면에서는 파일 저장이 막혀 있습니다. 복사 버튼을 쓰세요.'); return false; }
+}
+async function download(c, kind) {
+  const p = proj(c.id); if (!p) return;
+  const base = shortName(c);
+  toast('문서를 만드는 중입니다…');
+  try {
+    if (kind === 'zip') {
+      const [docs, JSZip] = await Promise.all([buildDocs(c, p, ['proposal', 'summary', 'guide']), lib('JSZip', 'lib-jszip')]);
+      const zip = new JSZip();
+      zip.file('00_제출패키지_안내.docx', docs.guide);
+      zip.file('01_제안서.docx', docs.proposal);
+      zip.file('02_1쪽요약.docx', docs.summary);
+      const tf = textFiles(c, p);
+      for (const k in tf) zip.file(k, tf[k]);
+      const blob = await zip.generateAsync({ type: 'blob' });
+      if (await saveBlob(base + '_제출패키지_' + stamp() + '.zip', blob)) toast('전체 패키지를 저장했습니다.');
+    } else {
+      const docs = await buildDocs(c, p, [kind]);
+      const names = { proposal: '_제안서_', summary: '_1쪽요약_', guide: '_제출패키지_안내_' };
+      if (await saveBlob(base + names[kind] + stamp() + '.docx', docs[kind])) toast('문서를 저장했습니다.');
+    }
+  } catch (e) {
+    toast('문서 도구를 불러오지 못했습니다. 인터넷 연결을 확인하거나 복사 버튼을 쓰세요.');
+  }
+}
+
+/* ---------- 복사·알림 ---------- */
+let toastTimer;
+function toast(t) {
+  let el = $('.toast');
+  if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
+  el.textContent = t; el.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true; }, 2600);
+}
+function copy(text, label) {
+  const done = () => toast((label || '내용') + '을 복사했습니다.');
+  const fallback = () => {
+    const panel = $('#panel') || $('#main');
+    let box = $('#copybox');
+    if (!box) { box = document.createElement('textarea'); box.id = 'copybox'; box.className = 'copybox'; box.setAttribute('aria-label', '복사할 내용'); panel.prepend(box); }
+    box.value = text; box.focus(); box.select();
+    toast('자동 복사가 막혀 있어 내용을 선택해 두었습니다. 직접 복사하세요.');
+  };
+  try { const pr = navigator.clipboard && navigator.clipboard.writeText(text); if (pr) pr.then(done, fallback); else fallback(); } catch (e) { fallback(); }
+}
+
+/* ---------- 공고 추가 ---------- */
+const AF = ['title', 'org', 'orgType', 'start', 'end', 'endTime', 'team', 'who', 'prizeKind', 'prizeTop', 'prizeText', 'theme', 'submit', 'how', 'judging', 'announce', 'contact', 'aiRule', 'url', 'tags'];
+function openAdd() {
+  const dlg = $('#addDlg');
+  $('#extractBtn').disabled = !st.sample || st.sampleOff;
+  $('#extractMsg').textContent = (!st.sample || st.sampleOff) ? '이 화면에서는 Claude 정리를 쓸 수 없어 직접 입력해야 합니다.' : '';
+  fillSido($('#a_esido'), '', '제한 없음');
+  $('#addErr').hidden = true;
+  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+}
+async function extract() {
+  const text = $('#pasteText').value.trim();
+  if (!text) { $('#extractMsg').textContent = '공고문을 먼저 붙여 넣으세요.'; return; }
+  const btn = $('#extractBtn'); btn.disabled = true; $('#extractMsg').textContent = 'Claude가 공고를 읽는 중입니다…';
+  const prompt = '다음은 정책·아이디어 공모전 공고문이다. 공고에 적힌 내용만 아래 JSON 객체 하나로 답하라. 공고에 없는 값은 null. 날짜는 YYYY-MM-DD(연도가 없으면 ' + today().slice(0, 4) + '년으로). 추측하지 말 것.\n' +
+    '{"title":"공모 이름","org":"주최 기관","orgType":"중앙부처|광역지자체|기초지자체|공공기관|국회|학회·민간 중 하나","start":"접수 시작일","end":"접수 마감일","endTime":"마감 시각 예: 18:00","team":"참가 형태 예: 개인 또는 3인 이내 팀","who":"참여 조건","prizeKind":"cash|goods|none|unknown","prizeTop":최고 상금 원 단위 숫자 또는 null,"prizeText":"시상 내역 요약","theme":"공모 주제와 분야","submit":"제출물, 서식, 분량","how":"제출 방법과 접수처","judging":"심사 기준과 절차","announce":"발표 일정","contact":"문의처","aiRule":"생성형 AI 관련 규정","url":"공고에 적힌 공식 주소","tags":["주제 태그 1~3개, 예: 청년, 주거, 환경, 안전, 복지, 지역, 행정혁신, 디지털·데이터, 일자리, 교육, 문화"],"eligRegion":{"sido":"참여 자격에 거주지 제한이 있으면 시·도 정식 명칭(예: 서울특별시, 경기도), 없으면 null","sigungu":"시·군·구 제한이 있으면 이름(예: 양천구), 없으면 null"},"eligWorkSchoolOk":그 지역 직장·학교에 다니는 사람도 되면 true 아니면 false,"eligMinAge":최소 나이 숫자 또는 null,"eligMaxAge":최대 나이 숫자 또는 null,"eligStudentOnly":대학(원)생만 참여할 수 있으면 true 아니면 false}\n\n[공고문]\n' + text.slice(0, 60000);
+  try {
+    const o = await st.sample.json(prompt, engineOpts({ cache: false }));
+    if (!o || typeof o !== 'object') throw { code: 'invalid_json' };
+    for (const k of AF) {
+      const el = $('#a_' + k); if (!el) continue;
+      let v = o[k];
+      if (k === 'tags') v = Array.isArray(v) ? v.join(', ') : (v || '');
+      if (v == null) continue;
+      if (el.tagName === 'SELECT') { if ([...el.options].some(op => op.value === String(v))) el.value = String(v); }
+      else el.value = String(v);
+    }
+    const er = o.eligRegion && typeof o.eligRegion === 'object' ? o.eligRegion : {};
+    if (er.sido && SIDO.includes(er.sido)) $('#a_esido').value = er.sido;
+    if (er.sigungu) $('#a_esigungu').value = String(er.sigungu);
+    if (o.eligMinAge) $('#a_eminage').value = String(o.eligMinAge);
+    if (o.eligMaxAge) $('#a_emaxage').value = String(o.eligMaxAge);
+    $('#a_eworkok').checked = !!o.eligWorkSchoolOk;
+    $('#a_estudent').checked = !!o.eligStudentOnly;
+    $('#extractMsg').textContent = '정리했습니다. 틀린 곳이 없는지 확인한 뒤 추가하세요.';
+  } catch (e) {
+    $('#extractMsg').textContent = errText(e) || '정리하지 못했습니다.';
+  } finally { btn.disabled = !st.sample || st.sampleOff; }
+}
+function saveAdd() {
+  const v = k => { const el = $('#a_' + k); return el ? el.value.trim() : ''; };
+  if (!v('title')) { const e = $('#addErr'); e.textContent = '공모 이름을 입력하세요.'; e.hidden = false; return; }
+  if (v('url') && !/^https?:\/\//.test(v('url'))) { const e = $('#addErr'); e.textContent = '공식 공고 주소는 http로 시작해야 합니다.'; e.hidden = false; return; }
+  const id = 'my-' + Date.now().toString(36);
+  const top = parseInt(v('prizeTop').replace(/[^0-9]/g, ''), 10);
+  const c = {
+    id, title: v('title'), org: v('org') || '주최 확인 필요', orgType: v('orgType'), kind: '공모전',
+    tags: v('tags').split(/[,，]/).map(s => s.trim()).filter(Boolean).slice(0, 4),
+    start: v('start') || null, end: v('end') || null, endTime: v('endTime') || null,
+    who: v('who') || null, team: v('team') || null, limit: null,
+    prize: { kind: v('prizeKind') || 'unknown', total: null, top: isFinite(top) ? top : null, text: v('prizeText') || '공고 확인 필요' },
+    theme: v('theme') || null, submit: v('submit') || null, how: v('how') || null, judging: v('judging') || null,
+    announce: v('announce') || null, aiRule: v('aiRule') || null, contact: v('contact') || null, tip: null,
+    url: v('url') || null, verified: false, source: '직접 추가한 공고', note: null, checkedAt: today(), addedAt: Date.now()
+  };
+  const num = k => { const n = parseInt(v(k).replace(/[^0-9]/g, ''), 10); return isFinite(n) && n > 0 ? n : null; };
+  const elig = {};
+  if (v('esido')) elig.regions = [{ sido: v('esido'), sigungu: v('esigungu') || null }];
+  if (elig.regions && $('#a_eworkok').checked) elig.workSchoolOk = true;
+  if (num('eminage')) elig.minAge = num('eminage');
+  if (num('emaxage')) elig.maxAge = num('emaxage');
+  if ($('#a_estudent').checked) elig.statuses = ['대학(원)생'];
+  c.elig = elig;
+  if (!c.end) c.always = false;
+  st.overlay.set(id, c);
+  queue('contests/' + id, c);
+  $('#addDlg').close ? $('#addDlg').close() : $('#addDlg').removeAttribute('open');
+  $('#addForm').reset();
+  renderFilters(); renderList();
+  location.hash = '#' + id;
+  toast(st.sharedMode === 'db' ? '공고를 목록에 추가했습니다.' : '공고를 이 브라우저의 목록에 추가했습니다.');
+}
+
+/* ---------- 라우팅·이벤트 ---------- */
+function route() {
+  const h = decodeURIComponent(location.hash.replace(/^#/, ''));
+  const c = h && h !== 'home' ? getC(h) : null;
+  const prev = st.route;
+  st.route = c ? c.id : 'home';
+  document.body.dataset.route = c ? 'contest' : 'home';
+  if (c && prev !== c.id) st.tab = 'brief';
+  if (c) renderContest(c.id); else renderHome();
+  renderList();
+  if (c && prev !== c.id) window.scrollTo({ top: 0 });
+}
+function bind() {
+  window.addEventListener('hashchange', route);
+  $('#viewSeg').addEventListener('click', e => {
+    const b = e.target.closest('button[data-v]'); if (!b) return;
+    st.f.view = b.dataset.v;
+    $$('#viewSeg button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    renderList();
+  });
+  let qT; $('#q').addEventListener('input', e => { clearTimeout(qT); qT = setTimeout(() => { st.f.q = e.target.value; renderList(); }, 150); });
+  $('#sort').addEventListener('change', e => { st.f.sort = e.target.value; renderList(); });
+  $('#tag').addEventListener('change', e => { st.f.tag = e.target.value; renderList(); });
+  $('#org').addEventListener('change', e => { st.f.org = e.target.value; renderList(); });
+  $('#fPrize').addEventListener('change', e => { st.f.prize = e.target.checked; renderList(); });
+  $('#fTeam').addEventListener('change', e => { st.f.team = e.target.checked; renderList(); });
+  $('#fAll').addEventListener('change', e => { st.f.anyone = e.target.checked; renderList(); });
+  $('#fElig').addEventListener('change', e => { st.f.elig = e.target.checked; rerenderAll(); });
+  $('#hidNote').addEventListener('click', e => { if (e.target.id === 'showAll') { st.f.elig = false; $('#fElig').checked = false; rerenderAll(); } });
+  $('#profBtn').addEventListener('click', openProfile);
+  $('#profCancel').addEventListener('click', () => closeDlg('#profDlg'));
+  $('#profClear').addEventListener('click', () => { closeDlg('#profDlg'); saveProfile(null); toast('내 조건을 지웠습니다.'); });
+  $('#profSave').addEventListener('click', () => { const p = readProfileForm(); if (!p) return; closeDlg('#profDlg'); saveProfile(p); toast('내 조건을 저장했습니다. 참여할 수 있는 공모만 보여 줍니다.'); });
+  $('#profForm').addEventListener('submit', e => e.preventDefault());
+  $('#addBtn').addEventListener('click', openAdd);
+  $('#addCancel').addEventListener('click', () => { const d = $('#addDlg'); d.close ? d.close() : d.removeAttribute('open'); });
+  $('#extractBtn').addEventListener('click', extract);
+  $('#addSave').addEventListener('click', saveAdd);
+  $('#addForm').addEventListener('submit', e => e.preventDefault());
+
+  $('#main').addEventListener('click', e => {
+    const c = st.route !== 'home' ? getC(st.route) : null;
+    const t = e.target;
+    if (!c && t.closest('[data-act="profile"]')) { openProfile(); return; }
+    const tab = t.closest('[data-tab]');
+    if (tab && c) { st.tab = tab.dataset.tab; $$('.tabs [data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === st.tab))); renderTab(c); if (!tab.closest('.tabs')) { const tb = $('.tabs'); if (tb) tb.scrollIntoView({ block: 'start' }); } return; }
+    const act = t.closest('[data-act]');
+    if (act && c) {
+      const a = act.dataset.act;
+      if ((a === 'start' || a === 'start-draft') && eligOf(c).k === 'no' && !st.forceElig[c.id] && !act.dataset.confirm) {
+        act.dataset.confirm = '1'; act.textContent = '자격이 맞지 않습니다. 그래도 시작';
+        toast('내 조건으로는 참여할 수 없는 공모입니다. 공고 한 장에서 이유를 확인하세요.');
+        return;
+      }
+      if (a === 'profile') { openProfile(); return; }
+      if (a === 'start' || a === 'start-draft') { if (eligOf(c).k === 'no') st.forceElig[c.id] = true; ensureProject(c.id); st.tab = a === 'start' ? 'pkg' : 'draft'; renderContest(c.id); renderList(); if (a === 'start') { const d = $('#in_direction'); if (d) d.focus(); } }
+      else if (a === 'make') makePackage(c);
+      else if (a === 'makerest') makePackage(c, 'rest');
+      else if (a === 'stopgen') stopGen(c);
+      else if (a === 'restore') { const p = clone(proj(c.id)); if (p.backup) { p.sections = p.backup.sections; delete p.backup; saveProject(c.id, p); renderContest(c.id); toast('이전 본문으로 되돌렸습니다.'); } }
+      else if (a === 'dl-zip' || a === 'dl-proposal' || a === 'dl-summary' || a === 'dl-guide') download(c, a.slice(3));
+      else if (a === 'submitted') { const p = clone(proj(c.id)); p.status = '제출 완료'; p.submittedAt = Date.now(); saveProject(c.id, p); renderContest(c.id); renderList(); toast('제출 완료로 표시했습니다.'); }
+      else if (a === 'unsubmit') { const p = clone(proj(c.id)); p.status = '검토 중'; delete p.submittedAt; saveProject(c.id, p); renderContest(c.id); renderList(); }
+      else if (a === 'ask') { st.tab = 'chat'; renderContest(c.id); const ask = $('#ask'); if (ask) ask.focus(); }
+      else if (a === 'handoff') copy(handoffText(c), '대화용 요약');
+      else if (a === 'send') { const ask = $('#ask'); sendChat(c, ask && ask.value); }
+      else if (a === 'stop') { const ctl = st.busy[c.id]; if (ctl) ctl.abort(); }
+      else if (a === 'clearchat') { if (act.dataset.confirm) { saveChat(c.id, []); st.chatErr[c.id] = ''; renderContest(c.id); } else { act.dataset.confirm = '1'; act.textContent = '정말 지우기'; } }
+      else if (a === 'review') { st.tab = 'chat'; st.includeDraft[c.id] = true; renderContest(c.id); sendChat(c, STARTERS[5][1]); }
+      else if (a === 'copydraft') { const p = proj(c.id); if (p) copy(draftMarkdown(c, p), '제안서'); }
+      else if (a === 'savefile') saveFile(c);
+      else if (a === 'resetdraft') { if (act.dataset.confirm) { const p = blankProject(c.id); p.status = (proj(c.id) || {}).status || p.status; saveProject(c.id, p); renderContest(c.id); } else { act.dataset.confirm = '1'; act.textContent = '정말 비우기'; } }
+      else if (a === 'delete') { if (act.dataset.confirm) { st.overlay.delete(c.id); queue('contests/' + c.id, null); location.hash = '#home'; renderFilters(); toast('공고를 지웠습니다.'); } else { act.dataset.confirm = '1'; act.textContent = '정말 지우기'; } }
+      return;
+    }
+    const cpk = t.closest('[data-copy-pk]');
+    if (cpk && c) { const p = proj(c.id); if (p && p.pkg) copy(pkText(p.pkg, cpk.dataset.copyPk), '내용'); return; }
+    const ctx = t.closest('[data-copy-text]');
+    if (ctx) { copy(ctx.dataset.copyText, '주소'); return; }
+    const sb = t.closest('[data-starter]');
+    if (sb && c) { sendChat(c, STARTERS[+sb.dataset.starter][1]); return; }
+    const cm = t.closest('[data-copy-msg]');
+    if (cm && c) { const m = chatOf(c.id)[+cm.dataset.copyMsg]; if (m) copy(m.content, '답변'); return; }
+    const into = t.closest('[data-into]');
+    if (into && c) {
+      const i = +into.dataset.into, m = chatOf(c.id)[i], sel = $('#to' + i);
+      if (m && sel) { ensureProject(c.id, false); const cur = (proj(c.id).sections[sel.value] || '').trim(); setSection(c, sel.value, (cur ? cur + '\n\n' : '') + plain(m.content)); toast('\'' + SECTIONS.find(s => s.key === sel.value).label + '\' 칸에 붙였습니다.'); renderList(); }
+      return;
+    }
+    const ai = t.closest('[data-ai]');
+    if (ai && c) { aiSection(c, ai.dataset.ai); return; }
+    const sg = t.closest('[data-sg]');
+    if (sg && c) {
+      const key = sg.dataset.k, k = c.id + ':' + key, s = st.sugg[k];
+      if (sg.dataset.sg === 'stop') { if (s && s.ctl) s.ctl.abort(); return; }
+      if (sg.dataset.sg === 'replace' && s) setSection(c, key, s.text);
+      if (sg.dataset.sg === 'append' && s) { const cur = (proj(c.id).sections[key] || '').trim(); setSection(c, key, (cur ? cur + '\n\n' : '') + s.text); }
+      delete st.sugg[k];
+      renderDraft(c, $('#panel'));
+    }
+  });
+  $('#main').addEventListener('keydown', e => {
+    if (e.target.id === 'ask' && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { const c = getC(st.route); if (c) sendChat(c, e.target.value); }
+  });
+  $('#main').addEventListener('input', e => {
+    const c = st.route !== 'home' ? getC(st.route) : null; if (!c) return;
+    const t = e.target;
+    if (t.dataset.in) {
+      const p = clone(proj(c.id) || blankProject(c.id));
+      p.input = Object.assign({}, p.input || {}, { [t.dataset.in]: t.value });
+      saveProject(c.id, p);
+      return;
+    }
+    if (t.dataset.pk) {
+      setPk(c, t.dataset.pk, t.value);
+      const cnt = t.dataset.pk === 'summary1p' ? $('#cnt_summary1p') : /^upload\.\d+\.value$/.test(t.dataset.pk) ? $('#cnt_up' + t.dataset.pk.split('.')[1]) : null;
+      if (cnt) cnt.textContent = t.value.length.toLocaleString('ko-KR') + '자';
+      return;
+    }
+    if (t.id && t.id.startsWith('s_')) {
+      const key = t.id.slice(2);
+      setSection(c, key, t.value);
+      const n = $('#n_' + key); if (n) n.textContent = t.value.length.toLocaleString('ko-KR') + '자';
+    }
+  });
+  $('#main').addEventListener('change', e => {
+    const c = st.route !== 'home' ? getC(st.route) : null; if (!c) return;
+    const t = e.target;
+    if (t.id === 'incDraft') st.includeDraft[c.id] = t.checked;
+    else if (t.id === 'reviewPass') st.reviewPass[c.id] = t.checked;
+    else if (t.dataset.in) { const p = clone(proj(c.id) || blankProject(c.id)); p.input = Object.assign({}, p.input || {}, { [t.dataset.in]: t.value }); saveProject(c.id, p); renderList(); }
+    else if (t.id === 'pStatus') { const p = JSON.parse(JSON.stringify(proj(c.id))); p.status = t.value; saveProject(c.id, p); renderList(); }
+    else if (t.dataset.check) { const p = JSON.parse(JSON.stringify(proj(c.id))); p.checks[t.dataset.check] = t.checked; saveProject(c.id, p); }
+    else if (t.id && t.id.startsWith('s_')) { renderList(); }
+  });
+}
+async function saveFile(c) {
+  const p = proj(c.id); if (!p || !st.downloads) return;
+  const name = ((p.sections.title || c.title).replace(/[\\/:*?"<>|]/g, '').slice(0, 60) || '제안서') + '.md';
+  try { await st.downloads.save({ filename: name, data: draftMarkdown(c, p) }); toast('파일을 저장했습니다.'); }
+  catch (e) { if (e && e.code === 'declined') return; if (e && ['unavailable', 'not_granted', 'capability_disabled', 'capability_removed'].includes(e.code)) { st.downloads = null; renderTab(c); } toast('파일로 저장하지 못했습니다. \'제안서 복사\'를 쓰세요.'); }
+}
+
+/* ---------- 저장소 연결 ---------- */
+function applyDocs(col, docs) {
+  const next = {};
+  for (const d of docs) next[d.id] = d.data();
+  if (col === 'contests') {
+    const ov = new Map();
+    for (const [id, v] of Object.entries(next)) ov.set(id, JSON.parse(JSON.stringify(v)));
+    for (const [path, at] of Object.entries(st.dirty)) if (path.startsWith('contests/') && Date.now() - at < 5000) { const id = path.slice(9); if (st.overlay.has(id)) ov.set(id, st.overlay.get(id)); else ov.delete(id); }
+    for (const [id, v] of st.localOv) ov.set(id, v);
+    st.overlay = ov; renderFilters();
+  } else {
+    if (st.workMode === 'local') return;
+    const target = col === 'projects' ? st.projects : st.chats;
+    const merged = {};
+    for (const [id, v] of Object.entries(next)) merged[id] = JSON.parse(JSON.stringify(v));
+    for (const [path, at] of Object.entries(st.dirty)) if (path.startsWith(col + '/') && Date.now() - at < 5000) { const id = path.slice(col.length + 1); if (target[id]) merged[id] = target[id]; }
+    if (col === 'projects') st.projects = merged; else st.chats = merged;
+  }
+  renderList();
+  const focusIn = document.activeElement && $('#main').contains(document.activeElement) && /TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName);
+  if (st.route === 'home') renderHome();
+  else if (!focusIn && !st.busy[st.route] && !(st.gen[st.route] && st.gen[st.route].running) && !Object.keys(st.sugg).some(k => k.startsWith(st.route + ':') && st.sugg[k].busy)) renderContest(st.route);
+}
+async function connect() {
+  const cl = window.claude;
+  if (!cl || typeof cl.use !== 'function') { st.sample = null; setSync('local'); if (st.route !== 'home') renderContest(st.route); return; }
+  cl.use('sample').then(s => { st.sample = s || null; if (st.route !== 'home') renderContest(st.route); }).catch(() => {});
+  cl.use('downloads').then(d => { st.downloads = d || null; if (st.route !== 'home' && st.tab === 'draft') renderContest(st.route); }).catch(() => {});
+  setSync('connecting');
+  let db = null;
+  try { db = await cl.use('db'); } catch (e) { db = null; }
+  if (!db) { setSync('local'); return; }
+  st.db = db; st.backend = 'db';
+  let owner = false, admin = false, canW = null;
+  try {
+    const u = await cl.use('user');
+    if (u) { owner = await u.isOwner(); admin = await u.canEdit(); canW = await u.can('data.write'); st.uid = await u.id(); }
+  } catch (e) { /* 모르면 이 브라우저에 저장 */ }
+  st.sharedMode = admin ? 'db' : 'local';
+  st.selfWrite = !!st.uid && canW !== false;
+  if (st.selfWrite && canW === null && !owner) {
+    try { await db.doc('data/users/' + st.uid + '/work').set({ v: 1 }); } catch (e) { st.selfWrite = false; }
+  }
+  st.workMode = owner ? 'owner' : st.selfWrite ? 'private' : 'local';
+  if (st.uid) {
+    db.doc('data/users/' + st.uid + '/profile').onSnapshot(snap => {
+      if (snap.exists) {
+        const v = snap.data();
+        st.profile = v && !v.cleared ? JSON.parse(JSON.stringify(v)) : null;
+        LS.set('gongmo.profile', st.profile);
+        renderProfileBtn(); rerenderAll();
+      } else if (st.profile && st.selfWrite) {
+        st.db.doc('data/users/' + st.uid + '/profile').set(st.profile).catch(() => {});
+      }
+    }, () => {});
+  }
+  st.overlay = new Map(st.localOv);
+  if (st.workMode !== 'local') { st.projects = {}; st.chats = {}; }
+  let answered = false;
+  const timer = setTimeout(() => { if (!answered) setSync('slow'); }, 10000);
+  const onErr = e => { answered = true; clearTimeout(timer); setSync(e && e.code === 'revoked' ? 'readonly' : 'error'); };
+  const listen = (ref, col) => ref.onSnapshot(snap => {
+    if (!snap.metadata.fromCache) { answered = true; clearTimeout(timer); syncState(); }
+    applyDocs(col, snap.docs);
+  }, onErr);
+  listen(db.collection('contests'), 'contests');
+  for (const col of ['projects', 'chats']) {
+    if (st.workMode === 'local') break;
+    st.unsub.push(listen(db.collection(st.workMode === 'owner' ? col : workPath(col)), col));
+  }
+}
+
+/* ---------- 시작 ---------- */
+$('#asOf').textContent = SNAP.asOf;
+loadLocal();
+st.profile = LS.get('gongmo.profile', null);
+renderProfileBtn();
+initEngine();
+renderFilters();
+bind();
+route();
+connect();
+})();
+</script>
