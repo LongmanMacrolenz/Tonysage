@@ -1352,60 +1352,116 @@ function updLive(c) {
   if (el && g) { el.textContent = g.live.slice(-2500); el.scrollTop = el.scrollHeight; }
   const t = $('#genTime'); if (t && g) t.textContent = Math.round((Date.now() - g.t0) / 1000) + '초';
 }
-async function runStep(c, g, k, prompt, asJson) {
+const STEP_LIMIT_MS = 7 * 60 * 1000;
+async function runStep(c, g, k, prompt) {
   const s = g.steps.find(x => x.k === k);
   s.state = 'run'; s.t0 = Date.now(); g.live = ''; rerPkg(c);
   const ctl = g.ctl = new AbortController();
-  const o = engineOpts({ cache: false, signal: ctl.signal, onText: ({ text }) => { g.live = text; updLive(c); } });
-  const r = asJson ? await st.sample.json(prompt, o) : await st.sample(prompt, o);
+  const o = engineOpts({ cache: false, signal: ctl.signal, onText: ({ text }) => { if (!g.stopped) { g.live = text; updLive(c); } } });
+  let timer = null;
+  const guard = new Promise((_, rej) => {
+    g.stopNow = () => rej({ code: 'cancelled' });
+    timer = setTimeout(() => { try { ctl.abort(); } catch (e) { /* 이미 끝남 */ } rej({ code: 'timeout' }); }, STEP_LIMIT_MS);
+  });
+  let r;
+  try { r = await Promise.race([st.sample(prompt, o), guard]); }
+  finally { clearTimeout(timer); g.stopNow = null; }
   s.state = 'done'; s.secs = Math.round((Date.now() - s.t0) / 1000);
-  if (!asJson) { g.applied = noteApplied(r); if (r.truncated) g.warn = '답이 길어 중간에 끊겼습니다. 생각 수준을 낮추거나 아이디어를 줄여 다시 만들어 보세요.'; }
+  g.applied = noteApplied(r);
+  if (r.truncated) g.warn = '답이 길어 중간에 끊겼습니다. 생각 수준을 낮추거나 아이디어를 줄여 다시 만들어 보세요.';
   return r;
 }
-async function makePackage(c) {
+/* Claude가 준 JSON을 너그럽게 읽는다: 코드 울타리, 앞뒤 설명, 끝 쉼표, 문자열 안 줄바꿈 */
+function parseJsonLoose(text) {
+  let t = String(text || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if (a < 0 || b <= a) return null;
+  t = t.slice(a, b + 1);
+  const tries = [t, t.replace(/,\s*([}\]])/g, '$1')];
+  let fixed = '', inStr = false, esc = false;
+  for (const ch of tries[1]) {
+    if (inStr) {
+      if (esc) { esc = false; fixed += ch; continue; }
+      if (ch === '\\') { esc = true; fixed += ch; continue; }
+      if (ch === '"') { inStr = false; fixed += ch; continue; }
+      if (ch === '\n') { fixed += '\\n'; continue; }
+      if (ch === '\r') continue;
+      if (ch === '\t') { fixed += '\\t'; continue; }
+      fixed += ch;
+    } else { if (ch === '"') inStr = true; fixed += ch; }
+  }
+  tries.push(fixed);
+  for (const x of tries) { try { const o = JSON.parse(x); if (o && typeof o === 'object') return o; } catch (e) { /* 다음 방법 */ } }
+  return null;
+}
+function stopGen(c) {
+  const g = st.gen[c.id];
+  if (!g || !g.running) return;
+  g.stopped = true;
+  try { if (g.ctl) g.ctl.abort(); } catch (e) { /* 무시 */ }
+  if (g.stopNow) g.stopNow();
+}
+async function makePackage(c, mode) {
   const id = c.id;
   if (st.gen[id] && st.gen[id].running) return;
+  const rest = mode === 'rest';
   if (!st.sample || st.sampleOff) { toast('이 화면에서는 Claude를 부를 수 없습니다. \'대화용 요약 복사\'를 쓰세요.'); return; }
   ensureProject(id, false);
   const inp = proj(id).input || {};
   if (eligOf(c).k === 'no' && !st.forceElig[id]) { toast('내 조건으로는 참여할 수 없는 공모라 패키지를 만들지 않았습니다. 공고 한 장에서 이유를 확인하세요.'); return; }
   if (!(inp.direction || '').trim() && !(inp.idea || '').trim()) { toast('정책 방향이나 아이디어 초안을 먼저 적어 주세요.'); const el = $('#in_direction'); if (el) el.focus(); return; }
-  const review = st.reviewPass[id] !== false;
+  if (rest && !(proj(id) && filled(proj(id)) >= 4)) { toast('제안서 본문이 먼저 있어야 합니다. \'제출 패키지 만들기\'를 눌러 주세요.'); return; }
+  const review = !rest && st.reviewPass[id] !== false;
+  const EXTRAS = { k: 'extras', label: '1쪽 요약, 신청서·업로드·이메일 문안, 파일 목록 만들기' };
   const g = st.gen[id] = {
-    running: true, t0: Date.now(), live: '', err: '', warn: '', applied: '',
-    steps: [{ k: 'body', label: '제안서 본문 쓰기' }].concat(review ? [{ k: 'review', label: '심사위원 관점으로 검토하고 다시 쓰기' }] : [], [{ k: 'extras', label: '1쪽 요약, 신청서·업로드·이메일 문안, 파일 목록 만들기' }]).map(s => Object.assign(s, { state: 'wait' }))
+    running: true, t0: Date.now(), live: '', err: '', warn: '', applied: '', rest,
+    steps: (rest ? [EXTRAS] : [{ k: 'body', label: '제안서 본문 쓰기' }].concat(review ? [{ k: 'review', label: '심사위원 관점으로 검토하고 다시 쓰기' }] : [], [EXTRAS])).map(s => Object.assign({}, s, { state: 'wait' }))
   };
+  const live = () => st.gen[id] === g && !g.stopped;
   const tick = setInterval(() => updLive(c), 1000);
   let p = clone(proj(id));
-  if (filled(p)) p.backup = { sections: clone(p.sections), at: Date.now() };
-  saveProject(id, p);
+  if (!rest) { if (filled(p)) p.backup = { sections: clone(p.sections), at: Date.now() }; saveProject(id, p); }
   try {
-    let r = await runStep(c, g, 'body', bodyPrompt(c, inp));
-    let sec = parseSections(r.text);
+    let r, sec, reviewNote = (p.pkg && p.pkg.review) || '';
+    if (rest) sec = clone(p.sections);
+    else {
+    r = await runStep(c, g, 'body', bodyPrompt(c, inp));
+    if (!live()) return;
+    sec = parseSections(r.text);
     if (!sec) throw { code: 'format', text: r.text };
-    let reviewNote = '';
+    reviewNote = '';
     p = clone(proj(id)); Object.assign(p.sections, pick(sec)); saveProject(id, p);
     if (review) {
       r = await runStep(c, g, 'review', reviewPrompt(c, inp, sec));
+      if (!live()) return;
       const sec2 = parseSections(r.text);
       if (sec2) { reviewNote = sec2.review || ''; sec = sec2; p = clone(proj(id)); Object.assign(p.sections, pick(sec)); saveProject(id, p); }
       else g.warn = '검토본의 형식을 읽지 못해 첫 초안을 그대로 썼습니다.';
     }
-    const ex = cleanExtras(await runStep(c, g, 'extras', extrasPrompt(c, inp, sec), true));
+    }
+    r = await runStep(c, g, 'extras', extrasPrompt(c, inp, sec));
+    if (!live()) return;
+    const obj = parseJsonLoose(r.text);
+    if (!obj) throw { code: 'extras_format', text: r.text };
+    const ex = cleanExtras(obj);
     p = clone(proj(id));
     p.pkg = Object.assign(ex, { review: reviewNote, generatedAt: Date.now(), engine: { model: st.engine.model, effort: st.engine.effort }, applied: g.applied || '' });
     if (['아이디어 구상', '작성 중'].includes(p.status)) p.status = '검토 중';
     saveProject(id, p);
     toast('제출 패키지를 만들었습니다.');
   } catch (e) {
+    if (st.gen[id] !== g) return;
     const s = g.steps.find(x => x.state === 'run');
     if (s) s.state = 'err';
-    if (e && e.code === 'format') { g.err = 'Claude 답의 형식을 읽지 못했습니다. 다시 만들어 보세요. 받은 내용은 아래에 남겨 두었습니다.'; g.live = e.text || g.live; }
-    else if (e && e.code === 'cancelled') g.err = '멈췄습니다. 끝난 단계까지의 결과는 저장되어 있습니다.';
-    else g.err = errText(e) || '만들지 못했습니다. 다시 시도해 주세요.';
+    const after = proj(id) && filled(proj(id)) >= 4 ? ' 본문은 저장돼 있으니 \'남은 단계만 만들기\'로 이어서 만드세요.' : '';
+    if (e && e.code === 'extras_format') { g.err = '마지막 단계(요약·제출 문안)의 답을 읽지 못했습니다.' + after; g.live = e.text || g.live; }
+    else if (e && e.code === 'timeout') g.err = '한 단계가 7분을 넘겨 멈췄습니다. 생각 수준을 낮추거나 잠시 뒤 다시 시도하세요.' + after;
+    else if (g.stopped || (e && e.code === 'cancelled')) g.err = '멈췄습니다.' + after;
+    else if (e && e.code === 'format') { g.err = 'Claude 답의 형식을 읽지 못했습니다. 다시 만들어 보세요. 받은 내용은 아래에 남겨 두었습니다.'; g.live = e.text || g.live; }
+    else g.err = (errText(e) || '만들지 못했습니다. 다시 시도해 주세요.') + after;
   } finally {
     clearInterval(tick);
-    g.running = false; g.ctl = null;
+    if (st.gen[id] === g) { g.running = false; g.ctl = null; }
     if (st.route === id) renderContest(id);
     renderList();
   }
@@ -1433,9 +1489,11 @@ function renderPkg(c, el) {
     '<div class="engline" id="engNow">' + engineNowHtml() + '</div>' +
     '<label class="chk"><input type="checkbox" id="reviewPass"' + (st.reviewPass[id] !== false ? ' checked' : '') + (running ? ' disabled' : '') + '> 심사위원 관점으로 한 번 더 검토하고 다시 쓰기(권장, 시간이 두 배쯤 걸림)</label>' +
     '<p class="muted" style="margin:0">Claude는 인터넷을 검색하지 않습니다. 확실하지 않은 수치는 <span class="mark">[확인 필요]</span>로 남기니 공식 통계로 채워 주세요. 높은 생각 수준은 단계마다 1~3분 걸릴 수 있습니다.</p>' +
-    (hasBody && !running ? '<p class="note" style="margin:0">다시 만들면 지금 제안서 본문을 새 내용으로 바꿉니다. 지금 본문은 \'이전 본문으로 되돌리기\'로 한 번 되돌릴 수 있게 보관합니다.</p>' : '') +
+    (hasBody && !running && !pk ? '<p class="note" style="margin:0">본문은 이미 있습니다. \'남은 단계만 만들기\'는 지금 본문으로 1쪽 요약과 제출 문안만 만듭니다. \'처음부터 다시 만들기\'는 본문도 새로 씁니다(지금 본문은 되돌릴 수 있게 보관).</p>' : '') +
+    (hasBody && !running && pk ? '<p class="note" style="margin:0">다시 만들면 지금 제안서 본문을 새 내용으로 바꿉니다. 지금 본문은 \'이전 본문으로 되돌리기\'로 한 번 되돌릴 수 있게 보관합니다.</p>' : '') +
     '<div class="actions">' + (running ? '<button class="btn" type="button" data-act="stopgen">멈추기</button>'
-      : '<button class="btn talk" type="button" data-act="make"' + (aiOff ? ' disabled' : '') + '>' + (pk ? '제출 패키지 다시 만들기' : '제출 패키지 만들기') + '</button>') +
+      : (hasBody && !pk ? '<button class="btn talk" type="button" data-act="makerest"' + (aiOff ? ' disabled' : '') + '>남은 단계만 만들기 (요약·제출 문안)</button><button class="btn ghost" type="button" data-act="make"' + (aiOff ? ' disabled' : '') + '>처음부터 다시 만들기</button>'
+        : '<button class="btn talk" type="button" data-act="make"' + (aiOff ? ' disabled' : '') + '>' + (pk ? '제출 패키지 다시 만들기' : '제출 패키지 만들기') + '</button>' + (pk ? '<button class="btn ghost" type="button" data-act="makerest"' + (aiOff ? ' disabled' : '') + '>제출 문안만 다시 만들기</button>' : ''))) +
     (p && p.backup && !running ? '<button class="btn ghost" type="button" data-act="restore">이전 본문으로 되돌리기</button>' : '') +
     (aiOff ? '<button class="btn ghost" type="button" data-act="handoff">대화용 요약 복사</button>' : '') + '</div>' +
     (aiOff ? '<p class="muted" style="margin:0">' + (st.sample === undefined && !st.sampleOff ? 'Claude 연결을 확인하는 중입니다.' : '이 화면에서는 Claude를 바로 부를 수 없습니다. 게시된 페이지에서 열거나, 대화용 요약을 복사해 Claude 대화창에서 이어 가세요.') + '</p>' : '') +
@@ -1479,7 +1537,8 @@ function pkgResultHtml(c, p, pk) {
     pk.applicationFields.map((f, i) => '<tr><td>' + esc(f.label) + '</td><td><input type="text" data-pk="applicationFields.' + i + '.value" value="' + esc(f.value) + '"></td></tr>').join('') + '</tbody></table></div></div>';
   if (pk.upload.length) h += '<div class="part"><h4>온라인 접수 입력란<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="upload">전체 복사</button></span></h4><div class="pwrap"><table class="ptable"><tbody>' +
     pk.upload.map((f, i) => '<tr><td>' + esc(f.field) + (f.limit ? '<br><small class="muted">' + esc(f.limit) + '</small>' : '') + '<br><small class="muted" id="cnt_up' + i + '">' + f.value.length.toLocaleString('ko-KR') + '자</small></td><td><textarea data-pk="upload.' + i + '.value" rows="' + Math.min(8, 2 + Math.ceil(f.value.length / 60)) + '">' + esc(f.value) + '</textarea><button class="btn small ghost" type="button" data-copy-pk="upload.' + i + '">이 칸 복사</button></td></tr>').join('') + '</tbody></table></div></div>';
-  h += '<div class="part"><h4>이메일 문안<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="email.subject">제목 복사</button><button class="btn small ghost" type="button" data-copy-pk="email.body">본문 복사</button></span></h4>' +
+  const hasEmail = !!(pk.email && (pk.email.to || pk.email.subject || pk.email.body));
+  if (hasEmail) h += '<div class="part"><h4>이메일 문안<span class="sp"><button class="btn small ghost" type="button" data-copy-pk="email.subject">제목 복사</button><button class="btn small ghost" type="button" data-copy-pk="email.body">본문 복사</button></span></h4>' +
     '<div class="fld"><label for="em_to">받는 곳</label><input type="text" id="em_to" data-pk="email.to" value="' + esc(pk.email.to) + '"></div>' +
     '<div class="fld"><label for="em_sub">제목</label><input type="text" id="em_sub" data-pk="email.subject" value="' + esc(pk.email.subject) + '"></div>' +
     '<div class="fld"><label for="em_body">본문</label><textarea id="em_body" data-pk="email.body" rows="7">' + esc(pk.email.body) + '</textarea></div>' +
@@ -1599,7 +1658,7 @@ async function buildDocs(c, p, kinds) {
       H1('5. 1쪽 요약'), ...body(pk.summary1p),
       H1('6. 참가신청서 기재 초안'), pk.applicationFields.length ? kv(pk.applicationFields.map(f => [f.label, f.value])) : P('공고 양식을 확인하세요.'), gap(),
       H1('7. 온라인 접수 입력란'), pk.upload.length ? grid(['입력란', '붙여 넣을 내용'], pk.upload.map(f => [f.field + (f.limit ? '\n(' + f.limit + ')' : ''), f.value]), [2300, W - 2300]) : P('온라인 입력란 정보가 공고 요약에 없습니다.'), gap(),
-      H1('8. 이메일 문안'), kv([['받는 곳', pk.email.to || '[공고 확인]'], ['제목', pk.email.subject], ['본문', pk.email.body], ['첨부', pk.email.attachments.join('\n')]]), gap()
+      H1('8. 이메일 문안'), ...(pk.email && (pk.email.to || pk.email.subject || pk.email.body) ? [kv([['받는 곳', pk.email.to || '[공고 확인]'], ['제목', pk.email.subject], ['본문', pk.email.body], ['첨부', pk.email.attachments.join('\n')]])] : [P('이메일 접수가 아닙니다. 위 온라인 접수 입력란을 쓰세요.')]), gap()
     ];
     if (pk.slides.length) { ch.push(H1('9. 발표·장면 구성')); pk.slides.forEach((s, i) => { ch.push(H2((i + 1) + '. ' + s.title)); s.points.forEach(t => ch.push(P('• ' + t, { para: { indent: { left: 400, hanging: 200 } } }))); }); }
     ch.push(H1((pk.slides.length ? '10' : '9') + '. 생성형 AI 활용 고지'), P(c.aiRule ? '공고 규정: ' + c.aiRule : '공고 요약에 규정 없음. 공식 공고에서 확인하세요.'), ...body(pk.aiNote || '(필요하면 작성)'));
@@ -1806,7 +1865,8 @@ function bind() {
       if (a === 'profile') { openProfile(); return; }
       if (a === 'start' || a === 'start-draft') { if (eligOf(c).k === 'no') st.forceElig[c.id] = true; ensureProject(c.id); st.tab = a === 'start' ? 'pkg' : 'draft'; renderContest(c.id); renderList(); if (a === 'start') { const d = $('#in_direction'); if (d) d.focus(); } }
       else if (a === 'make') makePackage(c);
-      else if (a === 'stopgen') { const g = st.gen[c.id]; if (g && g.ctl) g.ctl.abort(); }
+      else if (a === 'makerest') makePackage(c, 'rest');
+      else if (a === 'stopgen') stopGen(c);
       else if (a === 'restore') { const p = clone(proj(c.id)); if (p.backup) { p.sections = p.backup.sections; delete p.backup; saveProject(c.id, p); renderContest(c.id); toast('이전 본문으로 되돌렸습니다.'); } }
       else if (a === 'dl-zip' || a === 'dl-proposal' || a === 'dl-summary' || a === 'dl-guide') download(c, a.slice(3));
       else if (a === 'submitted') { const p = clone(proj(c.id)); p.status = '제출 완료'; p.submittedAt = Date.now(); saveProject(c.id, p); renderContest(c.id); renderList(); toast('제출 완료로 표시했습니다.'); }
